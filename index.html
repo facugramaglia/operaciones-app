@@ -921,7 +921,16 @@
         }
         
         function updateUI() {
-            document.getElementById('header-balance').textContent = '$' + balanceTotal.toLocaleString('es-AR');
+            // Update balance with color
+            const balanceElement = document.getElementById('header-balance');
+            balanceElement.textContent = '$' + balanceTotal.toLocaleString('es-AR');
+            
+            // Color verde si positivo, rojo si negativo
+            if (balanceTotal >= 0) {
+                balanceElement.style.color = '#48bb78'; // Verde
+            } else {
+                balanceElement.style.color = '#f56565'; // Rojo
+            }
             
             const totalVentas = ventas.reduce((sum, v) => sum + v.cantidad, 0);
             const totalCompras = compras.reduce((sum, c) => sum + c.cantidad, 0);
@@ -961,15 +970,20 @@
         
         function getFilteredOps(ops) {
             if (currentFilter === 'ultimo') {
-                // Buscar el último separador
+                // Buscar el ÚLTIMO separador (desde el final hacia atrás)
                 let lastSepIndex = -1;
                 for (let i = ops.length - 1; i >= 0; i--) {
-                    if (ops[i].operador === config.separador) {
+                    if (ops[i].operador === config.separador || ops[i].operador.includes('SEPARADOR')) {
                         lastSepIndex = i;
                         break;
                     }
                 }
-                return lastSepIndex >= 0 ? ops.slice(lastSepIndex + 1) : ops;
+                // Si encontramos separador, devolver todo lo que está DESPUÉS
+                if (lastSepIndex >= 0) {
+                    return ops.slice(lastSepIndex + 1);
+                }
+                // Si no hay separador, devolver todo
+                return ops;
             }
             return ops.slice(-currentFilter);
         }
