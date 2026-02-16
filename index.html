@@ -1172,15 +1172,8 @@
                 fechaFormateada = parts[2] + '/' + parts[1] + '/' + parts[0];
             }
             
-            // Crear formulario oculto
-            const form = document.createElement('form');
-            form.method = 'GET';
-            form.action = config.scriptUrl;
-            form.target = '_blank';
-            form.style.display = 'none';
-            
-            // Agregar campos
-            const fields = {
+            // Construir URL con parámetros
+            const params = new URLSearchParams({
                 'action': 'update_status',
                 'tipo': tipo,
                 'fecha': fechaFormateada,
@@ -1188,30 +1181,33 @@
                 'cantidad': cantidad.replace('$', ''),
                 'nuevoEstado': nuevoEstado,
                 'usuario': currentUser
-            };
+            });
             
-            for (const [key, value] of Object.entries(fields)) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = value;
-                form.appendChild(input);
-            }
+            const url = config.scriptUrl + '?' + params.toString();
             
-            document.body.appendChild(form);
+            // Crear iframe invisible
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.style.position = 'absolute';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = 'none';
+            iframe.src = url;
             
-            // Enviar formulario
-            form.submit();
+            document.body.appendChild(iframe);
             
-            // Eliminar formulario después de 1 segundo
+            // Mostrar mensaje de éxito inmediato
+            alert('✅ Estado actualizado a: ' + nuevoEstado);
+            
+            // Remover iframe después de 3 segundos
             setTimeout(() => {
-                document.body.removeChild(form);
-            }, 1000);
+                if (iframe.parentNode) {
+                    document.body.removeChild(iframe);
+                }
+            }, 3000);
             
-            alert('✅ Solicitud enviada!\n\nSe abrirá una nueva pestaña (puedes cerrarla).\n\nVerifica en tu planilla que el estado se haya actualizado a: ' + nuevoEstado);
-            
-            // Recargar datos después de 3 segundos
-            setTimeout(() => loadData(), 3000);
+            // Recargar datos
+            setTimeout(() => loadData(), 2000);
         }
         
         function showScreen(screen) {
