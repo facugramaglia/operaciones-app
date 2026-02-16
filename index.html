@@ -699,6 +699,8 @@
         let currentUser = null;
         let ventas = [];
         let compras = [];
+        let ventasRaw = [];
+        let comprasRaw = [];
         let balanceTotal = 0;
         let currentTipo = 'VENTA';
         let currentFilter = 'ultimo';
@@ -871,12 +873,14 @@
                 const ventasUrl = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.ventasRange}?key=${config.apiKey}`;
                 const ventasRes = await fetch(ventasUrl);
                 const ventasData = await ventasRes.json();
-                ventas = processData(ventasData.values || []);
+                ventasRaw = ventasData.values || [];
+                ventas = processData(ventasRaw);
                 
                 const comprasUrl = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.comprasRange}?key=${config.apiKey}`;
                 const comprasRes = await fetch(comprasUrl);
                 const comprasData = await comprasRes.json();
-                compras = processData(comprasData.values || []);
+                comprasRaw = comprasData.values || [];
+                compras = processData(comprasRaw);
                 
                 updateUI();
             } catch (error) {
@@ -887,8 +891,15 @@
         
         function processData(rows) {
             return rows
-                .filter(row => row && row.length > 0 && row[1] && row[3])
-                .map(row => {
+                .filter(row => {
+                    if (!row || row.length === 0) return false;
+                    if (!row[1] || !row[3]) return false;
+                    // Filtrar filas que son separadores (con o sin guiones)
+                    const operador = String(row[1]).trim();
+                    if (operador === '---SEPARADOR---' || operador === 'SEPARADOR' || operador.includes('SEPARADOR')) return false;
+                    return true;
+                })
+                .map((row, index) => {
                     const cantidadStr = String(row[3] || '0').replace(/\$/g, '').replace(/,/g, '').trim();
                     const precioStr = String(row[4] || '0').replace(/\$/g, '').replace(/,/g, '').trim();
                     const totalStr = String(row[5] || '0').replace(/\$/g, '').replace(/,/g, '').trim();
@@ -968,21 +979,39 @@
             });
         }
         
-        function getFilteredOps(ops) {
+        function getFilteredOps(ops, isVentas) {
             if (currentFilter === 'ultimo') {
-                // Buscar el ÚLTIMO separador (desde el final hacia atrás)
+                // Buscar el ÚLTIMO separador en los datos RAW
+                const rawData = isVentas ? ventasRaw : comprasRaw;
                 let lastSepIndex = -1;
-                for (let i = ops.length - 1; i >= 0; i--) {
-                    if (ops[i].operador === config.separador || ops[i].operador.includes('SEPARADOR')) {
-                        lastSepIndex = i;
-                        break;
+                
+                for (let i = rawData.length - 1; i >= 0; i--) {
+                    if (rawData[i] && rawData[i][1]) {
+                        const operador = String(rawData[i][1]).trim();
+                        if (operador === '---SEPARADOR---' || operador.includes('SEPARADOR')) {
+                            lastSepIndex = i;
+                            break;
+                        }
                     }
                 }
-                // Si encontramos separador, devolver todo lo que está DESPUÉS
+                
+                // Si encontramos separador, necesitamos mapear índices
                 if (lastSepIndex >= 0) {
-                    return ops.slice(lastSepIndex + 1);
+                    // Contar cuántas filas válidas hay antes del separador
+                    let validRowsBeforeSep = 0;
+                    for (let i = 0; i < lastSepIndex; i++) {
+                        const row = rawData[i];
+                        if (row && row[1] && row[3]) {
+                            const op = String(row[1]).trim();
+                            if (op !== '---SEPARADOR---' && !op.includes('SEPARADOR')) {
+                                validRowsBeforeSep++;
+                            }
+                        }
+                    }
+                    // Devolver operaciones después de ese índice
+                    return ops.slice(validRowsBeforeSep);
                 }
-                // Si no hay separador, devolver todo
+                
                 return ops;
             }
             return ops.slice(-currentFilter);
@@ -998,8 +1027,8 @@
             ventasTbody.innerHTML = '';
             comprasTbody.innerHTML = '';
             
-            const ventasFiltradas = getFilteredOps(ventas).reverse();
-            const comprasFiltradas = getFilteredOps(compras).reverse();
+            const ventasFiltradas = getFilteredOps(ventas, true).reverse();
+            const comprasFiltradas = getFilteredOps(compras, false).reverse();
             
             ventasFiltradas.forEach((v, idx) => {
                 const row = ventasTbody.insertRow();
