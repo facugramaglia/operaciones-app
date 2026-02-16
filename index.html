@@ -349,19 +349,21 @@
         
         .filter-btn {
             flex: 1;
-            padding: 10px;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 12px 20px;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: transparent;
+            border-radius: 0;
+            font-size: 15px;
             font-weight: 600;
             color: #718096;
+            transition: all 0.3s;
         }
         
         .filter-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
+            background: transparent;
+            color: #667eea;
+            border-bottom-color: #667eea;
         }
         
         table {
@@ -495,7 +497,10 @@
                         <div style="font-size: 12px; color: #a0aec0;">Operador</div>
                     </div>
                 </div>
-                <button class="btn-logout" id="btn-logout">Salir</button>
+                <div style="display: flex; gap: 10px;">
+                    <button style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;" id="btn-config-header">⚙️</button>
+                    <button class="btn-logout" id="btn-logout">Salir</button>
+                </div>
             </div>
         </div>
         
@@ -595,16 +600,15 @@
             
             <!-- HISTORIAL -->
             <div id="historial-screen" class="screen">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
                     <button class="filter-btn active" id="tab-ventas">📈 Ventas</button>
                     <button class="filter-btn" id="tab-compras">📉 Compras</button>
-                </div>
-                
-                <div class="operations-header">
-                    <button class="filter-btn active" id="filter-ultimo">Último día</button>
-                    <button class="filter-btn" id="filter-10">10</button>
-                    <button class="filter-btn" id="filter-20">20</button>
-                    <button class="filter-btn" id="filter-30">30</button>
+                    <select id="filter-select" style="margin-left: auto; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-weight: 600; color: #667eea; background: white;">
+                        <option value="ultimo">Último día</option>
+                        <option value="10">Últimas 10</option>
+                        <option value="20">Últimas 20</option>
+                        <option value="30">Últimas 30</option>
+                    </select>
                 </div>
                 
                 <div id="ventas-tab" class="card">
@@ -685,10 +689,6 @@
                 <div class="nav-icon">📋</div>
                 <div>Historial</div>
             </button>
-            <button class="nav-item" id="nav-config">
-                <div class="nav-icon">⚙️</div>
-                <div>Config</div>
-            </button>
         </div>
     </div>
     
@@ -757,7 +757,9 @@
             document.getElementById('nav-dashboard').addEventListener('click', () => showScreen('dashboard'));
             document.getElementById('nav-cargar').addEventListener('click', () => showScreen('cargar'));
             document.getElementById('nav-historial').addEventListener('click', () => showScreen('historial'));
-            document.getElementById('nav-config').addEventListener('click', () => showScreen('config'));
+            
+            // Config button in header
+            document.getElementById('btn-config-header').addEventListener('click', () => showScreen('config'));
             
             // Logout
             document.getElementById('btn-logout').addEventListener('click', handleLogout);
@@ -775,11 +777,11 @@
             document.getElementById('tab-ventas').addEventListener('click', () => switchTab('ventas'));
             document.getElementById('tab-compras').addEventListener('click', () => switchTab('compras'));
             
-            // Filters
-            document.getElementById('filter-ultimo').addEventListener('click', () => changeFilter('ultimo'));
-            document.getElementById('filter-10').addEventListener('click', () => changeFilter(10));
-            document.getElementById('filter-20').addEventListener('click', () => changeFilter(20));
-            document.getElementById('filter-30').addEventListener('click', () => changeFilter(30));
+            // Filter dropdown
+            document.getElementById('filter-select').addEventListener('change', function() {
+                const value = this.value;
+                changeFilter(value === 'ultimo' ? 'ultimo' : parseInt(value));
+            });
             
             // Config
             document.getElementById('btn-save-config').addEventListener('click', saveConfig);
@@ -1088,7 +1090,7 @@
                     <td style="text-align: right; font-size: 11px;">$${v.precio.toFixed(2)}</td>
                     <td style="text-align: right; font-weight: 600; color: #48bb78;">$${v.total.toLocaleString('es-AR')}</td>
                     <td>
-                        <select class="estado-select" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
+                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
                             ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
@@ -1110,12 +1112,19 @@
                     <td style="text-align: right; font-size: 11px;">$${c.precio.toFixed(2)}</td>
                     <td style="text-align: right; font-weight: 600; color: #f56565;">$${c.total.toLocaleString('es-AR')}</td>
                     <td>
-                        <select class="estado-select" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
+                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
                             ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
                     <td>${c.observaciones ? `<div class="obs-box">${c.observaciones}</div>` : ''}</td>
                 `;
+            });
+            
+            // Add event listeners to all estado selects
+            document.querySelectorAll('.estado-select').forEach(select => {
+                select.addEventListener('change', function(e) {
+                    cambiarEstado(e.target);
+                });
             });
         }
         
@@ -1130,52 +1139,129 @@
             return colors[estado] || '#718096';
         }
         
+        async function cambiarEstado(selectElement) {
+            if (!config.scriptUrl) {
+                alert('⚠️ Configura la URL del Script para poder editar estados');
+                updateHistorial(); // Revert
+                return;
+            }
+            
+            const nuevoEstado = selectElement.value;
+            const tipo = selectElement.getAttribute('data-tipo');
+            const fecha = selectElement.getAttribute('data-fecha');
+            const cliente = selectElement.getAttribute('data-cliente');
+            const cantidad = selectElement.getAttribute('data-cantidad');
+            
+            if (!confirm(`¿Cambiar estado de "${cliente}" a ${nuevoEstado}?`)) {
+                updateHistorial(); // Revert
+                return;
+            }
+            
+            const data = {
+                action: 'update_status',
+                tipo: tipo,
+                fecha: fecha,
+                cliente: cliente,
+                cantidad: parseFloat(cantidad),
+                nuevoEstado: nuevoEstado,
+                usuario: currentUser
+            };
+            
+            try {
+                await fetch(config.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                alert('✅ Estado actualizado a ' + nuevoEstado);
+                
+                // Recargar datos después de 1 segundo
+                setTimeout(() => loadData(), 1000);
+                
+            } catch (error) {
+                alert('❌ Error al actualizar: ' + error.message);
+                updateHistorial(); // Revert
+            }
+        }
+        
         function showScreen(screen) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screen + '-screen').classList.add('active');
             
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById('nav-' + screen).classList.add('active');
+            
+            // Restaurar fondo morado para dashboard y config
+            if (screen === 'dashboard' || screen === 'config') {
+                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+            // Si vamos a historial, aplicar color según tab actual
+            else if (screen === 'historial') {
+                if (currentTab === 'ventas') {
+                    document.body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+                } else {
+                    document.body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
+                }
+            }
+            // Si vamos a cargar, aplicar color según tipo actual
+            else if (screen === 'cargar') {
+                if (currentTipo === 'VENTA') {
+                    document.body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+                } else {
+                    document.body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
+                }
+            }
         }
         
         function switchTab(tab) {
             currentTab = tab;
+            
+            const body = document.body;
             
             if (tab === 'ventas') {
                 document.getElementById('tab-ventas').classList.add('active');
                 document.getElementById('tab-compras').classList.remove('active');
                 document.getElementById('ventas-tab').classList.remove('hidden');
                 document.getElementById('compras-tab').classList.add('hidden');
+                // Fondo verde
+                body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
             } else {
                 document.getElementById('tab-ventas').classList.remove('active');
                 document.getElementById('tab-compras').classList.add('active');
                 document.getElementById('ventas-tab').classList.add('hidden');
                 document.getElementById('compras-tab').classList.remove('hidden');
+                // Fondo rojo
+                body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
             }
         }
         
         function changeFilter(filter) {
             currentFilter = filter;
-            
-            document.querySelectorAll('.operations-header .filter-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('filter-' + filter).classList.add('active');
-            
             updateHistorial();
         }
         
         function setTipo(tipo) {
             currentTipo = tipo;
             
+            const body = document.body;
+            const submitBtn = document.getElementById('btn-submit');
+            
             if (tipo === 'VENTA') {
                 document.getElementById('tipo-venta').classList.add('active');
                 document.getElementById('tipo-compra').classList.remove('active');
-                document.getElementById('btn-submit').textContent = 'Registrar VENTA';
-                document.getElementById('btn-submit').classList.remove('compra');
+                submitBtn.textContent = 'Registrar VENTA';
+                submitBtn.classList.remove('compra');
+                // Fondo verde suave
+                body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
             } else {
                 document.getElementById('tipo-venta').classList.remove('active');
                 document.getElementById('tipo-compra').classList.add('active');
-                document.getElementById('btn-submit').textContent = 'Registrar COMPRA';
-                document.getElementById('btn-submit').classList.add('compra');
+                submitBtn.textContent = 'Registrar COMPRA';
+                submitBtn.classList.add('compra');
+                // Fondo rojo suave
+                body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
             }
         }
         
@@ -1193,6 +1279,11 @@
         }
         
         async function agregarOperacion() {
+            const submitBtn = document.getElementById('btn-submit');
+            
+            // Prevenir múltiples clicks
+            if (submitBtn.disabled) return;
+            
             if (!config.scriptUrl) {
                 alert('Configura la URL del Script en Config');
                 return;
@@ -1222,6 +1313,12 @@
                 observaciones: observaciones
             };
             
+            // Deshabilitar botón y cambiar texto
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '⏳ Guardando...';
+            submitBtn.style.opacity = '0.6';
+            
             try {
                 await fetch(config.scriptUrl, {
                     method: 'POST',
@@ -1241,6 +1338,13 @@
                 setTimeout(() => loadData(), 2000);
             } catch (error) {
                 alert('Error: ' + error.message);
+            } finally {
+                // Re-habilitar botón
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    submitBtn.style.opacity = '1';
+                }, 2000);
             }
         }
         
