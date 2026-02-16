@@ -1184,33 +1184,22 @@
             
             console.log('Enviando:', data);
             
-            try {
-                const response = await fetch(config.scriptUrl, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data),
-                    redirect: 'follow'
-                });
-                
-                // Con mode no-cors no podemos leer la respuesta, pero si no hay error de red, asumimos éxito
-                console.log('Respuesta recibida');
+            // Usar método iframe para iOS
+            const params = new URLSearchParams(data);
+            const url = config.scriptUrl + '?' + params.toString();
+            
+            // Crear iframe invisible
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            
+            // Esperar 3 segundos y asumir éxito
+            setTimeout(() => {
+                document.body.removeChild(iframe);
                 alert('✅ Estado actualizado a ' + nuevoEstado + '\n\nVerifica en tu planilla que se haya actualizado.');
-                
-                // Recargar datos después de 2 segundos
-                setTimeout(() => loadData(), 2000);
-                
-            } catch (error) {
-                console.error('Error completo:', error);
-                alert('❌ Error de red al actualizar.\n\n' +
-                      'Verifica:\n' +
-                      '1. Que la URL del Script sea correcta\n' +
-                      '2. Que el Script esté implementado correctamente\n' +
-                      '3. Tu conexión a internet\n\n' +
-                      'Error: ' + error.message);
-                updateHistorial(); // Revert
-            }
+                setTimeout(() => loadData(), 1000);
+            }, 3000);
         }
         
         function showScreen(screen) {
