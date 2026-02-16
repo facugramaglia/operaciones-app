@@ -1072,7 +1072,7 @@
         }
         
         function updateHistorial() {
-            const estadosVentas = ['PENDIENTE', 'REALIZADA', 'LLEVO BILLETES'];
+            const estadosVentas = ['PENDIENTE', 'REALIZADA', 'LLEVO BILLETES', 'LLEVO BILL'];
             const estadosCompras = ['PENDIENTE', 'REALIZADA', 'LLEVO PESOS', 'PREPARADO'];
             
             const ventasTbody = document.getElementById('ventas-tbody');
@@ -1086,7 +1086,7 @@
             
             ventasFiltradas.forEach((v, idx) => {
                 const row = ventasTbody.insertRow();
-                const estadoColor = getEstadoColor(v.estado);
+                const estadoStyles = getEstadoStyles(v.estado);
                 
                 row.innerHTML = `
                     <td style="font-size: 11px;">${v.fecha}</td>
@@ -1098,7 +1098,7 @@
                     <td style="text-align: right; font-size: 11px;">$${v.precio.toFixed(2)}</td>
                     <td style="text-align: right; font-weight: 600; color: #48bb78;">$${v.total.toLocaleString('es-AR')}</td>
                     <td>
-                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
+                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="padding: 6px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 11px; font-weight: 600;">
                             ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
@@ -1108,7 +1108,7 @@
             
             comprasFiltradas.forEach((c, idx) => {
                 const row = comprasTbody.insertRow();
-                const estadoColor = getEstadoColor(c.estado);
+                const estadoStyles = getEstadoStyles(c.estado);
                 
                 row.innerHTML = `
                     <td style="font-size: 11px;">${c.fecha}</td>
@@ -1120,7 +1120,7 @@
                     <td style="text-align: right; font-size: 11px;">$${c.precio.toFixed(2)}</td>
                     <td style="text-align: right; font-weight: 600; color: #f56565;">$${c.total.toLocaleString('es-AR')}</td>
                     <td>
-                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
+                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="padding: 6px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 11px; font-weight: 600;">
                             ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
@@ -1136,15 +1136,16 @@
             });
         }
         
-        function getEstadoColor(estado) {
-            const colors = {
-                'PENDIENTE': '#f59e0b',
-                'REALIZADA': '#48bb78',
-                'LLEVO BILLETES': '#667eea',
-                'LLEVO PESOS': '#667eea',
-                'PREPARADO': '#9333ea'
+        function getEstadoStyles(estado) {
+            const styles = {
+                'PENDIENTE': { bg: '#FEF3C7', color: '#92400E' },
+                'REALIZADA': { bg: '#86EFAC', color: '#166534' },
+                'LLEVO BILLETES': { bg: '#FCA5A5', color: '#7F1D1D' },
+                'LLEVO BILL': { bg: '#FCA5A5', color: '#7F1D1D' },
+                'LLEVO PESOS': { bg: '#FCA5A5', color: '#7F1D1D' },
+                'PREPARADO': { bg: '#FDBA74', color: '#7C2D12' }
             };
-            return colors[estado] || '#718096';
+            return styles[estado] || { bg: '#E5E7EB', color: '#374151' };
         }
         
         async function cambiarEstado(selectElement) {
