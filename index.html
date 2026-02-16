@@ -1165,41 +1165,53 @@
                 return;
             }
             
-            // Convertir fecha a formato DD/MM/YYYY si viene en otro formato
+            // Convertir fecha a formato DD/MM/YYYY
             let fechaFormateada = fecha;
             if (fecha.includes('-')) {
                 const parts = fecha.split('-');
                 fechaFormateada = parts[2] + '/' + parts[1] + '/' + parts[0];
             }
             
-            const data = {
-                action: 'update_status',
-                tipo: tipo,
-                fecha: fechaFormateada,
-                cliente: cliente,
-                cantidad: parseFloat(cantidad.replace('$', '')),
-                nuevoEstado: nuevoEstado,
-                usuario: currentUser
+            // Crear formulario oculto
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = config.scriptUrl;
+            form.target = '_blank';
+            form.style.display = 'none';
+            
+            // Agregar campos
+            const fields = {
+                'action': 'update_status',
+                'tipo': tipo,
+                'fecha': fechaFormateada,
+                'cliente': cliente,
+                'cantidad': cantidad.replace('$', ''),
+                'nuevoEstado': nuevoEstado,
+                'usuario': currentUser
             };
             
-            console.log('Enviando:', data);
+            for (const [key, value] of Object.entries(fields)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
             
-            // Usar método iframe para iOS
-            const params = new URLSearchParams(data);
-            const url = config.scriptUrl + '?' + params.toString();
+            document.body.appendChild(form);
             
-            // Crear iframe invisible
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = url;
-            document.body.appendChild(iframe);
+            // Enviar formulario
+            form.submit();
             
-            // Esperar 3 segundos y asumir éxito
+            // Eliminar formulario después de 1 segundo
             setTimeout(() => {
-                document.body.removeChild(iframe);
-                alert('✅ Estado actualizado a ' + nuevoEstado + '\n\nVerifica en tu planilla que se haya actualizado.');
-                setTimeout(() => loadData(), 1000);
-            }, 3000);
+                document.body.removeChild(form);
+            }, 1000);
+            
+            alert('✅ Solicitud enviada!\n\nSe abrirá una nueva pestaña (puedes cerrarla).\n\nVerifica en tu planilla que el estado se haya actualizado a: ' + nuevoEstado);
+            
+            // Recargar datos después de 3 segundos
+            setTimeout(() => loadData(), 3000);
         }
         
         function showScreen(screen) {
