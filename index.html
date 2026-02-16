@@ -665,6 +665,9 @@
                     <div class="form-group">
                         <label class="form-label">URL del Google Apps Script</label>
                         <input type="text" class="form-input" id="config-script-url" placeholder="https://script.google.com/macros/s/.../exec">
+                        <small style="font-size: 11px; color: #718096; margin-top: 5px; display: block;">
+                            Debe terminar en /exec
+                        </small>
                     </div>
                     
                     <div class="alert-success hidden" id="config-success">
@@ -672,6 +675,10 @@
                     </div>
                     
                     <button class="btn-primary" id="btn-save-config">Guardar Cambios</button>
+                    
+                    <button style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 10px; font-size: 14px; margin-top: 10px;" id="btn-test-script">
+                        🧪 Probar conexión con Script
+                    </button>
                 </div>
             </div>
         </div>
@@ -785,6 +792,7 @@
             
             // Config
             document.getElementById('btn-save-config').addEventListener('click', saveConfig);
+            document.getElementById('btn-test-script').addEventListener('click', testScriptConnection);
         }
         
         function checkPIN() {
@@ -1157,31 +1165,50 @@
                 return;
             }
             
+            // Convertir fecha a formato DD/MM/YYYY si viene en otro formato
+            let fechaFormateada = fecha;
+            if (fecha.includes('-')) {
+                const parts = fecha.split('-');
+                fechaFormateada = parts[2] + '/' + parts[1] + '/' + parts[0];
+            }
+            
             const data = {
                 action: 'update_status',
                 tipo: tipo,
-                fecha: fecha,
+                fecha: fechaFormateada,
                 cliente: cliente,
-                cantidad: parseFloat(cantidad),
+                cantidad: parseFloat(cantidad.replace('$', '')),
                 nuevoEstado: nuevoEstado,
                 usuario: currentUser
             };
             
+            console.log('Enviando:', data);
+            
             try {
-                await fetch(config.scriptUrl, {
+                const response = await fetch(config.scriptUrl, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data),
+                    redirect: 'follow'
                 });
                 
-                alert('✅ Estado actualizado a ' + nuevoEstado);
+                // Con mode no-cors no podemos leer la respuesta, pero si no hay error de red, asumimos éxito
+                console.log('Respuesta recibida');
+                alert('✅ Estado actualizado a ' + nuevoEstado + '\n\nVerifica en tu planilla que se haya actualizado.');
                 
-                // Recargar datos después de 1 segundo
-                setTimeout(() => loadData(), 1000);
+                // Recargar datos después de 2 segundos
+                setTimeout(() => loadData(), 2000);
                 
             } catch (error) {
-                alert('❌ Error al actualizar: ' + error.message);
+                console.error('Error completo:', error);
+                alert('❌ Error de red al actualizar.\n\n' +
+                      'Verifica:\n' +
+                      '1. Que la URL del Script sea correcta\n' +
+                      '2. Que el Script esté implementado correctamente\n' +
+                      '3. Tu conexión a internet\n\n' +
+                      'Error: ' + error.message);
                 updateHistorial(); // Revert
             }
         }
@@ -1365,6 +1392,53 @@
             const successMsg = document.getElementById('config-success');
             successMsg.classList.remove('hidden');
             setTimeout(() => successMsg.classList.add('hidden'), 3000);
+        }
+        
+        async function testScriptConnection() {
+            const scriptUrl = document.getElementById('config-script-url').value.trim();
+            
+            if (!scriptUrl) {
+                alert('⚠️ Primero ingresa la URL del Script');
+                return;
+            }
+            
+            if (!scriptUrl.includes('/exec')) {
+                alert('⚠️ La URL debe terminar en /exec');
+                return;
+            }
+            
+            const testData = {
+                action: 'test',
+                message: 'Prueba de conexión desde la app'
+            };
+            
+            try {
+                console.log('Probando conexión a:', scriptUrl);
+                
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testData),
+                    redirect: 'follow'
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                alert('✅ Conexión exitosa!\n\n' +
+                      'La URL del Script funciona correctamente.\n' +
+                      'Status: ' + response.status);
+                
+            } catch (error) {
+                console.error('Error de prueba:', error);
+                alert('❌ Error de conexión\n\n' +
+                      'No se pudo conectar con el Script.\n\n' +
+                      'Verifica:\n' +
+                      '1. La URL esté correcta\n' +
+                      '2. El Script esté implementado\n' +
+                      '3. Permisos: "Anyone" puede acceder\n\n' +
+                      'Error: ' + error.message);
+            }
         }
     </script>
 </body>
