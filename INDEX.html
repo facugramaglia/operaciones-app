@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sistema de Operaciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        button {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none;
+            outline: none;
+        }
+        
+        /* LOGIN */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .login-logo h1 {
+            font-size: 28px;
+            color: #667eea;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        
+        .login-logo p {
+            color: #718096;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        .input-group select,
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 13px;
+            text-decoration: underline;
+            padding: 10px;
+            margin-top: 15px;
+            display: block;
+            text-align: center;
+            width: 100%;
+        }
+        
+        /* APP */
+        .app-container {
+            display: none;
+        }
+        
+        .app-header {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .btn-logout {
+            padding: 8px 16px;
+            background: #f56565;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            color: #718096;
+            border: none;
+            background: none;
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: #667eea;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        /* CONTENT */
+        .content {
+            padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .stat-sub {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        /* FORM */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .tipo-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tipo-btn {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .tipo-btn.active {
+            background: #48bb78;
+            color: white;
+            border-color: #48bb78;
+        }
+        
+        .tipo-btn.compra.active {
+            background: #f56565;
+            border-color: #f56565;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .btn-submit.compra {
+            background: #f56565;
+        }
+        
+        /* HISTORIAL */
+        .operations-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #718096;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        table {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 10px 5px;
+            color: #718096;
+            border-bottom: 2px solid #e2e8f0;
+            background: #f7fafc;
+        }
+        
+        td {
+            padding: 10px 5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .estado-select {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            width: 100%;
+        }
+        
+        .obs-box {
+            background: #fef5e7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 11px;
+            color: #92400e;
+            max-width: 150px;
+            word-wrap: break-word;
+        }
+        
+        .total-preview {
+            background: #e6f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .total-preview-label {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .total-preview-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 5px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- PIN SCREEN -->
+    <div id="pin-screen" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <h1>🔐 Acceso Seguro</h1>
+                <p>Ingresa el PIN de acceso</p>
+            </div>
+            
+            <div class="input-group">
+                <label>PIN (4 dígitos)</label>
+                <input type="password" id="pin-input" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*">
+            </div>
+            
+            <button class="btn-primary" id="btn-pin">Continuar</button>
+        </div>
+    </div>
+    
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="login-container hidden">
+        <div class="login-card">
+            <div class="login-logo">
+                <h1>💱 Operaciones</h1>
+                <p>Inicia sesión para continuar</p>
+            </div>
+            
+            <div class="input-group">
+                <label>Operador</label>
+                <select id="login-user">
+                    <option value="">Selecciona tu usuario</option>
+                    <option value="TOMI">TOMI</option>
+                    <option value="CHOKI">CHOKI</option>
+                    <option value="TURCO">TURCO</option>
+                    <option value="AGU">AGU</option>
+                    <option value="X3">X3</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" id="login-password" placeholder="Ingresa tu contraseña">
+            </div>
+            
+            <button class="btn-primary" id="btn-login">Iniciar Sesión</button>
+            <button class="btn-link" id="btn-reconfig">⚙️ Configurar API Key</button>
+        </div>
+    </div>
+    
+    <!-- MAIN APP -->
+    <div id="main-app" class="app-container">
+        <div class="app-header">
+            <div class="header-top">
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar"></div>
+                    <div>
+                        <div style="font-weight: 600; color: #2d3748;" id="user-name"></div>
+                        <div style="font-size: 12px; color: #a0aec0;">Operador</div>
+                    </div>
+                </div>
+                <button class="btn-logout" id="btn-logout">Salir</button>
+            </div>
+            
+            <div class="balance-card">
+                <div class="balance-label">Balance Total</div>
+                <div class="balance-amount" id="header-balance">$0</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- DASHBOARD -->
+            <div id="dashboard-screen" class="screen active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Ventas</div>
+                        <div class="stat-value" style="color: #48bb78;" id="stat-ventas">$0</div>
+                        <div class="stat-sub" id="stat-ventas-count">0 ops</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Total Compras</div>
+                        <div class="stat-value" style="color: #f56565;" id="stat-compras">$0</div>
+                        <div class="stat-sub" id="stat-compras-count">0 ops</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Resumen por Operador (30 días)</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Op</th>
+                                <th style="text-align: right;">Ventas</th>
+                                <th style="text-align: right;">Compras</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operadores-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- CARGAR -->
+            <div id="cargar-screen" class="screen">
+                <div class="card">
+                    <div class="card-title">Nueva Operación</div>
+                    
+                    <div class="tipo-buttons">
+                        <button class="tipo-btn active" id="tipo-venta">⬆️ VENTA</button>
+                        <button class="tipo-btn compra" id="tipo-compra">⬇️ COMPRA</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-input" id="form-fecha">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Cliente</label>
+                        <input type="text" class="form-input" id="form-cliente" placeholder="Nombre del cliente">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Cantidad (USD)</label>
+                        <input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Precio (ARS)</label>
+                        <input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea>
+                    </div>
+                    
+                    <div id="total-preview" class="total-preview hidden">
+                        <div class="total-preview-label">Total calculado:</div>
+                        <div class="total-preview-value" id="total-preview-value">$0</div>
+                    </div>
+                    
+                    <button class="btn-submit" id="btn-submit">Registrar VENTA</button>
+                </div>
+            </div>
+            
+            <!-- HISTORIAL -->
+            <div id="historial-screen" class="screen">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="filter-btn active" id="tab-ventas">📈 Ventas</button>
+                    <button class="filter-btn" id="tab-compras">📉 Compras</button>
+                </div>
+                
+                <div class="operations-header">
+                    <button class="filter-btn active" id="filter-ultimo">Último día</button>
+                    <button class="filter-btn" id="filter-10">10</button>
+                    <button class="filter-btn" id="filter-20">20</button>
+                    <button class="filter-btn" id="filter-30">30</button>
+                </div>
+                
+                <div id="ventas-tab" class="card">
+                    <div class="card-title">Últimas Ventas</div>
+                    <div style="overflow-x: auto;">
+                        <table id="ventas-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th style="text-align: right;">Cant</th>
+                                    <th style="text-align: right;">Precio</th>
+                                    <th style="text-align: right;">Total</th>
+                                    <th>Estado</th>
+                                    <th>Obs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ventas-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="compras-tab" class="card hidden">
+                    <div class="card-title">Últimas Compras</div>
+                    <div style="overflow-x: auto;">
+                        <table id="compras-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th style="text-align: right;">Cant</th>
+                                    <th style="text-align: right;">Precio</th>
+                                    <th style="text-align: right;">Total</th>
+                                    <th>Estado</th>
+                                    <th>Obs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="compras-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CONFIG -->
+            <div id="config-screen" class="screen">
+                <div class="card">
+                    <div class="card-title">⚙️ Configuración</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Google Sheets API Key</label>
+                        <input type="text" class="form-input" id="config-api-key" placeholder="AIzaSy...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">URL del Google Apps Script</label>
+                        <input type="text" class="form-input" id="config-script-url" placeholder="https://script.google.com/macros/s/.../exec">
+                    </div>
+                    
+                    <div class="alert-success hidden" id="config-success">
+                        ✅ Configuración guardada correctamente
+                    </div>
+                    
+                    <button class="btn-primary" id="btn-save-config">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <button class="nav-item active" id="nav-dashboard">
+                <div class="nav-icon">📊</div>
+                <div>Dashboard</div>
+            </button>
+            <button class="nav-item" id="nav-cargar">
+                <div class="nav-icon">➕</div>
+                <div>Cargar</div>
+            </button>
+            <button class="nav-item" id="nav-historial">
+                <div class="nav-icon">📋</div>
+                <div>Historial</div>
+            </button>
+            <button class="nav-item" id="nav-config">
+                <div class="nav-icon">⚙️</div>
+                <div>Config</div>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let config = {
+            apiKey: localStorage.getItem('apiKey') || '',
+            sheetId: '1Fn3iiKSMeDH8PAh1C-8SSLrcuikOSHTx7-ZIZXqeDnE',
+            ventasRange: 'VENTAS!A2:M1000',
+            comprasRange: 'COMPRAS!A2:M1000',
+            balanceCell: 'CALCULO!D3',
+            scriptUrl: localStorage.getItem('scriptUrl') || '',
+            separador: '---SEPARADOR---'
+        };
+        
+        const USERS = {
+            'TOMI': 'TOMI',
+            'CHOKI': 'CHOKI',
+            'TURCO': 'TURCO',
+            'AGU': 'AGU',
+            'X3': 'X3'
+        };
+        
+        const MASTER_PIN = '7994';
+        
+        let currentUser = null;
+        let ventas = [];
+        let compras = [];
+        let balanceTotal = 0;
+        let currentTipo = 'VENTA';
+        let currentFilter = 'ultimo';
+        let currentTab = 'ventas';
+        
+        // INIT
+        window.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('form-fecha').value = today;
+            
+            setupEventListeners();
+            
+            // Check if PIN already verified
+            const pinVerified = localStorage.getItem('pinVerified');
+            if (pinVerified === 'true') {
+                document.getElementById('pin-screen').classList.add('hidden');
+                checkInitialSetup();
+            }
+            // Otherwise show PIN screen (already visible by default)
+        });
+        
+        function setupEventListeners() {
+            // PIN
+            document.getElementById('btn-pin').addEventListener('click', checkPIN);
+            document.getElementById('pin-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkPIN();
+            });
+            
+            // Login
+            document.getElementById('btn-login').addEventListener('click', handleLogin);
+            document.getElementById('btn-reconfig').addEventListener('click', showConfigPrompt);
+            document.getElementById('login-password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleLogin();
+            });
+            
+            // Nav
+            document.getElementById('nav-dashboard').addEventListener('click', () => showScreen('dashboard'));
+            document.getElementById('nav-cargar').addEventListener('click', () => showScreen('cargar'));
+            document.getElementById('nav-historial').addEventListener('click', () => showScreen('historial'));
+            document.getElementById('nav-config').addEventListener('click', () => showScreen('config'));
+            
+            // Logout
+            document.getElementById('btn-logout').addEventListener('click', handleLogout);
+            
+            // Tipo
+            document.getElementById('tipo-venta').addEventListener('click', () => setTipo('VENTA'));
+            document.getElementById('tipo-compra').addEventListener('click', () => setTipo('COMPRA'));
+            
+            // Form
+            document.getElementById('form-cantidad').addEventListener('input', calcularTotal);
+            document.getElementById('form-precio').addEventListener('input', calcularTotal);
+            document.getElementById('btn-submit').addEventListener('click', agregarOperacion);
+            
+            // Historial tabs
+            document.getElementById('tab-ventas').addEventListener('click', () => switchTab('ventas'));
+            document.getElementById('tab-compras').addEventListener('click', () => switchTab('compras'));
+            
+            // Filters
+            document.getElementById('filter-ultimo').addEventListener('click', () => changeFilter('ultimo'));
+            document.getElementById('filter-10').addEventListener('click', () => changeFilter(10));
+            document.getElementById('filter-20').addEventListener('click', () => changeFilter(20));
+            document.getElementById('filter-30').addEventListener('click', () => changeFilter(30));
+            
+            // Config
+            document.getElementById('btn-save-config').addEventListener('click', saveConfig);
+        }
+        
+        function checkPIN() {
+            const pin = document.getElementById('pin-input').value;
+            
+            if (pin === MASTER_PIN) {
+                localStorage.setItem('pinVerified', 'true');
+                document.getElementById('pin-screen').classList.add('hidden');
+                checkInitialSetup();
+            } else {
+                alert('❌ PIN incorrecto');
+                document.getElementById('pin-input').value = '';
+            }
+        }
+        
+        function checkInitialSetup() {
+            const savedUser = localStorage.getItem('currentUser');
+            
+            if (savedUser && config.apiKey) {
+                currentUser = savedUser;
+                showMainApp();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+            }
+        }
+        
+        function showConfigPrompt() {
+            const apiKey = prompt('Google Sheets API Key:');
+            if (!apiKey || !apiKey.trim()) {
+                alert('❌ La API Key es obligatoria');
+                return;
+            }
+            
+            config.apiKey = apiKey.trim();
+            localStorage.setItem('apiKey', config.apiKey);
+            
+            const scriptUrl = prompt('URL del Google Apps Script (opcional):');
+            if (scriptUrl && scriptUrl.trim()) {
+                config.scriptUrl = scriptUrl.trim();
+                localStorage.setItem('scriptUrl', config.scriptUrl);
+            }
+            
+            alert('✅ Configuración guardada');
+        }
+        
+        function handleLogin() {
+            const username = document.getElementById('login-user').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!username || !password) {
+                alert('Completa todos los campos');
+                return;
+            }
+            
+            if (!config.apiKey) {
+                alert('Configura tu API Key primero');
+                showConfigPrompt();
+                return;
+            }
+            
+            if (USERS[username] && USERS[username] === password) {
+                currentUser = username;
+                localStorage.setItem('currentUser', username);
+                showMainApp();
+            } else {
+                alert('❌ Usuario o contraseña incorrectos');
+            }
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('pinVerified');
+            currentUser = null;
+            document.getElementById('pin-screen').classList.remove('hidden');
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('pin-input').value = '';
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-password').value = '';
+        }
+        
+        function showMainApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').style.display = 'block';
+            
+            document.getElementById('user-avatar').textContent = currentUser[0];
+            document.getElementById('user-name').textContent = currentUser;
+            document.getElementById('config-api-key').value = config.apiKey;
+            document.getElementById('config-script-url').value = config.scriptUrl;
+            
+            loadData();
+        }
+        
+        async function loadData() {
+            try {
+                const balanceUrl = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.balanceCell}?key=${config.apiKey}`;
+                const balanceRes = await fetch(balanceUrl);
+                const balanceData = await balanceRes.json();
+                
+                if (balanceData.values && balanceData.values[0]) {
+                    const balanceStr = String(balanceData.values[0][0]).replace(/\$/g, '').replace(/,/g, '').trim();
+                    balanceTotal = parseFloat(balanceStr) || 0;
+                }
+                
+                const ventasUrl = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.ventasRange}?key=${config.apiKey}`;
+                const ventasRes = await fetch(ventasUrl);
+                const ventasData = await ventasRes.json();
+                ventas = processData(ventasData.values || []);
+                
+                const comprasUrl = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.comprasRange}?key=${config.apiKey}`;
+                const comprasRes = await fetch(comprasUrl);
+                const comprasData = await comprasRes.json();
+                compras = processData(comprasData.values || []);
+                
+                updateUI();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar datos');
+            }
+        }
+        
+        function processData(rows) {
+            return rows
+                .filter(row => row && row.length > 0 && row[1] && row[3])
+                .map(row => {
+                    const cantidadStr = String(row[3] || '0').replace(/\$/g, '').replace(/,/g, '').trim();
+                    const precioStr = String(row[4] || '0').replace(/\$/g, '').replace(/,/g, '').trim();
+                    const totalStr = String(row[5] || '0').replace(/\$/g, '').replace(/,/g, '').trim();
+                    
+                    let timestamp = null;
+                    if (row[10]) {
+                        const tsValue = row[10];
+                        if (typeof tsValue === 'number') {
+                            timestamp = new Date((tsValue - 25569) * 86400 * 1000);
+                        } else {
+                            timestamp = new Date(tsValue);
+                        }
+                        if (isNaN(timestamp.getTime())) timestamp = null;
+                    }
+                    
+                    return {
+                        fecha: String(row[0] || '').trim(),
+                        operador: String(row[1] || '').trim().toUpperCase(),
+                        cliente: String(row[2] || '').trim(),
+                        cantidad: parseFloat(cantidadStr) || 0,
+                        precio: parseFloat(precioStr) || 0,
+                        total: parseFloat(totalStr) || 0,
+                        estado: String(row[6] || 'PENDIENTE').trim(),
+                        observaciones: String(row[7] || '').trim(),
+                        timestamp: timestamp,
+                        modificadoPor: String(row[11] || '').trim(),
+                        fechaModificacion: String(row[12] || '').trim()
+                    };
+                });
+        }
+        
+        function updateUI() {
+            document.getElementById('header-balance').textContent = '$' + balanceTotal.toLocaleString('es-AR');
+            
+            const totalVentas = ventas.reduce((sum, v) => sum + v.cantidad, 0);
+            const totalCompras = compras.reduce((sum, c) => sum + c.cantidad, 0);
+            
+            document.getElementById('stat-ventas').textContent = '$' + totalVentas.toLocaleString('es-AR');
+            document.getElementById('stat-ventas-count').textContent = ventas.length + ' ops';
+            document.getElementById('stat-compras').textContent = '$' + totalCompras.toLocaleString('es-AR');
+            document.getElementById('stat-compras-count').textContent = compras.length + ' ops';
+            
+            updateOperadoresTable();
+            updateHistorial();
+        }
+        
+        function updateOperadoresTable() {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            const ventasRecientes = ventas.filter(v => !v.timestamp || v.timestamp >= thirtyDaysAgo);
+            const comprasRecientes = compras.filter(c => !c.timestamp || c.timestamp >= thirtyDaysAgo);
+            
+            const operadores = ['TOMI', 'CHOKI', 'TURCO', 'AGU', 'X3'];
+            const tbody = document.getElementById('operadores-tbody');
+            tbody.innerHTML = '';
+            
+            operadores.forEach(op => {
+                const ventasOp = ventasRecientes.filter(v => v.operador === op).reduce((sum, v) => sum + v.cantidad, 0);
+                const comprasOp = comprasRecientes.filter(c => c.operador === op).reduce((sum, c) => sum + c.cantidad, 0);
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><strong>${op}</strong></td>
+                    <td style="text-align: right; color: #48bb78;">$${ventasOp.toLocaleString('es-AR')}</td>
+                    <td style="text-align: right; color: #f56565;">$${comprasOp.toLocaleString('es-AR')}</td>
+                `;
+            });
+        }
+        
+        function getFilteredOps(ops) {
+            if (currentFilter === 'ultimo') {
+                // Buscar el último separador
+                let lastSepIndex = -1;
+                for (let i = ops.length - 1; i >= 0; i--) {
+                    if (ops[i].operador === config.separador) {
+                        lastSepIndex = i;
+                        break;
+                    }
+                }
+                return lastSepIndex >= 0 ? ops.slice(lastSepIndex + 1) : ops;
+            }
+            return ops.slice(-currentFilter);
+        }
+        
+        function updateHistorial() {
+            const estadosVentas = ['PENDIENTE', 'REALIZADA', 'LLEVO BILLETES'];
+            const estadosCompras = ['PENDIENTE', 'REALIZADA', 'LLEVO PESOS', 'PREPARADO'];
+            
+            const ventasTbody = document.getElementById('ventas-tbody');
+            const comprasTbody = document.getElementById('compras-tbody');
+            
+            ventasTbody.innerHTML = '';
+            comprasTbody.innerHTML = '';
+            
+            const ventasFiltradas = getFilteredOps(ventas).reverse();
+            const comprasFiltradas = getFilteredOps(compras).reverse();
+            
+            ventasFiltradas.forEach((v, idx) => {
+                const row = ventasTbody.insertRow();
+                const estadoColor = getEstadoColor(v.estado);
+                
+                row.innerHTML = `
+                    <td style="font-size: 11px;">${v.fecha}</td>
+                    <td>
+                        <div style="font-weight: 600;">${v.cliente}</div>
+                        <div style="font-size: 10px; color: #a0aec0;">${v.operador}</div>
+                    </td>
+                    <td style="text-align: right;">$${v.cantidad}</td>
+                    <td style="text-align: right; font-size: 11px;">$${v.precio.toFixed(2)}</td>
+                    <td style="text-align: right; font-weight: 600; color: #48bb78;">$${v.total.toLocaleString('es-AR')}</td>
+                    <td>
+                        <select class="estado-select" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
+                            ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td>${v.observaciones ? `<div class="obs-box">${v.observaciones}</div>` : ''}</td>
+                `;
+            });
+            
+            comprasFiltradas.forEach((c, idx) => {
+                const row = comprasTbody.insertRow();
+                const estadoColor = getEstadoColor(c.estado);
+                
+                row.innerHTML = `
+                    <td style="font-size: 11px;">${c.fecha}</td>
+                    <td>
+                        <div style="font-weight: 600;">${c.cliente}</div>
+                        <div style="font-size: 10px; color: #a0aec0;">${c.operador}</div>
+                    </td>
+                    <td style="text-align: right;">$${c.cantidad}</td>
+                    <td style="text-align: right; font-size: 11px;">$${c.precio.toFixed(2)}</td>
+                    <td style="text-align: right; font-weight: 600; color: #f56565;">$${c.total.toLocaleString('es-AR')}</td>
+                    <td>
+                        <select class="estado-select" style="border: 1px solid ${estadoColor}; background: ${estadoColor}20; color: ${estadoColor};">
+                            ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td>${c.observaciones ? `<div class="obs-box">${c.observaciones}</div>` : ''}</td>
+                `;
+            });
+        }
+        
+        function getEstadoColor(estado) {
+            const colors = {
+                'PENDIENTE': '#f59e0b',
+                'REALIZADA': '#48bb78',
+                'LLEVO BILLETES': '#667eea',
+                'LLEVO PESOS': '#667eea',
+                'PREPARADO': '#9333ea'
+            };
+            return colors[estado] || '#718096';
+        }
+        
+        function showScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screen + '-screen').classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('nav-' + screen).classList.add('active');
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            if (tab === 'ventas') {
+                document.getElementById('tab-ventas').classList.add('active');
+                document.getElementById('tab-compras').classList.remove('active');
+                document.getElementById('ventas-tab').classList.remove('hidden');
+                document.getElementById('compras-tab').classList.add('hidden');
+            } else {
+                document.getElementById('tab-ventas').classList.remove('active');
+                document.getElementById('tab-compras').classList.add('active');
+                document.getElementById('ventas-tab').classList.add('hidden');
+                document.getElementById('compras-tab').classList.remove('hidden');
+            }
+        }
+        
+        function changeFilter(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.operations-header .filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('filter-' + filter).classList.add('active');
+            
+            updateHistorial();
+        }
+        
+        function setTipo(tipo) {
+            currentTipo = tipo;
+            
+            if (tipo === 'VENTA') {
+                document.getElementById('tipo-venta').classList.add('active');
+                document.getElementById('tipo-compra').classList.remove('active');
+                document.getElementById('btn-submit').textContent = 'Registrar VENTA';
+                document.getElementById('btn-submit').classList.remove('compra');
+            } else {
+                document.getElementById('tipo-venta').classList.remove('active');
+                document.getElementById('tipo-compra').classList.add('active');
+                document.getElementById('btn-submit').textContent = 'Registrar COMPRA';
+                document.getElementById('btn-submit').classList.add('compra');
+            }
+        }
+        
+        function calcularTotal() {
+            const cantidad = parseFloat(document.getElementById('form-cantidad').value) || 0;
+            const precio = parseFloat(document.getElementById('form-precio').value) || 0;
+            const total = cantidad * precio;
+            
+            if (total > 0) {
+                document.getElementById('total-preview').classList.remove('hidden');
+                document.getElementById('total-preview-value').textContent = '$' + total.toLocaleString('es-AR');
+            } else {
+                document.getElementById('total-preview').classList.add('hidden');
+            }
+        }
+        
+        async function agregarOperacion() {
+            if (!config.scriptUrl) {
+                alert('Configura la URL del Script en Config');
+                return;
+            }
+            
+            const cliente = document.getElementById('form-cliente').value.trim();
+            const cantidad = parseFloat(document.getElementById('form-cantidad').value);
+            const precio = parseFloat(document.getElementById('form-precio').value);
+            
+            if (!cliente || !cantidad || !precio) {
+                alert('Completa todos los campos');
+                return;
+            }
+            
+            const fecha = document.getElementById('form-fecha').value;
+            const observaciones = document.getElementById('form-observaciones').value;
+            const total = cantidad * precio;
+            
+            const data = {
+                tipo: currentTipo,
+                fecha: fecha,
+                operador: currentUser,
+                cliente: cliente,
+                cantidad: cantidad,
+                precio: precio,
+                total: total,
+                observaciones: observaciones
+            };
+            
+            try {
+                await fetch(config.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                alert('✅ ' + currentTipo + ' agregada');
+                
+                document.getElementById('form-cliente').value = '';
+                document.getElementById('form-cantidad').value = '';
+                document.getElementById('form-precio').value = '';
+                document.getElementById('form-observaciones').value = '';
+                document.getElementById('total-preview').classList.add('hidden');
+                
+                setTimeout(() => loadData(), 2000);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function saveConfig() {
+            const apiKey = document.getElementById('config-api-key').value.trim();
+            const scriptUrl = document.getElementById('config-script-url').value.trim();
+            
+            if (!apiKey) {
+                alert('Ingresa la API Key');
+                return;
+            }
+            
+            config.apiKey = apiKey;
+            config.scriptUrl = scriptUrl;
+            localStorage.setItem('apiKey', apiKey);
+            localStorage.setItem('scriptUrl', scriptUrl);
+            
+            const successMsg = document.getElementById('config-success');
+            successMsg.classList.remove('hidden');
+            setTimeout(() => successMsg.classList.add('hidden'), 3000);
+        }
+    </script>
+</body>
+</html>
