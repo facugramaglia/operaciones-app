@@ -436,6 +436,125 @@
         .hidden {
             display: none !important;
         }
+        
+        /* MODAL */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+        
+        .detail-row-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            background: #f7fafc;
+            margin: 0 -20px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        
+        .detail-label {
+            font-size: 13px;
+            color: #718096;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            font-size: 15px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .detail-value-big {
+            font-size: 18px;
+            color: #2d3748;
+            font-weight: 700;
+        }
+        
+        .detail-value-total {
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .detail-badge {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .detail-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 12px 0;
+        }
+        
+        .detail-obs {
+            background: #fef5e7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #92400e;
+        }
+        
+        .detail-modified {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
     </style>
 </head>
 <body>
@@ -696,6 +815,62 @@
                 <div class="nav-icon">📋</div>
                 <div>Historial</div>
             </button>
+        </div>
+    </div>
+    
+    <!-- OPERATION DETAIL MODAL -->
+    <div id="operation-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-tipo" style="margin: 0; font-size: 20px;">VENTA</h2>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="detail-row">
+                    <span class="detail-label">Cliente</span>
+                    <span class="detail-value" id="modal-cliente">-</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Operador</span>
+                    <span class="detail-value" id="modal-operador">-</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Fecha</span>
+                    <span class="detail-value" id="modal-fecha">-</span>
+                </div>
+                
+                <div class="detail-divider"></div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Cantidad USD</span>
+                    <span class="detail-value-big" id="modal-cantidad">$0</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Precio ARS</span>
+                    <span class="detail-value-big" id="modal-precio">$0</span>
+                </div>
+                
+                <div class="detail-row-total">
+                    <span class="detail-label">Total ARS</span>
+                    <span class="detail-value-total" id="modal-total">$0</span>
+                </div>
+                
+                <div class="detail-divider"></div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Estado</span>
+                    <span class="detail-badge" id="modal-estado">PENDIENTE</span>
+                </div>
+                
+                <div id="modal-observaciones" class="detail-obs" style="display: none;"></div>
+                
+                <div id="modal-modificado" class="detail-modified" style="display: none;"></div>
+            </div>
         </div>
     </div>
     
@@ -1087,45 +1262,43 @@
             ventasFiltradas.forEach((v, idx) => {
                 const row = ventasTbody.insertRow();
                 const estadoStyles = getEstadoStyles(v.estado);
+                row.style.cursor = 'pointer';
+                row.style.transition = 'background 0.2s';
                 
                 row.innerHTML = `
-                    <td style="font-size: 10px; padding: 8px 4px;">${v.fecha}</td>
-                    <td style="padding: 8px 4px;">
-                        <div style="font-weight: 600; font-size: 13px;">${v.cliente}</div>
-                        <div style="font-size: 9px; color: #a0aec0;">${v.operador}</div>
+                    <td style="padding: 12px 8px;">
+                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${v.cliente}</div>
+                        <div style="font-size: 11px; color: #a0aec0;">${v.operador} • $${v.cantidad}</div>
                     </td>
-                    <td style="text-align: right; font-size: 12px; padding: 8px 4px;">$${v.cantidad}</td>
-                    <td style="text-align: right; font-size: 10px; padding: 8px 4px;">$${v.precio.toFixed(0)}</td>
-                    <td style="text-align: right; font-weight: 600; color: #48bb78; font-size: 12px; padding: 8px 4px;">$${(v.total/1000).toFixed(0)}k</td>
-                    <td style="padding: 8px 4px; min-width: 85px;">
-                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 5px 8px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 10px; font-weight: 600;">
+                    <td style="padding: 12px 8px; text-align: right;">
+                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation();">
                             ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
-                    <td style="padding: 8px 4px; max-width: 100px;">${v.observaciones ? `<div style="background: #fef5e7; border: 1px solid #f59e0b; border-radius: 4px; padding: 4px 6px; font-size: 9px; color: #92400e; word-wrap: break-word;">${v.observaciones}</div>` : ''}</td>
                 `;
+                
+                row.addEventListener('click', () => showOperationDetail(v, 'VENTA'));
             });
             
             comprasFiltradas.forEach((c, idx) => {
                 const row = comprasTbody.insertRow();
                 const estadoStyles = getEstadoStyles(c.estado);
+                row.style.cursor = 'pointer';
+                row.style.transition = 'background 0.2s';
                 
                 row.innerHTML = `
-                    <td style="font-size: 10px; padding: 8px 4px;">${c.fecha}</td>
-                    <td style="padding: 8px 4px;">
-                        <div style="font-weight: 600; font-size: 13px;">${c.cliente}</div>
-                        <div style="font-size: 9px; color: #a0aec0;">${c.operador}</div>
+                    <td style="padding: 12px 8px;">
+                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${c.cliente}</div>
+                        <div style="font-size: 11px; color: #a0aec0;">${c.operador} • $${c.cantidad}</div>
                     </td>
-                    <td style="text-align: right; font-size: 12px; padding: 8px 4px;">$${c.cantidad}</td>
-                    <td style="text-align: right; font-size: 10px; padding: 8px 4px;">$${c.precio.toFixed(0)}</td>
-                    <td style="text-align: right; font-weight: 600; color: #f56565; font-size: 12px; padding: 8px 4px;">$${(c.total/1000).toFixed(0)}k</td>
-                    <td style="padding: 8px 4px; min-width: 85px;">
-                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 5px 8px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 10px; font-weight: 600;">
+                    <td style="padding: 12px 8px; text-align: right;">
+                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation();">
                             ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
-                    <td style="padding: 8px 4px; max-width: 100px;">${c.observaciones ? `<div style="background: #fef5e7; border: 1px solid #f59e0b; border-radius: 4px; padding: 4px 6px; font-size: 9px; color: #92400e; word-wrap: break-word;">${c.observaciones}</div>` : ''}</td>
                 `;
+                
+                row.addEventListener('click', () => showOperationDetail(c, 'COMPRA'));
             });
             
             // Add event listeners to all estado selects
@@ -1134,6 +1307,50 @@
                     cambiarEstado(e.target);
                 });
             });
+        }
+        
+        function showOperationDetail(op, tipo) {
+            const modal = document.getElementById('operation-modal');
+            const estadoStyles = getEstadoStyles(op.estado);
+            
+            document.getElementById('modal-tipo').textContent = tipo;
+            document.getElementById('modal-tipo').style.color = tipo === 'VENTA' ? '#48bb78' : '#f56565';
+            
+            document.getElementById('modal-cliente').textContent = op.cliente;
+            document.getElementById('modal-operador').textContent = op.operador;
+            document.getElementById('modal-fecha').textContent = op.fecha;
+            
+            document.getElementById('modal-cantidad').textContent = '$' + op.cantidad.toLocaleString('es-AR');
+            document.getElementById('modal-precio').textContent = '$' + op.precio.toLocaleString('es-AR', {minimumFractionDigits: 2});
+            document.getElementById('modal-total').textContent = '$' + op.total.toLocaleString('es-AR');
+            document.getElementById('modal-total').style.color = tipo === 'VENTA' ? '#48bb78' : '#f56565';
+            
+            const estadoBadge = document.getElementById('modal-estado');
+            estadoBadge.textContent = op.estado;
+            estadoBadge.style.background = estadoStyles.bg;
+            estadoBadge.style.color = estadoStyles.color;
+            
+            const obsDiv = document.getElementById('modal-observaciones');
+            if (op.observaciones) {
+                obsDiv.textContent = op.observaciones;
+                obsDiv.style.display = 'block';
+            } else {
+                obsDiv.style.display = 'none';
+            }
+            
+            const modifDiv = document.getElementById('modal-modificado');
+            if (op.modificadoPor) {
+                modifDiv.innerHTML = `Modificado por <strong>${op.modificadoPor}</strong>${op.fechaModificacion ? ' • ' + op.fechaModificacion : ''}`;
+                modifDiv.style.display = 'block';
+            } else {
+                modifDiv.style.display = 'none';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function closeModal() {
+            document.getElementById('operation-modal').classList.add('hidden');
         }
         
         function getEstadoStyles(estado) {
