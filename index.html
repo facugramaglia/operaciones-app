@@ -215,6 +215,10 @@
             padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px;
         }
         
+        .content .balance-card {
+            margin-bottom: 20px;
+        }
+        
         .screen {
             display: none;
         }
@@ -493,42 +497,55 @@
                 </div>
                 <button class="btn-logout" id="btn-logout">Salir</button>
             </div>
-            
-            <div class="balance-card">
-                <div class="balance-label">Balance Total</div>
-                <div class="balance-amount" id="header-balance">$0</div>
-            </div>
         </div>
         
         <div class="content">
             <!-- DASHBOARD -->
             <div id="dashboard-screen" class="screen active">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Total Ventas</div>
-                        <div class="stat-value" style="color: #48bb78;" id="stat-ventas">$0</div>
-                        <div class="stat-sub" id="stat-ventas-count">0 ops</div>
+                <!-- Balance Card with Date/Time -->
+                <div class="balance-card" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="balance-label">Balance Total</div>
+                        <div class="balance-amount" id="header-balance-main">$0</div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-label">Total Compras</div>
-                        <div class="stat-value" style="color: #f56565;" id="stat-compras">$0</div>
-                        <div class="stat-sub" id="stat-compras-count">0 ops</div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px; opacity: 0.8;" id="current-date">--/--/----</div>
+                        <div style="font-size: 20px; font-weight: bold; margin-top: 5px;" id="current-time">--:--</div>
                     </div>
                 </div>
                 
+                <!-- Ventas Pendientes -->
                 <div class="card">
-                    <div class="card-title">Resumen por Operador (30 días)</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Op</th>
-                                <th style="text-align: right;">Ventas</th>
-                                <th style="text-align: right;">Compras</th>
-                            </tr>
-                        </thead>
-                        <tbody id="operadores-tbody"></tbody>
-                    </table>
+                    <div class="card-title" style="color: #48bb78;">📈 Ventas Pendientes</div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Operador</th>
+                                    <th>Cliente</th>
+                                    <th style="text-align: right;">Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ventas-pendientes-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Compras Pendientes -->
+                <div class="card">
+                    <div class="card-title" style="color: #f56565;">📉 Compras Pendientes</div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Operador</th>
+                                    <th>Cliente</th>
+                                    <th style="text-align: right;">Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="compras-pendientes-tbody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             
@@ -932,8 +949,8 @@
         }
         
         function updateUI() {
-            // Update balance with color
-            const balanceElement = document.getElementById('header-balance');
+            // Update balance with color in dashboard
+            const balanceElement = document.getElementById('header-balance-main');
             balanceElement.textContent = '$' + balanceTotal.toLocaleString('es-AR');
             
             // Color verde si positivo, rojo si negativo
@@ -943,40 +960,67 @@
                 balanceElement.style.color = '#f56565'; // Rojo
             }
             
-            const totalVentas = ventas.reduce((sum, v) => sum + v.cantidad, 0);
-            const totalCompras = compras.reduce((sum, c) => sum + c.cantidad, 0);
+            // Update date and time
+            updateDateTime();
             
-            document.getElementById('stat-ventas').textContent = '$' + totalVentas.toLocaleString('es-AR');
-            document.getElementById('stat-ventas-count').textContent = ventas.length + ' ops';
-            document.getElementById('stat-compras').textContent = '$' + totalCompras.toLocaleString('es-AR');
-            document.getElementById('stat-compras-count').textContent = compras.length + ' ops';
+            // Update pending tables
+            updatePendingTables();
             
-            updateOperadoresTable();
             updateHistorial();
         }
         
-        function updateOperadoresTable() {
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
             
-            const ventasRecientes = ventas.filter(v => !v.timestamp || v.timestamp >= thirtyDaysAgo);
-            const comprasRecientes = compras.filter(c => !c.timestamp || c.timestamp >= thirtyDaysAgo);
+            document.getElementById('current-date').textContent = now.toLocaleDateString('es-AR', dateOptions);
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('es-AR', timeOptions);
             
-            const operadores = ['TOMI', 'CHOKI', 'TURCO', 'AGU', 'X3'];
-            const tbody = document.getElementById('operadores-tbody');
-            tbody.innerHTML = '';
+            // Update every minute
+            setTimeout(updateDateTime, 60000);
+        }
+        
+        function updatePendingTables() {
+            // Filtrar solo operaciones PENDIENTES
+            const ventasPendientes = ventas.filter(v => v.estado.toUpperCase() === 'PENDIENTE');
+            const comprasPendientes = compras.filter(c => c.estado.toUpperCase() === 'PENDIENTE');
             
-            operadores.forEach(op => {
-                const ventasOp = ventasRecientes.filter(v => v.operador === op).reduce((sum, v) => sum + v.cantidad, 0);
-                const comprasOp = comprasRecientes.filter(c => c.operador === op).reduce((sum, c) => sum + c.cantidad, 0);
-                
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><strong>${op}</strong></td>
-                    <td style="text-align: right; color: #48bb78;">$${ventasOp.toLocaleString('es-AR')}</td>
-                    <td style="text-align: right; color: #f56565;">$${comprasOp.toLocaleString('es-AR')}</td>
-                `;
-            });
+            // Ventas Pendientes
+            const ventasTbody = document.getElementById('ventas-pendientes-tbody');
+            ventasTbody.innerHTML = '';
+            
+            if (ventasPendientes.length === 0) {
+                const row = ventasTbody.insertRow();
+                row.innerHTML = '<td colspan="3" style="text-align: center; color: #a0aec0; padding: 20px;">No hay ventas pendientes</td>';
+            } else {
+                ventasPendientes.forEach(v => {
+                    const row = ventasTbody.insertRow();
+                    row.innerHTML = `
+                        <td><strong>${v.operador}</strong></td>
+                        <td>${v.cliente}</td>
+                        <td style="text-align: right; font-weight: 600; color: #48bb78;">$${v.cantidad.toLocaleString('es-AR')}</td>
+                    `;
+                });
+            }
+            
+            // Compras Pendientes
+            const comprasTbody = document.getElementById('compras-pendientes-tbody');
+            comprasTbody.innerHTML = '';
+            
+            if (comprasPendientes.length === 0) {
+                const row = comprasTbody.insertRow();
+                row.innerHTML = '<td colspan="3" style="text-align: center; color: #a0aec0; padding: 20px;">No hay compras pendientes</td>';
+            } else {
+                comprasPendientes.forEach(c => {
+                    const row = comprasTbody.insertRow();
+                    row.innerHTML = `
+                        <td><strong>${c.operador}</strong></td>
+                        <td>${c.cliente}</td>
+                        <td style="text-align: right; font-weight: 600; color: #f56565;">$${c.cantidad.toLocaleString('es-AR')}</td>
+                    `;
+                });
+            }
         }
         
         function getFilteredOps(ops, isVentas) {
