@@ -1072,7 +1072,7 @@
         }
         
         function updateHistorial() {
-            const estadosVentas = ['PENDIENTE', 'REALIZADA', 'LLEVO BILLETES', 'LLEVO BILL'];
+            const estadosVentas = ['PENDIENTE', 'REALIZADA', 'LLEVO BILL'];
             const estadosCompras = ['PENDIENTE', 'REALIZADA', 'LLEVO PESOS', 'PREPARADO'];
             
             const ventasTbody = document.getElementById('ventas-tbody');
@@ -1089,20 +1089,20 @@
                 const estadoStyles = getEstadoStyles(v.estado);
                 
                 row.innerHTML = `
-                    <td style="font-size: 11px;">${v.fecha}</td>
-                    <td>
-                        <div style="font-weight: 600;">${v.cliente}</div>
-                        <div style="font-size: 10px; color: #a0aec0;">${v.operador}</div>
+                    <td style="font-size: 10px; padding: 8px 4px;">${v.fecha}</td>
+                    <td style="padding: 8px 4px;">
+                        <div style="font-weight: 600; font-size: 13px;">${v.cliente}</div>
+                        <div style="font-size: 9px; color: #a0aec0;">${v.operador}</div>
                     </td>
-                    <td style="text-align: right;">$${v.cantidad}</td>
-                    <td style="text-align: right; font-size: 11px;">$${v.precio.toFixed(2)}</td>
-                    <td style="text-align: right; font-weight: 600; color: #48bb78;">$${v.total.toLocaleString('es-AR')}</td>
-                    <td>
-                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="padding: 6px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 11px; font-weight: 600;">
+                    <td style="text-align: right; font-size: 12px; padding: 8px 4px;">$${v.cantidad}</td>
+                    <td style="text-align: right; font-size: 10px; padding: 8px 4px;">$${v.precio.toFixed(0)}</td>
+                    <td style="text-align: right; font-weight: 600; color: #48bb78; font-size: 12px; padding: 8px 4px;">$${(v.total/1000).toFixed(0)}k</td>
+                    <td style="padding: 8px 4px; min-width: 85px;">
+                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 5px 8px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 10px; font-weight: 600;">
                             ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
-                    <td>${v.observaciones ? `<div class="obs-box">${v.observaciones}</div>` : ''}</td>
+                    <td style="padding: 8px 4px; max-width: 100px;">${v.observaciones ? `<div style="background: #fef5e7; border: 1px solid #f59e0b; border-radius: 4px; padding: 4px 6px; font-size: 9px; color: #92400e; word-wrap: break-word;">${v.observaciones}</div>` : ''}</td>
                 `;
             });
             
@@ -1111,20 +1111,20 @@
                 const estadoStyles = getEstadoStyles(c.estado);
                 
                 row.innerHTML = `
-                    <td style="font-size: 11px;">${c.fecha}</td>
-                    <td>
-                        <div style="font-weight: 600;">${c.cliente}</div>
-                        <div style="font-size: 10px; color: #a0aec0;">${c.operador}</div>
+                    <td style="font-size: 10px; padding: 8px 4px;">${c.fecha}</td>
+                    <td style="padding: 8px 4px;">
+                        <div style="font-weight: 600; font-size: 13px;">${c.cliente}</div>
+                        <div style="font-size: 9px; color: #a0aec0;">${c.operador}</div>
                     </td>
-                    <td style="text-align: right;">$${c.cantidad}</td>
-                    <td style="text-align: right; font-size: 11px;">$${c.precio.toFixed(2)}</td>
-                    <td style="text-align: right; font-weight: 600; color: #f56565;">$${c.total.toLocaleString('es-AR')}</td>
-                    <td>
-                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="padding: 6px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 11px; font-weight: 600;">
+                    <td style="text-align: right; font-size: 12px; padding: 8px 4px;">$${c.cantidad}</td>
+                    <td style="text-align: right; font-size: 10px; padding: 8px 4px;">$${c.precio.toFixed(0)}</td>
+                    <td style="text-align: right; font-weight: 600; color: #f56565; font-size: 12px; padding: 8px 4px;">$${(c.total/1000).toFixed(0)}k</td>
+                    <td style="padding: 8px 4px; min-width: 85px;">
+                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 5px 8px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 6px; font-size: 10px; font-weight: 600;">
                             ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
-                    <td>${c.observaciones ? `<div class="obs-box">${c.observaciones}</div>` : ''}</td>
+                    <td style="padding: 8px 4px; max-width: 100px;">${c.observaciones ? `<div style="background: #fef5e7; border: 1px solid #f59e0b; border-radius: 4px; padding: 4px 6px; font-size: 9px; color: #92400e; word-wrap: break-word;">${c.observaciones}</div>` : ''}</td>
                 `;
             });
             
