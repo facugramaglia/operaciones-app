@@ -737,7 +737,8 @@
                             <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0;">
                                     <th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #718096; font-weight: 600;">Cliente</th>
-                                    <th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 140px;">Estado</th>
+                                    <th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 100px;">Monto</th>
+                                    <th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 130px;">Estado</th>
                                 </tr>
                             </thead>
                             <tbody id="ventas-tbody"></tbody>
@@ -752,7 +753,8 @@
                             <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0;">
                                     <th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #718096; font-weight: 600;">Cliente</th>
-                                    <th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 140px;">Estado</th>
+                                    <th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 100px;">Monto</th>
+                                    <th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 130px;">Estado</th>
                                 </tr>
                             </thead>
                             <tbody id="compras-tbody"></tbody>
@@ -854,7 +856,7 @@
                 
                 <div class="detail-row">
                     <span class="detail-label">Estado</span>
-                    <span class="detail-badge" id="modal-estado">PENDIENTE</span>
+                    <select id="modal-estado-select" class="detail-select estado-select" style="padding: 8px 14px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600;"></select>
                 </div>
                 
                 <div id="modal-observaciones" class="detail-obs" style="display: none;"></div>
@@ -1157,9 +1159,19 @@
         }
         
         function updatePendingTables() {
-            // Filtrar solo operaciones PENDIENTES
-            const ventasPendientes = ventas.filter(v => v.estado.toUpperCase() === 'PENDIENTE');
-            const comprasPendientes = compras.filter(c => c.estado.toUpperCase() === 'PENDIENTE');
+            // Filtrar ventas: PENDIENTE y LLEVO BILL
+            const ventasPendientes = ventas.filter(v => 
+                v.estado.toUpperCase() === 'PENDIENTE' || 
+                v.estado.toUpperCase() === 'LLEVO BILL' ||
+                v.estado.toUpperCase() === 'LLEVO BILLETES'
+            );
+            
+            // Filtrar compras: PENDIENTE, LLEVO PESOS y PREPARADO
+            const comprasPendientes = compras.filter(c => 
+                c.estado.toUpperCase() === 'PENDIENTE' || 
+                c.estado.toUpperCase() === 'LLEVO PESOS' ||
+                c.estado.toUpperCase() === 'PREPARADO'
+            );
             
             // Ventas Pendientes
             const ventasTbody = document.getElementById('ventas-pendientes-tbody');
@@ -1257,17 +1269,21 @@
                 
                 row.innerHTML = `
                     <td style="padding: 12px 8px;">
-                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${v.cliente}</div>
-                        <div style="font-size: 11px; color: #a0aec0;">${v.operador} • $${v.cantidad}</div>
+                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 2px;">${v.cliente}</div>
+                        <div style="font-size: 11px; color: #a0aec0;">${v.operador}</div>
                     </td>
                     <td style="padding: 12px 8px; text-align: right;">
-                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation();">
+                        <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${v.cantidad}</div>
+                        <div style="font-size: 11px; color: #a0aec0;">$${v.precio.toFixed(0)}</div>
+                    </td>
+                    <td style="padding: 12px 8px; text-align: right;" onclick="event.stopPropagation();">
+                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
                             ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
                 `;
                 
-                row.addEventListener('click', () => showOperationDetail(v, 'VENTA'));
+                row.addEventListener('click', () => showOperationDetail(v, 'VENTA', estadosVentas));
             });
             
             comprasFiltradas.forEach((c, idx) => {
@@ -1278,17 +1294,21 @@
                 
                 row.innerHTML = `
                     <td style="padding: 12px 8px;">
-                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${c.cliente}</div>
-                        <div style="font-size: 11px; color: #a0aec0;">${c.operador} • $${c.cantidad}</div>
+                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 2px;">${c.cliente}</div>
+                        <div style="font-size: 11px; color: #a0aec0;">${c.operador}</div>
                     </td>
                     <td style="padding: 12px 8px; text-align: right;">
-                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation();">
+                        <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${c.cantidad}</div>
+                        <div style="font-size: 11px; color: #a0aec0;">$${c.precio.toFixed(0)}</div>
+                    </td>
+                    <td style="padding: 12px 8px; text-align: right;" onclick="event.stopPropagation();">
+                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
                             ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     </td>
                 `;
                 
-                row.addEventListener('click', () => showOperationDetail(c, 'COMPRA'));
+                row.addEventListener('click', () => showOperationDetail(c, 'COMPRA', estadosCompras));
             });
             
             // Add event listeners to all estado selects
@@ -1299,7 +1319,7 @@
             });
         }
         
-        function showOperationDetail(op, tipo) {
+        function showOperationDetail(op, tipo, estadosDisponibles) {
             const modal = document.getElementById('operation-modal');
             const estadoStyles = getEstadoStyles(op.estado);
             
@@ -1315,10 +1335,17 @@
             document.getElementById('modal-total').textContent = '$' + op.total.toLocaleString('es-AR');
             document.getElementById('modal-total').style.color = tipo === 'VENTA' ? '#48bb78' : '#f56565';
             
-            const estadoBadge = document.getElementById('modal-estado');
-            estadoBadge.textContent = op.estado;
-            estadoBadge.style.background = estadoStyles.bg;
-            estadoBadge.style.color = estadoStyles.color;
+            // Estado selector in modal
+            const estadoSelect = document.getElementById('modal-estado-select');
+            estadoSelect.innerHTML = estadosDisponibles.map(e => 
+                `<option value="${e}" ${op.estado === e ? 'selected' : ''}>${e}</option>`
+            ).join('');
+            estadoSelect.style.background = estadoStyles.bg;
+            estadoSelect.style.color = estadoStyles.color;
+            estadoSelect.dataset.tipo = tipo;
+            estadoSelect.dataset.fecha = op.fecha;
+            estadoSelect.dataset.cliente = op.cliente;
+            estadoSelect.dataset.cantidad = op.cantidad;
             
             const obsDiv = document.getElementById('modal-observaciones');
             if (op.observaciones) {
@@ -1337,6 +1364,13 @@
             }
             
             modal.classList.remove('hidden');
+            
+            // Add event listener to modal estado select
+            const modalEstadoSelect = document.getElementById('modal-estado-select');
+            modalEstadoSelect.onchange = function() {
+                cambiarEstado(this);
+                setTimeout(() => closeModal(), 500);
+            };
         }
         
         function closeModal() {
