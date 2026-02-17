@@ -997,8 +997,11 @@
                 
                 <!-- Change History -->
                 <div id="modal-historial-cambios" style="display: none; margin-top: 12px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">📋 Historial de cambios</div>
-                    <div id="modal-cambios-lista"></div>
+                    <button onclick="toggleCambios()" id="btn-toggle-cambios" style="width: 100%; display: flex; justify-content: space-between; align-items: center; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; color: #718096;">
+                        <span>📋 Historial de cambios</span>
+                        <span id="cambios-arrow">▼</span>
+                    </button>
+                    <div id="modal-cambios-lista" style="display: none; margin-top: 6px; background: #f7fafc; border-radius: 10px; padding: 8px 12px;"></div>
                 </div>
                 
                 <!-- Edit Form (hidden by default) -->
@@ -1630,6 +1633,14 @@
             } catch(e) {}
         }
         
+        function toggleCambios() {
+            const lista = document.getElementById('modal-cambios-lista');
+            const arrow = document.getElementById('cambios-arrow');
+            const isOpen = lista.style.display !== 'none';
+            lista.style.display = isOpen ? 'none' : 'block';
+            arrow.textContent = isOpen ? '▼' : '▲';
+        }
+        
         function renderCambios(opKey) {
             let historial = [];
             try {
@@ -1668,6 +1679,9 @@
                 </div>
             `).join('');
             
+            // Always start collapsed, show the container
+            lista.style.display = 'none';
+            document.getElementById('cambios-arrow').textContent = '▼';
             container.style.display = 'block';
         }
         
