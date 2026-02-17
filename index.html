@@ -1578,10 +1578,8 @@
                                             <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${v.cantidad}</div>
                                             <div style="font-size: 11px; color: #a0aec0;">$${v.precio.toFixed(0)}</div>
                                         </td>
-                                        <td style="padding: 12px 8px; text-align: right; width: 130px;" onclick="event.stopPropagation();">
-                                            <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 8px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
-                                                ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
-                                            </select>
+                                        <td style="padding: 12px 8px; text-align: right; width: 130px;">
+                                            <span style="padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; display: inline-block;">${v.estado}</span>
                                         </td>
                                     </tr>
                                 </table>
@@ -1590,6 +1588,22 @@
                         </div>
                     </td>
                 `;
+                
+                // Hidden select for cambiarEstado compatibility
+                const hiddenSelect = document.createElement('select');
+                hiddenSelect.className = 'estado-select';
+                hiddenSelect.style.display = 'none';
+                hiddenSelect.dataset.tipo = 'VENTA';
+                hiddenSelect.dataset.fecha = v.fecha;
+                hiddenSelect.dataset.cliente = v.cliente;
+                hiddenSelect.dataset.cantidad = v.cantidad;
+                estadosVentas.forEach(e => {
+                    const opt = document.createElement('option');
+                    opt.value = e; opt.textContent = e;
+                    if (e === v.estado) opt.selected = true;
+                    hiddenSelect.appendChild(opt);
+                });
+                row.appendChild(hiddenSelect);
                 
                 setupSwipe(row);
                 row.addEventListener('click', () => showOperationDetail(v, 'VENTA', estadosVentas));
@@ -1623,10 +1637,8 @@
                                             <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${c.cantidad}</div>
                                             <div style="font-size: 11px; color: #a0aec0;">$${c.precio.toFixed(0)}</div>
                                         </td>
-                                        <td style="padding: 12px 8px; text-align: right; width: 130px;" onclick="event.stopPropagation();">
-                                            <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 8px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
-                                                ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
-                                            </select>
+                                        <td style="padding: 12px 8px; text-align: right; width: 130px;">
+                                            <span style="padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; display: inline-block;">${c.estado}</span>
                                         </td>
                                     </tr>
                                 </table>
@@ -1635,6 +1647,21 @@
                         </div>
                     </td>
                 `;
+                
+                const hiddenSelect = document.createElement('select');
+                hiddenSelect.className = 'estado-select';
+                hiddenSelect.style.display = 'none';
+                hiddenSelect.dataset.tipo = 'COMPRA';
+                hiddenSelect.dataset.fecha = c.fecha;
+                hiddenSelect.dataset.cliente = c.cliente;
+                hiddenSelect.dataset.cantidad = c.cantidad;
+                estadosCompras.forEach(e => {
+                    const opt = document.createElement('option');
+                    opt.value = e; opt.textContent = e;
+                    if (e === c.estado) opt.selected = true;
+                    hiddenSelect.appendChild(opt);
+                });
+                row.appendChild(hiddenSelect);
                 
                 setupSwipe(row);
                 row.addEventListener('click', () => showOperationDetail(c, 'COMPRA', estadosCompras));
