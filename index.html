@@ -737,11 +737,11 @@
     <div id="main-app" class="app-container">
         <div class="app-header">
             <div class="header-top">
-                <div class="user-info">
+                <div class="user-info" onclick="switchOperator()" style="cursor: pointer;">
                     <div class="user-avatar" id="user-avatar"></div>
                     <div>
                         <div style="font-weight: 600; color: #2d3748;" id="user-name"></div>
-                        <div style="font-size: 12px; color: #a0aec0;">Operador</div>
+                        <div style="font-size: 12px; color: #a0aec0;">Cambiar operador</div>
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px;">
@@ -1216,6 +1216,14 @@
             currentUser = username;
             localStorage.setItem('currentUser', username);
             showMainApp();
+        }
+        
+        function switchOperator() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-user').value = '';
         }
         
         function handleLogout() {
