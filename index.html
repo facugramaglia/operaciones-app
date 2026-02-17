@@ -17,7 +17,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #d4e5d4;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -186,28 +186,46 @@
             background: white;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0 max(10px, env(safe-area-inset-bottom));
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            align-items: center;
+            padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
             z-index: 100;
         }
         
         .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            color: #718096;
+            background: transparent;
             border: none;
-            background: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: #a0aec0;
             font-size: 12px;
+            padding: 0;
+            transition: all 0.3s;
+        }
+        
+        .nav-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f7fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            transition: all 0.3s;
+        }
+        
+        .nav-item.active .nav-icon {
+            background: #667eea;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
         
         .nav-item.active {
             color: #667eea;
-        }
-        
-        .nav-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
+            font-weight: 600;
         }
         
         /* CONTENT */
@@ -268,10 +286,10 @@
         }
         
         .card-title {
-            font-size: 18px;
+            font-size: 22px;
             font-weight: bold;
             color: #2d3748;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
         
         /* FORM */
@@ -351,19 +369,18 @@
             flex: 1;
             padding: 12px 20px;
             border: none;
-            border-bottom: 3px solid transparent;
-            background: transparent;
-            border-radius: 0;
-            font-size: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: 600;
             color: #718096;
             transition: all 0.3s;
         }
         
         .filter-btn.active {
-            background: transparent;
+            background: white;
             color: #667eea;
-            border-bottom-color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         table {
@@ -1458,48 +1475,21 @@
             
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById('nav-' + screen).classList.add('active');
-            
-            // Restaurar fondo morado para dashboard y config
-            if (screen === 'dashboard' || screen === 'config') {
-                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            }
-            // Si vamos a historial, aplicar color según tab actual
-            else if (screen === 'historial') {
-                if (currentTab === 'ventas') {
-                    document.body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
-                } else {
-                    document.body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
-                }
-            }
-            // Si vamos a cargar, aplicar color según tipo actual
-            else if (screen === 'cargar') {
-                if (currentTipo === 'VENTA') {
-                    document.body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
-                } else {
-                    document.body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
-                }
-            }
         }
         
         function switchTab(tab) {
             currentTab = tab;
-            
-            const body = document.body;
             
             if (tab === 'ventas') {
                 document.getElementById('tab-ventas').classList.add('active');
                 document.getElementById('tab-compras').classList.remove('active');
                 document.getElementById('ventas-tab').classList.remove('hidden');
                 document.getElementById('compras-tab').classList.add('hidden');
-                // Fondo verde
-                body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
             } else {
                 document.getElementById('tab-ventas').classList.remove('active');
                 document.getElementById('tab-compras').classList.add('active');
                 document.getElementById('ventas-tab').classList.add('hidden');
                 document.getElementById('compras-tab').classList.remove('hidden');
-                // Fondo rojo
-                body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
             }
         }
         
@@ -1511,7 +1501,6 @@
         function setTipo(tipo) {
             currentTipo = tipo;
             
-            const body = document.body;
             const submitBtn = document.getElementById('btn-submit');
             
             if (tipo === 'VENTA') {
@@ -1519,15 +1508,11 @@
                 document.getElementById('tipo-compra').classList.remove('active');
                 submitBtn.textContent = 'Registrar VENTA';
                 submitBtn.classList.remove('compra');
-                // Fondo verde suave
-                body.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
             } else {
                 document.getElementById('tipo-venta').classList.remove('active');
                 document.getElementById('tipo-compra').classList.add('active');
                 submitBtn.textContent = 'Registrar COMPRA';
                 submitBtn.classList.add('compra');
-                // Fondo rojo suave
-                body.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
             }
         }
         
