@@ -1531,17 +1531,27 @@
             document.getElementById('modal-total').textContent = '$' + op.total.toLocaleString('es-AR');
             document.getElementById('modal-total').style.color = tipo === 'VENTA' ? '#48bb78' : '#f56565';
             
-            // Estado selector in modal
-            const estadoSelect = document.getElementById('modal-estado-select');
-            estadoSelect.innerHTML = estadosDisponibles.map(e => 
+            // Add event listener to modal estado select - replace to avoid duplicates
+            const modalEstadoSelect = document.getElementById('modal-estado-select');
+            const newSelect = modalEstadoSelect.cloneNode(true);
+            modalEstadoSelect.parentNode.replaceChild(newSelect, modalEstadoSelect);
+            
+            newSelect.innerHTML = estadosDisponibles.map(e => 
                 `<option value="${e}" ${op.estado === e ? 'selected' : ''}>${e}</option>`
             ).join('');
-            estadoSelect.style.background = estadoStyles.bg;
-            estadoSelect.style.color = estadoStyles.color;
-            estadoSelect.dataset.tipo = tipo;
-            estadoSelect.dataset.fecha = op.fecha;
-            estadoSelect.dataset.cliente = op.cliente;
-            estadoSelect.dataset.cantidad = op.cantidad;
+            newSelect.style.background = estadoStyles.bg;
+            newSelect.style.color = estadoStyles.color;
+            newSelect.dataset.tipo = tipo;
+            newSelect.dataset.fecha = op.fecha;
+            newSelect.dataset.cliente = op.cliente;
+            newSelect.dataset.cantidad = op.cantidad;
+            
+            newSelect.onchange = function() {
+                const opKey = getOpKey(op, tipo);
+                guardarCambio(opKey, 'estado', op.estado, this.value, currentUser);
+                cambiarEstado(this);
+                setTimeout(() => closeModal(), 500);
+            };
             
             const obsDiv = document.getElementById('modal-observaciones');
             if (op.observaciones) {
@@ -1589,16 +1599,6 @@
             
             // Save button
             document.getElementById('btn-edit-save').onclick = () => guardarEdicion(op, tipo);
-            
-            // Add event listener to modal estado select
-            const modalEstadoSelect = document.getElementById('modal-estado-select');
-            modalEstadoSelect.onchange = function() {
-                // Save change to history
-                const opKey = getOpKey(op, tipo);
-                guardarCambio(opKey, 'estado', op.estado, this.value, currentUser);
-                cambiarEstado(this);
-                setTimeout(() => closeModal(), 500);
-            };
         }
         
         // ── HISTORIAL DE CAMBIOS ──────────────────────────────────────
