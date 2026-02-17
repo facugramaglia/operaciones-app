@@ -917,6 +917,40 @@
                 <div id="modal-observaciones" class="detail-obs" style="display: none;"></div>
                 
                 <div id="modal-modificado" class="detail-modified" style="display: none;"></div>
+                
+                <!-- Edit Form (hidden by default) -->
+                <div id="modal-edit-form" style="display: none; margin-top: 16px; border-top: 2px solid #e2e8f0; padding-top: 16px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #2d3748; margin-bottom: 16px;">✏️ Editar Operación</div>
+                    
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Cantidad (USD)</label>
+                        <input type="number" id="edit-cantidad" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;">
+                    </div>
+                    
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Precio (ARS)</label>
+                        <input type="number" id="edit-precio" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;">
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Observaciones</label>
+                        <textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button id="btn-edit-cancel" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #718096;">
+                            Cancelar
+                        </button>
+                        <button id="btn-edit-save" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(102,126,234,0.3);">
+                            💾 Guardar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Edit Button -->
+                <button id="btn-edit-toggle" style="width: 100%; margin-top: 16px; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #667eea;">
+                    ✏️ Editar operación
+                </button>
             </div>
         </div>
     </div>
@@ -1446,12 +1480,84 @@
             
             modal.classList.remove('hidden');
             
+            // Reset edit form
+            document.getElementById('modal-edit-form').style.display = 'none';
+            document.getElementById('btn-edit-toggle').style.display = 'block';
+            document.getElementById('btn-edit-toggle').textContent = '✏️ Editar operación';
+            
+            // Pre-fill edit fields
+            document.getElementById('edit-cantidad').value = op.cantidad;
+            document.getElementById('edit-precio').value = op.precio;
+            document.getElementById('edit-observaciones').value = op.observaciones || '';
+            
+            // Edit toggle button
+            document.getElementById('btn-edit-toggle').onclick = () => {
+                document.getElementById('modal-edit-form').style.display = 'block';
+                document.getElementById('btn-edit-toggle').style.display = 'none';
+            };
+            
+            // Cancel button
+            document.getElementById('btn-edit-cancel').onclick = () => {
+                document.getElementById('modal-edit-form').style.display = 'none';
+                document.getElementById('btn-edit-toggle').style.display = 'block';
+            };
+            
+            // Save button
+            document.getElementById('btn-edit-save').onclick = () => guardarEdicion(op, tipo);
+            
             // Add event listener to modal estado select
             const modalEstadoSelect = document.getElementById('modal-estado-select');
             modalEstadoSelect.onchange = function() {
                 cambiarEstado(this);
                 setTimeout(() => closeModal(), 500);
             };
+        }
+        
+        async function guardarEdicion(op, tipo) {
+            const nuevaCantidad = parseFloat(document.getElementById('edit-cantidad').value);
+            const nuevoPrecio = parseFloat(document.getElementById('edit-precio').value);
+            const nuevasObs = document.getElementById('edit-observaciones').value.trim();
+            
+            if (!nuevaCantidad || !nuevoPrecio) {
+                alert('⚠️ Cantidad y precio son requeridos');
+                return;
+            }
+            
+            const nuevoTotal = nuevaCantidad * nuevoPrecio;
+            
+            if (!confirm(`¿Guardar cambios?\n\nCantidad: $${nuevaCantidad}\nPrecio: $${nuevoPrecio}\nTotal: $${nuevoTotal.toLocaleString('es-AR')}`)) {
+                return;
+            }
+            
+            const data = {
+                action: 'edit_operation',
+                tipo: tipo,
+                fecha: op.fecha,
+                clienteOriginal: op.cliente,
+                cantidadOriginal: op.cantidad,
+                nuevaCantidad: nuevaCantidad,
+                nuevoPrecio: nuevoPrecio,
+                nuevoTotal: nuevoTotal,
+                nuevasObs: nuevasObs,
+                usuario: currentUser
+            };
+            
+            const params = new URLSearchParams(data);
+            const url = config.scriptUrl + '?' + params.toString();
+            
+            // Crear iframe invisible
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            
+            setTimeout(() => {
+                if (iframe.parentNode) document.body.removeChild(iframe);
+            }, 3000);
+            
+            alert('✅ Operación actualizada');
+            closeModal();
+            setTimeout(() => loadData(), 1500);
         }
         
         function closeModal() {
