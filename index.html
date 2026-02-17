@@ -602,6 +602,86 @@
             padding-top: 12px;
             border-top: 1px solid #e2e8f0;
         }
+        
+        .cambio-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: flex-start;
+        }
+        
+        .cambio-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cambio-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+        
+        .cambio-content {
+            flex: 1;
+        }
+        
+        .cambio-tipo {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .cambio-detalle {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 2px;
+        }
+        
+        .cambio-meta {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-top: 2px;
+        }
+        
+        /* PULL TO REFRESH */
+        .pull-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+            z-index: 200;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .pull-indicator.visible {
+            transform: translateY(0);
+        }
+        
+        .pull-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -627,7 +707,7 @@
         <div class="login-card">
             <div class="login-logo">
                 <h1>💱 Operaciones</h1>
-                <p>Inicia sesión para continuar</p>
+                <p>Seleccioná tu usuario</p>
             </div>
             
             <div class="input-group">
@@ -642,14 +722,15 @@
                 </select>
             </div>
             
-            <div class="input-group">
-                <label>Contraseña</label>
-                <input type="password" id="login-password" placeholder="Ingresa tu contraseña">
-            </div>
-            
-            <button class="btn-primary" id="btn-login">Iniciar Sesión</button>
+            <button class="btn-primary" id="btn-login">Entrar</button>
             <button class="btn-link" id="btn-reconfig">⚙️ Configurar API Key</button>
         </div>
+    </div>
+    
+    <!-- PULL TO REFRESH -->
+    <div class="pull-indicator" id="pull-indicator">
+        <div class="pull-spinner" id="pull-spinner" style="display:none;"></div>
+        <span id="pull-text">↓ Desliza para actualizar</span>
     </div>
     
     <!-- MAIN APP -->
@@ -918,6 +999,12 @@
                 
                 <div id="modal-modificado" class="detail-modified" style="display: none;"></div>
                 
+                <!-- Change History -->
+                <div id="modal-historial-cambios" style="display: none; margin-top: 12px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">📋 Historial de cambios</div>
+                    <div id="modal-cambios-lista"></div>
+                </div>
+                
                 <!-- Edit Form (hidden by default) -->
                 <div id="modal-edit-form" style="display: none; margin-top: 16px; border-top: 2px solid #e2e8f0; padding-top: 16px;">
                     <div style="font-size: 14px; font-weight: 700; color: #2d3748; margin-bottom: 16px;">✏️ Editar Operación</div>
@@ -974,7 +1061,7 @@
             'X3': 'X3'
         };
         
-        const MASTER_PIN = '7994';
+        const MASTER_PIN = '630500';
         
         let currentUser = null;
         let ventas = [];
@@ -1122,10 +1209,9 @@
         
         function handleLogin() {
             const username = document.getElementById('login-user').value;
-            const password = document.getElementById('login-password').value;
             
-            if (!username || !password) {
-                alert('Completa todos los campos');
+            if (!username) {
+                alert('Seleccioná tu usuario');
                 return;
             }
             
@@ -1135,13 +1221,9 @@
                 return;
             }
             
-            if (USERS[username] && USERS[username] === password) {
-                currentUser = username;
-                localStorage.setItem('currentUser', username);
-                showMainApp();
-            } else {
-                alert('❌ Usuario o contraseña incorrectos');
-            }
+            currentUser = username;
+            localStorage.setItem('currentUser', username);
+            showMainApp();
         }
         
         function handleLogout() {
@@ -1490,6 +1572,10 @@
             document.getElementById('edit-precio').value = op.precio;
             document.getElementById('edit-observaciones').value = op.observaciones || '';
             
+            // Show change history
+            const opKey = getOpKey(op, tipo);
+            renderCambios(opKey);
+            
             // Edit toggle button
             document.getElementById('btn-edit-toggle').onclick = () => {
                 document.getElementById('modal-edit-form').style.display = 'block';
@@ -1508,9 +1594,82 @@
             // Add event listener to modal estado select
             const modalEstadoSelect = document.getElementById('modal-estado-select');
             modalEstadoSelect.onchange = function() {
+                // Save change to history
+                const opKey = getOpKey(op, tipo);
+                guardarCambio(opKey, 'estado', op.estado, this.value, currentUser);
                 cambiarEstado(this);
                 setTimeout(() => closeModal(), 500);
             };
+        }
+        
+        // ── HISTORIAL DE CAMBIOS ──────────────────────────────────────
+        
+        function getOpKey(op, tipo) {
+            return `cambios_${tipo}_${op.fecha}_${op.cliente}_${op.cantidad}`.replace(/\s/g, '_');
+        }
+        
+        function guardarCambio(opKey, campo, valorAnterior, valorNuevo, usuario) {
+            let historial = [];
+            try {
+                const stored = localStorage.getItem(opKey);
+                if (stored) historial = JSON.parse(stored);
+            } catch(e) {}
+            
+            historial.unshift({
+                campo,
+                anterior: valorAnterior,
+                nuevo: valorNuevo,
+                usuario,
+                fecha: new Date().toLocaleString('es-AR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+            });
+            
+            // Máximo 10 cambios por operación
+            if (historial.length > 10) historial = historial.slice(0, 10);
+            
+            try {
+                localStorage.setItem(opKey, JSON.stringify(historial));
+            } catch(e) {}
+        }
+        
+        function renderCambios(opKey) {
+            let historial = [];
+            try {
+                const stored = localStorage.getItem(opKey);
+                if (stored) historial = JSON.parse(stored);
+            } catch(e) {}
+            
+            const container = document.getElementById('modal-historial-cambios');
+            const lista = document.getElementById('modal-cambios-lista');
+            
+            if (historial.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            const colores = {
+                estado: '#667eea',
+                cantidad: '#48bb78',
+                precio: '#f59e0b',
+                observaciones: '#a0aec0',
+                edicion: '#764ba2'
+            };
+            
+            lista.innerHTML = historial.map(c => `
+                <div class="cambio-item">
+                    <div class="cambio-dot" style="background: ${colores[c.campo] || '#a0aec0'};"></div>
+                    <div class="cambio-content">
+                        <div class="cambio-tipo">${c.campo.charAt(0).toUpperCase() + c.campo.slice(1)}</div>
+                        <div class="cambio-detalle">
+                            <span style="color:#a0aec0; text-decoration: line-through;">${c.anterior}</span>
+                            <span style="margin: 0 4px;">→</span>
+                            <strong>${c.nuevo}</strong>
+                        </div>
+                        <div class="cambio-meta">👤 ${c.usuario} · ${c.fecha}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.style.display = 'block';
         }
         
         async function guardarEdicion(op, tipo) {
@@ -1529,6 +1688,12 @@
                 return;
             }
             
+            // Guardar cambios en historial local
+            const opKey = getOpKey(op, tipo);
+            if (nuevaCantidad !== op.cantidad) guardarCambio(opKey, 'cantidad', '$'+op.cantidad, '$'+nuevaCantidad, currentUser);
+            if (nuevoPrecio !== op.precio) guardarCambio(opKey, 'precio', '$'+op.precio, '$'+nuevoPrecio, currentUser);
+            if (nuevasObs !== (op.observaciones || '')) guardarCambio(opKey, 'observaciones', op.observaciones || '(vacío)', nuevasObs || '(vacío)', currentUser);
+            
             const data = {
                 action: 'edit_operation',
                 tipo: tipo,
@@ -1545,7 +1710,6 @@
             const params = new URLSearchParams(data);
             const url = config.scriptUrl + '?' + params.toString();
             
-            // Crear iframe invisible
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = url;
@@ -1852,6 +2016,74 @@
                       'Error: ' + error.message);
             }
         }
+        // ── PULL TO REFRESH ───────────────────────────────────────────
+        
+        (function() {
+            let startY = 0;
+            let pulling = false;
+            let threshold = 80;
+            let refreshing = false;
+            const indicator = document.getElementById('pull-indicator');
+            const pullText = document.getElementById('pull-text');
+            const pullSpinner = document.getElementById('pull-spinner');
+            
+            document.addEventListener('touchstart', (e) => {
+                // Solo activar si estamos en el tope del scroll
+                if (window.scrollY === 0 && !refreshing) {
+                    startY = e.touches[0].clientY;
+                    pulling = true;
+                }
+            }, { passive: true });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!pulling || refreshing) return;
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                
+                if (diff > 10) {
+                    indicator.classList.add('visible');
+                    if (diff > threshold) {
+                        pullText.textContent = '↑ Suelta para actualizar';
+                        indicator.style.background = '#f0f4ff';
+                    } else {
+                        pullText.textContent = '↓ Desliza para actualizar';
+                        indicator.style.background = 'white';
+                    }
+                }
+            }, { passive: true });
+            
+            document.addEventListener('touchend', async (e) => {
+                if (!pulling || refreshing) return;
+                pulling = false;
+                
+                const endY = e.changedTouches[0].clientY;
+                const diff = endY - startY;
+                
+                if (diff > threshold) {
+                    // Ejecutar refresh
+                    refreshing = true;
+                    pullText.style.display = 'none';
+                    pullSpinner.style.display = 'block';
+                    indicator.classList.add('visible');
+                    
+                    try {
+                        await loadData();
+                    } catch(e) {}
+                    
+                    setTimeout(() => {
+                        indicator.classList.remove('visible');
+                        pullText.style.display = 'block';
+                        pullSpinner.style.display = 'none';
+                        pullText.textContent = '↓ Desliza para actualizar';
+                        indicator.style.background = 'white';
+                        refreshing = false;
+                    }, 600);
+                } else {
+                    indicator.classList.remove('visible');
+                }
+            }, { passive: true });
+        })();
+        
     </script>
 </body>
 </html>
