@@ -1904,30 +1904,33 @@
             const observaciones = document.getElementById('form-observaciones').value;
             const total = cantidad * precio;
             
-            const data = {
-                tipo: currentTipo,
-                fecha: fecha,
-                operador: currentUser,
-                cliente: cliente,
-                cantidad: cantidad,
-                precio: precio,
-                total: total,
-                observaciones: observaciones
-            };
-            
-            // Deshabilitar botón y cambiar texto
+            // Deshabilitar botón
             submitBtn.disabled = true;
             const originalText = submitBtn.textContent;
             submitBtn.textContent = '⏳ Guardando...';
             submitBtn.style.opacity = '0.6';
             
             try {
-                await fetch(config.scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                const params = new URLSearchParams({
+                    action: 'add_operation',
+                    tipo: currentTipo,
+                    fecha: fecha,
+                    operador: currentUser,
+                    cliente: cliente,
+                    cantidad: cantidad,
+                    precio: precio,
+                    total: total,
+                    observaciones: observaciones
                 });
+                
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = config.scriptUrl + '?' + params.toString();
+                document.body.appendChild(iframe);
+                
+                setTimeout(() => {
+                    if (iframe.parentNode) document.body.removeChild(iframe);
+                }, 4000);
                 
                 alert('✅ ' + currentTipo + ' agregada');
                 
@@ -1937,11 +1940,11 @@
                 document.getElementById('form-observaciones').value = '';
                 document.getElementById('total-preview').classList.add('hidden');
                 
-                setTimeout(() => loadData(), 2000);
+                setTimeout(() => loadData(), 2500);
+                
             } catch (error) {
                 alert('Error: ' + error.message);
             } finally {
-                // Re-habilitar botón
                 setTimeout(() => {
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
