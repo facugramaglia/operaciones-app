@@ -686,7 +686,7 @@
                 </div>
                 
                 <!-- Ventas Pendientes -->
-                <div class="card">
+                <div class="card" id="card-ventas-pendientes" style="cursor: pointer;">
                     <div class="card-title" style="color: #48bb78;">📈 Ventas Pendientes</div>
                     <div style="overflow-x: auto;">
                         <table>
@@ -700,10 +700,11 @@
                             <tbody id="ventas-pendientes-tbody"></tbody>
                         </table>
                     </div>
+                    <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
                 </div>
                 
                 <!-- Compras Pendientes -->
-                <div class="card">
+                <div class="card" id="card-compras-pendientes" style="cursor: pointer;">
                     <div class="card-title" style="color: #f56565;">📉 Compras Pendientes</div>
                     <div style="overflow-x: auto;">
                         <table>
@@ -717,6 +718,7 @@
                             <tbody id="compras-pendientes-tbody"></tbody>
                         </table>
                     </div>
+                    <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
                 </div>
             </div>
             
@@ -732,7 +734,13 @@
                     
                     <div class="form-group">
                         <label class="form-label">Fecha</label>
-                        <input type="date" class="form-input" id="form-fecha">
+                        <div style="position: relative;">
+                            <input type="date" class="form-input" id="form-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+                            <div id="fecha-display" style="padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 17px; background: white; color: #2d3748; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                                <span id="fecha-text">Hoy</span>
+                                <span style="color: #a0aec0; font-size: 18px;">📅</span>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -981,6 +989,32 @@
             
             // Config button in header
             document.getElementById('btn-config-header').addEventListener('click', () => showScreen('config'));
+            
+            // Date display
+            const fechaInput = document.getElementById('form-fecha');
+            const fechaText = document.getElementById('fecha-text');
+            
+            function updateFechaDisplay() {
+                if (fechaInput.value) {
+                    const [y, m, d] = fechaInput.value.split('-');
+                    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                    fechaText.textContent = `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+                    fechaText.style.color = '#2d3748';
+                }
+            }
+            
+            fechaInput.addEventListener('change', updateFechaDisplay);
+            updateFechaDisplay();
+            
+            // Dashboard cards → historial navigation
+            document.getElementById('card-ventas-pendientes').addEventListener('click', () => {
+                showScreen('historial');
+                switchTab('ventas');
+            });
+            document.getElementById('card-compras-pendientes').addEventListener('click', () => {
+                showScreen('historial');
+                switchTab('compras');
+            });
             
             // Logout
             document.getElementById('btn-logout').addEventListener('click', handleLogout);
