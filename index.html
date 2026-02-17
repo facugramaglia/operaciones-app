@@ -922,10 +922,6 @@
                     </div>
                     
                     <button class="btn-primary" id="btn-save-config">Guardar Cambios</button>
-                    
-                    <button style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 10px; font-size: 14px; margin-top: 10px;" id="btn-test-script">
-                        🧪 Probar conexión con Script
-                    </button>
                 </div>
             </div>
         </div>
@@ -1158,7 +1154,6 @@
             
             // Config
             document.getElementById('btn-save-config').addEventListener('click', saveConfig);
-            document.getElementById('btn-test-script').addEventListener('click', testScriptConnection);
         }
         
         function checkPIN() {
@@ -1966,52 +1961,6 @@
             setTimeout(() => successMsg.classList.add('hidden'), 3000);
         }
         
-        async function testScriptConnection() {
-            const scriptUrl = document.getElementById('config-script-url').value.trim();
-            
-            if (!scriptUrl) {
-                alert('⚠️ Primero ingresa la URL del Script');
-                return;
-            }
-            
-            if (!scriptUrl.includes('/exec')) {
-                alert('⚠️ La URL debe terminar en /exec');
-                return;
-            }
-            
-            const testData = {
-                action: 'test',
-                message: 'Prueba de conexión desde la app'
-            };
-            
-            try {
-                console.log('Probando conexión a:', scriptUrl);
-                
-                const response = await fetch(scriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(testData),
-                    redirect: 'follow'
-                });
-                
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
-                
-                alert('✅ Conexión exitosa!\n\n' +
-                      'La URL del Script funciona correctamente.\n' +
-                      'Status: ' + response.status);
-                
-            } catch (error) {
-                console.error('Error de prueba:', error);
-                alert('❌ Error de conexión\n\n' +
-                      'No se pudo conectar con el Script.\n\n' +
-                      'Verifica:\n' +
-                      '1. La URL esté correcta\n' +
-                      '2. El Script esté implementado\n' +
-                      '3. Permisos: "Anyone" puede acceder\n\n' +
-                      'Error: ' + error.message);
-            }
-        }
         // ── PULL TO REFRESH ───────────────────────────────────────────
         
         (function() {
