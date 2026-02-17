@@ -1099,9 +1099,6 @@
             // Login
             document.getElementById('btn-login').addEventListener('click', handleLogin);
             document.getElementById('btn-reconfig').addEventListener('click', showConfigPrompt);
-            document.getElementById('login-password').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleLogin();
-            });
             
             // Nav
             document.getElementById('nav-dashboard').addEventListener('click', () => showScreen('dashboard'));
@@ -1235,7 +1232,6 @@
             document.getElementById('main-app').style.display = 'none';
             document.getElementById('pin-input').value = '';
             document.getElementById('login-user').value = '';
-            document.getElementById('login-password').value = '';
         }
         
         function showMainApp() {
