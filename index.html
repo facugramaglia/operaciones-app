@@ -645,7 +645,42 @@
             margin-top: 2px;
         }
         
-        /* PULL TO REFRESH */
+        /* SWIPE TO CHANGE STATE */
+        .swipe-row {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swipe-actions {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 10px;
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+        }
+        
+        .swipe-action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+        
+        .swipe-row.swiped .swipe-actions {
+            transform: translateX(0);
+        }
+        
+        .swipe-row.swiped td:not(:last-child) {
+            opacity: 0.4;
+        }
         .pull-indicator {
             position: fixed;
             top: 0;
@@ -732,6 +767,9 @@
         <div class="pull-spinner" id="pull-spinner" style="display:none;"></div>
         <span id="pull-text">↓ Desliza para actualizar</span>
     </div>
+    
+    <!-- TOAST -->
+    <div id="toast" style="position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2d3748; color: white; padding: 12px 24px; border-radius: 24px; font-size: 14px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 2000; pointer-events: none; white-space: nowrap;"></div>
     
     <!-- MAIN APP -->
     <div id="main-app" class="app-container">
@@ -855,7 +893,7 @@
             
             <!-- HISTORIAL -->
             <div id="historial-screen" class="screen">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
                     <button class="filter-btn active" id="tab-ventas" style="flex: 1;">📈 Ventas</button>
                     <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
                     <select id="filter-select" style="flex: 0 0 140px; padding: 8px 12px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white;">
@@ -865,6 +903,14 @@
                         <option value="30">Últimas 30</option>
                     </select>
                 </div>
+                
+                <!-- Search bar -->
+                <div style="margin-bottom: 10px; position: relative;">
+                    <input type="text" id="search-cliente" placeholder="🔍  Buscar cliente..." style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;">
+                </div>
+                
+                <!-- Estado counters -->
+                <div id="estado-counters" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
                 
                 <div id="ventas-tab" class="card">
                     <div class="card-title">Últimas Ventas</div>
@@ -1157,6 +1203,23 @@
             
             // Config
             document.getElementById('btn-save-config').addEventListener('click', saveConfig);
+            
+            // Search
+            document.getElementById('search-cliente').addEventListener('input', function() {
+                searchQuery = this.value.toLowerCase().trim();
+                updateHistorial();
+            });
+            
+            // Auto-precio when switching to cargar screen
+            document.getElementById('nav-cargar').addEventListener('click', () => {
+                showScreen('cargar');
+                const lastPrice = getLastPrice();
+                const precioInput = document.getElementById('form-precio');
+                if (lastPrice && !precioInput.value) {
+                    precioInput.value = lastPrice;
+                    calcularTotal();
+                }
+            });
         }
         
         function checkPIN() {
@@ -1447,6 +1510,8 @@
             return ops.slice(-currentFilter);
         }
         
+        let searchQuery = '';
+        
         function updateHistorial() {
             const estadosVentas = ['PENDIENTE', 'REALIZADA', 'LLEVO BILL'];
             const estadosCompras = ['PENDIENTE', 'REALIZADA', 'LLEVO PESOS', 'PREPARADO'];
@@ -1457,14 +1522,30 @@
             ventasTbody.innerHTML = '';
             comprasTbody.innerHTML = '';
             
-            const ventasFiltradas = getFilteredOps(ventas, true).reverse();
-            const comprasFiltradas = getFilteredOps(compras, false).reverse();
+            let ventasFiltradas = getFilteredOps(ventas, true).reverse();
+            let comprasFiltradas = getFilteredOps(compras, false).reverse();
             
-            ventasFiltradas.forEach((v, idx) => {
+            // Filtro búsqueda
+            if (searchQuery) {
+                ventasFiltradas = ventasFiltradas.filter(v => v.cliente.toLowerCase().includes(searchQuery));
+                comprasFiltradas = comprasFiltradas.filter(c => c.cliente.toLowerCase().includes(searchQuery));
+            }
+            
+            // Contadores de estados
+            const tab = currentTab === 'ventas' ? ventasFiltradas : comprasFiltradas;
+            const counts = {};
+            tab.forEach(op => { counts[op.estado] = (counts[op.estado] || 0) + 1; });
+            const countersDiv = document.getElementById('estado-counters');
+            countersDiv.innerHTML = Object.entries(counts).map(([estado, n]) => {
+                const s = getEstadoStyles(estado);
+                return `<span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; background: ${s.bg}; color: ${s.color};">${estado} · ${n}</span>`;
+            }).join('');
+            
+            ventasFiltradas.forEach(v => {
                 const row = ventasTbody.insertRow();
                 const estadoStyles = getEstadoStyles(v.estado);
+                row.className = 'swipe-row';
                 row.style.cursor = 'pointer';
-                row.style.transition = 'background 0.2s';
                 
                 row.innerHTML = `
                     <td style="padding: 12px 8px;">
@@ -1475,21 +1556,28 @@
                         <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${v.cantidad}</div>
                         <div style="font-size: 11px; color: #a0aec0;">$${v.precio.toFixed(0)}</div>
                     </td>
-                    <td style="padding: 12px 8px; text-align: right;" onclick="event.stopPropagation();">
+                    <td style="padding: 12px 8px; text-align: right; position: relative;" onclick="event.stopPropagation();">
                         <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
                             ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
+                        <div class="swipe-actions">
+                            ${estadosVentas.filter(e => e !== v.estado).map(e => {
+                                const s = getEstadoStyles(e);
+                                return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${v.fecha}','${v.cliente}','${v.cantidad}','VENTA','${e}');event.stopPropagation();">${e}</button>`;
+                            }).join('')}
+                        </div>
                     </td>
                 `;
                 
+                setupSwipe(row);
                 row.addEventListener('click', () => showOperationDetail(v, 'VENTA', estadosVentas));
             });
             
-            comprasFiltradas.forEach((c, idx) => {
+            comprasFiltradas.forEach(c => {
                 const row = comprasTbody.insertRow();
                 const estadoStyles = getEstadoStyles(c.estado);
+                row.className = 'swipe-row';
                 row.style.cursor = 'pointer';
-                row.style.transition = 'background 0.2s';
                 
                 row.innerHTML = `
                     <td style="padding: 12px 8px;">
@@ -1500,22 +1588,59 @@
                         <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${c.cantidad}</div>
                         <div style="font-size: 11px; color: #a0aec0;">$${c.precio.toFixed(0)}</div>
                     </td>
-                    <td style="padding: 12px 8px; text-align: right;" onclick="event.stopPropagation();">
+                    <td style="padding: 12px 8px; text-align: right; position: relative;" onclick="event.stopPropagation();">
                         <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
                             ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
+                        <div class="swipe-actions">
+                            ${estadosCompras.filter(e => e !== c.estado).map(e => {
+                                const s = getEstadoStyles(e);
+                                return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${c.fecha}','${c.cliente}','${c.cantidad}','COMPRA','${e}');event.stopPropagation();">${e}</button>`;
+                            }).join('')}
+                        </div>
                     </td>
                 `;
                 
+                setupSwipe(row);
                 row.addEventListener('click', () => showOperationDetail(c, 'COMPRA', estadosCompras));
             });
             
-            // Add event listeners to all estado selects
             document.querySelectorAll('.estado-select').forEach(select => {
                 select.addEventListener('change', function(e) {
                     cambiarEstado(e.target);
                 });
             });
+        }
+        
+        // ── SWIPE ─────────────────────────────────────────────────────
+        function setupSwipe(row) {
+            let startX = 0, startY = 0, swiping = false;
+            
+            row.addEventListener('touchstart', e => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                swiping = true;
+            }, { passive: true });
+            
+            row.addEventListener('touchmove', e => {
+                if (!swiping) return;
+                const dx = e.touches[0].clientX - startX;
+                const dy = Math.abs(e.touches[0].clientY - startY);
+                if (dy > 10) { swiping = false; return; } // vertical scroll
+                if (dx < -40) row.classList.add('swiped');
+                if (dx > 20) row.classList.remove('swiped');
+            }, { passive: true });
+            
+            row.addEventListener('touchend', () => { swiping = false; });
+        }
+        
+        function cambiarEstadoSwipe(btn, fecha, cliente, cantidad, tipo, nuevoEstado) {
+            // Close swipe
+            btn.closest('.swipe-row').classList.remove('swiped');
+            // Find the select and trigger cambiarEstado
+            const select = btn.closest('td').querySelector('.estado-select');
+            select.value = nuevoEstado;
+            cambiarEstado(select);
         }
         
         function showOperationDetail(op, tipo, estadosDisponibles) {
@@ -1732,9 +1857,33 @@
                 if (iframe.parentNode) document.body.removeChild(iframe);
             }, 3000);
             
-            alert('✅ Operación actualizada');
+            showToast('✅ Operación actualizada', '#667eea');
             closeModal();
             setTimeout(() => loadData(), 1500);
+        }
+        
+        // ── TOAST ─────────────────────────────────────────────────────
+        function showToast(msg, color = '#2d3748') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.background = color;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+            }, 2500);
+        }
+        
+        // ── PRECIO SUGERIDO ───────────────────────────────────────────
+        function getLastPrice() {
+            const all = [...ventas, ...compras];
+            if (all.length === 0) return null;
+            // Ordenar por fecha y tomar el más reciente
+            const sorted = all.filter(op => op.precio > 0).sort((a, b) => {
+                return new Date(b.fecha.split('/').reverse().join('-')) - new Date(a.fecha.split('/').reverse().join('-'));
+            });
+            return sorted.length > 0 ? sorted[0].precio : null;
         }
         
         function closeModal() {
@@ -1803,7 +1952,7 @@
             document.body.appendChild(iframe);
             
             // Mostrar mensaje de éxito inmediato
-            alert('✅ Estado actualizado a: ' + nuevoEstado);
+            showToast('✅ Estado → ' + nuevoEstado, '#667eea');
             
             // Remover iframe después de 3 segundos
             setTimeout(() => {
@@ -1838,7 +1987,6 @@
         
         function switchTab(tab) {
             currentTab = tab;
-            
             const body = document.body;
             
             if (tab === 'ventas') {
@@ -1846,16 +1994,15 @@
                 document.getElementById('tab-compras').classList.remove('active');
                 document.getElementById('ventas-tab').classList.remove('hidden');
                 document.getElementById('compras-tab').classList.add('hidden');
-                // Fondo verde suave original
                 body.style.background = '#d4e5d4';
             } else {
                 document.getElementById('tab-ventas').classList.remove('active');
                 document.getElementById('tab-compras').classList.add('active');
                 document.getElementById('ventas-tab').classList.add('hidden');
                 document.getElementById('compras-tab').classList.remove('hidden');
-                // Fondo rojizo suave pastel
                 body.style.background = '#e5d4d4';
             }
+            updateHistorial();
         }
         
         function changeFilter(filter) {
@@ -1946,7 +2093,7 @@
                     if (iframe.parentNode) document.body.removeChild(iframe);
                 }, 4000);
                 
-                alert('✅ ' + currentTipo + ' agregada');
+                showToast('✅ ' + currentTipo + ' agregada', '#48bb78');
                 
                 document.getElementById('form-cliente').value = '';
                 document.getElementById('form-cantidad').value = '';
@@ -1981,9 +2128,7 @@
             localStorage.setItem('apiKey', apiKey);
             localStorage.setItem('scriptUrl', scriptUrl);
             
-            const successMsg = document.getElementById('config-success');
-            successMsg.classList.remove('hidden');
-            setTimeout(() => successMsg.classList.add('hidden'), 3000);
+            showToast('✅ Configuración guardada', '#48bb78');
         }
         
         // ── PULL TO REFRESH ───────────────────────────────────────────
