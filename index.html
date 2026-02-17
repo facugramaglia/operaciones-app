@@ -737,9 +737,9 @@
             <!-- HISTORIAL -->
             <div id="historial-screen" class="screen">
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
-                    <button class="filter-btn active" id="tab-ventas">📈 Ventas</button>
-                    <button class="filter-btn" id="tab-compras">📉 Compras</button>
-                    <select id="filter-select" style="margin-left: auto; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-weight: 600; color: #667eea; background: white;">
+                    <button class="filter-btn active" id="tab-ventas" style="flex: 1;">📈 Ventas</button>
+                    <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
+                    <select id="filter-select" style="flex: 0 0 140px; padding: 8px 12px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white;">
                         <option value="ultimo">Último día</option>
                         <option value="10">Últimas 10</option>
                         <option value="20">Últimas 20</option>
@@ -1475,21 +1475,39 @@
             
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById('nav-' + screen).classList.add('active');
+            
+            // Restaurar fondo verde cuando salimos de historial
+            if (screen !== 'historial') {
+                document.body.style.background = '#d4e5d4';
+            } else {
+                // Aplicar color según tab actual en historial
+                if (currentTab === 'compras') {
+                    document.body.style.background = '#e5d4d4';
+                } else {
+                    document.body.style.background = '#d4e5d4';
+                }
+            }
         }
         
         function switchTab(tab) {
             currentTab = tab;
+            
+            const body = document.body;
             
             if (tab === 'ventas') {
                 document.getElementById('tab-ventas').classList.add('active');
                 document.getElementById('tab-compras').classList.remove('active');
                 document.getElementById('ventas-tab').classList.remove('hidden');
                 document.getElementById('compras-tab').classList.add('hidden');
+                // Fondo verde suave original
+                body.style.background = '#d4e5d4';
             } else {
                 document.getElementById('tab-ventas').classList.remove('active');
                 document.getElementById('tab-compras').classList.add('active');
                 document.getElementById('ventas-tab').classList.add('hidden');
                 document.getElementById('compras-tab').classList.remove('hidden');
+                // Fondo rojizo suave pastel
+                body.style.background = '#e5d4d4';
             }
         }
         
