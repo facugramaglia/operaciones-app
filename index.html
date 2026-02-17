@@ -840,23 +840,6 @@
                     </div>
                 </div>
                 
-                <!-- Resumen del día -->
-                <div class="card" style="padding: 14px 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #48bb78; font-weight: 700; margin-bottom: 4px;">↑ VENTAS</div>
-                            <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-ventas-total">$0</div>
-                            <div style="font-size: 11px; color: #a0aec0;" id="hoy-ventas-count">0 operaciones</div>
-                        </div>
-                        <div style="background: #fff5f5; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #f56565; font-weight: 700; margin-bottom: 4px;">↓ COMPRAS</div>
-                            <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-compras-total">$0</div>
-                            <div style="font-size: 11px; color: #a0aec0;" id="hoy-compras-count">0 operaciones</div>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Ventas Pendientes -->
                 <div class="card" id="card-ventas-pendientes" style="cursor: pointer;">
                     <div class="card-title" style="color: #48bb78;">📈 Ventas Pendientes</div>
@@ -891,6 +874,23 @@
                         </table>
                     </div>
                     <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
+                </div>
+                
+                <!-- Resumen del día -->
+                <div class="card" style="padding: 14px 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #48bb78; font-weight: 700; margin-bottom: 4px;">↑ VENTAS</div>
+                            <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-ventas-total">$0</div>
+                            <div style="font-size: 11px; color: #a0aec0;" id="hoy-ventas-count">0 operaciones</div>
+                        </div>
+                        <div style="background: #fff5f5; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #f56565; font-weight: 700; margin-bottom: 4px;">↓ COMPRAS</div>
+                            <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-compras-total">$0</div>
+                            <div style="font-size: 11px; color: #a0aec0;" id="hoy-compras-count">0 operaciones</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -1487,12 +1487,12 @@
             const ventasHoy = ventas.filter(v => esHoy(v.fecha));
             const comprasHoy = compras.filter(c => esHoy(c.fecha));
             
-            const totalVentasHoy = ventasHoy.reduce((s, v) => s + (v.total || 0), 0);
-            const totalComprasHoy = comprasHoy.reduce((s, c) => s + (c.total || 0), 0);
+            const totalVentasHoy = ventasHoy.reduce((s, v) => s + (v.cantidad || 0), 0);
+            const totalComprasHoy = comprasHoy.reduce((s, c) => s + (c.cantidad || 0), 0);
             
-            document.getElementById('hoy-ventas-total').textContent = '$' + totalVentasHoy.toLocaleString('es-AR');
+            document.getElementById('hoy-ventas-total').textContent = 'USD ' + totalVentasHoy.toLocaleString('es-AR');
             document.getElementById('hoy-ventas-count').textContent = ventasHoy.length + ' operación' + (ventasHoy.length !== 1 ? 'es' : '');
-            document.getElementById('hoy-compras-total').textContent = '$' + totalComprasHoy.toLocaleString('es-AR');
+            document.getElementById('hoy-compras-total').textContent = 'USD ' + totalComprasHoy.toLocaleString('es-AR');
             document.getElementById('hoy-compras-count').textContent = comprasHoy.length + ' operación' + (comprasHoy.length !== 1 ? 'es' : '');
         }
         
