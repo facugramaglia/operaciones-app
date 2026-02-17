@@ -648,7 +648,18 @@
         /* SWIPE TO CHANGE STATE */
         .swipe-row {
             position: relative;
-            overflow: hidden;
+        }
+        
+        .swipe-inner {
+            display: flex;
+            align-items: center;
+            transition: transform 0.25s ease;
+            width: 100%;
+            background: white;
+        }
+        
+        .swipe-row.swiped .swipe-inner {
+            transform: translateX(-160px);
         }
         
         .swipe-actions {
@@ -656,30 +667,28 @@
             right: 0;
             top: 0;
             bottom: 0;
+            width: 160px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 0 10px;
-            transform: translateX(100%);
-            transition: transform 0.25s ease;
+            justify-content: center;
+            gap: 5px;
+            padding: 0 8px;
+            background: transparent;
         }
         
         .swipe-action-btn {
-            padding: 6px 10px;
+            padding: 6px 8px;
             border: none;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
-            color: white;
             white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
         
-        .swipe-row.swiped .swipe-actions {
-            transform: translateX(0);
-        }
-        
-        .swipe-row.swiped td:not(:last-child) {
-            opacity: 0.4;
+        .swipe-row.swiped .swipe-action-btn {
+            opacity: 1;
         }
         .pull-indicator {
             position: fixed;
@@ -1546,25 +1555,38 @@
                 const estadoStyles = getEstadoStyles(v.estado);
                 row.className = 'swipe-row';
                 row.style.cursor = 'pointer';
+                row.style.position = 'relative';
+                row.style.overflow = 'hidden';
+                
+                const otrosEstados = estadosVentas.filter(e => e !== v.estado);
+                const swipeBtns = otrosEstados.map(e => {
+                    const s = getEstadoStyles(e);
+                    return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${v.fecha}','${v.cliente}','${v.cantidad}','VENTA','${e}');event.stopPropagation();">${e}</button>`;
+                }).join('');
                 
                 row.innerHTML = `
-                    <td style="padding: 12px 8px;">
-                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 2px;">${v.cliente}</div>
-                        <div style="font-size: 11px; color: #a0aec0;">${v.operador}</div>
-                    </td>
-                    <td style="padding: 12px 8px; text-align: right;">
-                        <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${v.cantidad}</div>
-                        <div style="font-size: 11px; color: #a0aec0;">$${v.precio.toFixed(0)}</div>
-                    </td>
-                    <td style="padding: 12px 8px; text-align: right; position: relative;" onclick="event.stopPropagation();">
-                        <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
-                            ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
-                        </select>
-                        <div class="swipe-actions">
-                            ${estadosVentas.filter(e => e !== v.estado).map(e => {
-                                const s = getEstadoStyles(e);
-                                return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${v.fecha}','${v.cliente}','${v.cantidad}','VENTA','${e}');event.stopPropagation();">${e}</button>`;
-                            }).join('')}
+                    <td colspan="3" style="padding: 0; border: none;">
+                        <div style="position: relative; overflow: hidden;">
+                            <div class="swipe-inner">
+                                <table style="width:100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 12px 8px;">
+                                            <div style="font-weight: 600; font-size: 15px; margin-bottom: 2px;">${v.cliente}</div>
+                                            <div style="font-size: 11px; color: #a0aec0;">${v.operador}</div>
+                                        </td>
+                                        <td style="padding: 12px 8px; text-align: right; width: 100px;">
+                                            <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${v.cantidad}</div>
+                                            <div style="font-size: 11px; color: #a0aec0;">$${v.precio.toFixed(0)}</div>
+                                        </td>
+                                        <td style="padding: 12px 8px; text-align: right; width: 130px;" onclick="event.stopPropagation();">
+                                            <select class="estado-select" data-tipo="VENTA" data-fecha="${v.fecha}" data-cliente="${v.cliente}" data-cantidad="${v.cantidad}" style="width: 100%; padding: 8px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
+                                                ${estadosVentas.map(e => `<option value="${e}" ${v.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="swipe-actions">${swipeBtns}</div>
                         </div>
                     </td>
                 `;
@@ -1578,25 +1600,38 @@
                 const estadoStyles = getEstadoStyles(c.estado);
                 row.className = 'swipe-row';
                 row.style.cursor = 'pointer';
+                row.style.position = 'relative';
+                row.style.overflow = 'hidden';
+                
+                const otrosEstados = estadosCompras.filter(e => e !== c.estado);
+                const swipeBtns = otrosEstados.map(e => {
+                    const s = getEstadoStyles(e);
+                    return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${c.fecha}','${c.cliente}','${c.cantidad}','COMPRA','${e}');event.stopPropagation();">${e}</button>`;
+                }).join('');
                 
                 row.innerHTML = `
-                    <td style="padding: 12px 8px;">
-                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 2px;">${c.cliente}</div>
-                        <div style="font-size: 11px; color: #a0aec0;">${c.operador}</div>
-                    </td>
-                    <td style="padding: 12px 8px; text-align: right;">
-                        <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${c.cantidad}</div>
-                        <div style="font-size: 11px; color: #a0aec0;">$${c.precio.toFixed(0)}</div>
-                    </td>
-                    <td style="padding: 12px 8px; text-align: right; position: relative;" onclick="event.stopPropagation();">
-                        <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 8px 12px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
-                            ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
-                        </select>
-                        <div class="swipe-actions">
-                            ${estadosCompras.filter(e => e !== c.estado).map(e => {
-                                const s = getEstadoStyles(e);
-                                return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${c.fecha}','${c.cliente}','${c.cantidad}','COMPRA','${e}');event.stopPropagation();">${e}</button>`;
-                            }).join('')}
+                    <td colspan="3" style="padding: 0; border: none;">
+                        <div style="position: relative; overflow: hidden;">
+                            <div class="swipe-inner">
+                                <table style="width:100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 12px 8px;">
+                                            <div style="font-weight: 600; font-size: 15px; margin-bottom: 2px;">${c.cliente}</div>
+                                            <div style="font-size: 11px; color: #a0aec0;">${c.operador}</div>
+                                        </td>
+                                        <td style="padding: 12px 8px; text-align: right; width: 100px;">
+                                            <div style="font-weight: 600; font-size: 14px; color: #2d3748;">$${c.cantidad}</div>
+                                            <div style="font-size: 11px; color: #a0aec0;">$${c.precio.toFixed(0)}</div>
+                                        </td>
+                                        <td style="padding: 12px 8px; text-align: right; width: 130px;" onclick="event.stopPropagation();">
+                                            <select class="estado-select" data-tipo="COMPRA" data-fecha="${c.fecha}" data-cliente="${c.cliente}" data-cantidad="${c.cantidad}" style="width: 100%; padding: 8px 10px; border: none; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; border-radius: 8px; font-size: 11px; font-weight: 600;">
+                                                ${estadosCompras.map(e => `<option value="${e}" ${c.estado === e ? 'selected' : ''}>${e}</option>`).join('')}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="swipe-actions">${swipeBtns}</div>
                         </div>
                     </td>
                 `;
@@ -1614,31 +1649,35 @@
         
         // ── SWIPE ─────────────────────────────────────────────────────
         function setupSwipe(row) {
-            let startX = 0, startY = 0, swiping = false;
+            let startX = 0, startY = 0, moved = false;
             
             row.addEventListener('touchstart', e => {
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
-                swiping = true;
+                moved = false;
             }, { passive: true });
             
             row.addEventListener('touchmove', e => {
-                if (!swiping) return;
                 const dx = e.touches[0].clientX - startX;
                 const dy = Math.abs(e.touches[0].clientY - startY);
-                if (dy > 10) { swiping = false; return; } // vertical scroll
-                if (dx < -40) row.classList.add('swiped');
-                if (dx > 20) row.classList.remove('swiped');
+                if (dy > 15) return; // vertical scroll, ignorar
+                moved = true;
+                if (dx < -50) row.classList.add('swiped');
+                else if (dx > 20) row.classList.remove('swiped');
             }, { passive: true });
             
-            row.addEventListener('touchend', () => { swiping = false; });
+            row.addEventListener('touchend', () => {
+                // Si hubo movimiento, evitar que el click abra el modal
+                if (moved) {
+                    row.addEventListener('click', e => e.stopImmediatePropagation(), { once: true });
+                }
+            });
         }
         
         function cambiarEstadoSwipe(btn, fecha, cliente, cantidad, tipo, nuevoEstado) {
-            // Close swipe
-            btn.closest('.swipe-row').classList.remove('swiped');
-            // Find the select and trigger cambiarEstado
-            const select = btn.closest('td').querySelector('.estado-select');
+            const row = btn.closest('.swipe-row');
+            row.classList.remove('swiped');
+            const select = row.querySelector('.estado-select');
             select.value = nuevoEstado;
             cambiarEstado(select);
         }
