@@ -726,6 +726,18 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        /* SKELETON */
+        .skeleton-box {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f0f4f8 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body>
@@ -777,6 +789,21 @@
         <span id="pull-text">↓ Desliza para actualizar</span>
     </div>
     
+    <!-- SKELETON LOADER -->
+    <div id="skeleton-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.85); z-index: 500; padding: 20px;">
+        <div style="max-width: 480px; margin: 0 auto; padding-top: 80px;">
+            <div class="skeleton-box" style="height: 90px; border-radius: 16px; margin-bottom: 14px;"></div>
+            <div class="skeleton-box" style="height: 70px; border-radius: 16px; margin-bottom: 14px;"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                <div class="skeleton-box" style="height: 50px; border-radius: 10px;"></div>
+                <div class="skeleton-box" style="height: 50px; border-radius: 10px;"></div>
+            </div>
+            <div class="skeleton-box" style="height: 44px; border-radius: 10px; margin-bottom: 10px;"></div>
+            <div class="skeleton-box" style="height: 44px; border-radius: 10px; margin-bottom: 10px; opacity: 0.7;"></div>
+            <div class="skeleton-box" style="height: 44px; border-radius: 10px; opacity: 0.4;"></div>
+        </div>
+    </div>
+    
     <!-- TOAST -->
     <div id="toast" style="position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2d3748; color: white; padding: 12px 24px; border-radius: 24px; font-size: 14px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 2000; pointer-events: none; white-space: nowrap;"></div>
     
@@ -810,6 +837,23 @@
                     <div style="text-align: right;">
                         <div style="font-size: 12px; opacity: 0.8;" id="current-date">--/--/----</div>
                         <div style="font-size: 20px; font-weight: bold; margin-top: 5px;" id="current-time">--:--</div>
+                    </div>
+                </div>
+                
+                <!-- Resumen del día -->
+                <div class="card" style="padding: 14px 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #48bb78; font-weight: 700; margin-bottom: 4px;">↑ VENTAS</div>
+                            <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-ventas-total">$0</div>
+                            <div style="font-size: 11px; color: #a0aec0;" id="hoy-ventas-count">0 operaciones</div>
+                        </div>
+                        <div style="background: #fff5f5; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #f56565; font-weight: 700; margin-bottom: 4px;">↓ COMPRAS</div>
+                            <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-compras-total">$0</div>
+                            <div style="font-size: 11px; color: #a0aec0;" id="hoy-compras-count">0 operaciones</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1325,6 +1369,8 @@
         }
         
         async function loadData() {
+            const skeleton = document.getElementById('skeleton-overlay');
+            skeleton.style.display = 'block';
             try {
                 const balanceUrl = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.balanceCell}?key=${config.apiKey}`;
                 const balanceRes = await fetch(balanceUrl);
@@ -1350,7 +1396,9 @@
                 updateUI();
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al cargar datos');
+                showToast('❌ Error al cargar datos', '#e53e3e');
+            } finally {
+                skeleton.style.display = 'none';
             }
         }
         
@@ -1411,10 +1459,41 @@
             // Update date and time
             updateDateTime();
             
+            // Resumen del día
+            updateResumenHoy();
+            
             // Update pending tables
             updatePendingTables();
             
             updateHistorial();
+        }
+        
+        function updateResumenHoy() {
+            const hoy = new Date();
+            const diaHoy = String(hoy.getDate());
+            const mesHoy = String(hoy.getMonth() + 1);
+            const anioHoy = String(hoy.getFullYear());
+            
+            function esHoy(fecha) {
+                if (!fecha) return false;
+                // Formato DD/MM/YYYY
+                const partes = String(fecha).split('/');
+                if (partes.length === 3) {
+                    return partes[0] === diaHoy && partes[1] === mesHoy && partes[2] === anioHoy;
+                }
+                return false;
+            }
+            
+            const ventasHoy = ventas.filter(v => esHoy(v.fecha));
+            const comprasHoy = compras.filter(c => esHoy(c.fecha));
+            
+            const totalVentasHoy = ventasHoy.reduce((s, v) => s + (v.total || 0), 0);
+            const totalComprasHoy = comprasHoy.reduce((s, c) => s + (c.total || 0), 0);
+            
+            document.getElementById('hoy-ventas-total').textContent = '$' + totalVentasHoy.toLocaleString('es-AR');
+            document.getElementById('hoy-ventas-count').textContent = ventasHoy.length + ' operación' + (ventasHoy.length !== 1 ? 'es' : '');
+            document.getElementById('hoy-compras-total').textContent = '$' + totalComprasHoy.toLocaleString('es-AR');
+            document.getElementById('hoy-compras-count').textContent = comprasHoy.length + ' operación' + (comprasHoy.length !== 1 ? 'es' : '');
         }
         
         function updateDateTime() {
@@ -1579,7 +1658,10 @@
                                             <div style="font-size: 11px; color: #a0aec0;">$${v.precio.toFixed(0)}</div>
                                         </td>
                                         <td style="padding: 12px 8px; text-align: right; width: 130px;">
-                                            <span style="padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; display: inline-block;">${v.estado}</span>
+                                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+                                                <span style="font-size: 11px; color: #d0d7e0;">←</span>
+                                                <span style="padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; display: inline-block;">${v.estado}</span>
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -1638,7 +1720,10 @@
                                             <div style="font-size: 11px; color: #a0aec0;">$${c.precio.toFixed(0)}</div>
                                         </td>
                                         <td style="padding: 12px 8px; text-align: right; width: 130px;">
-                                            <span style="padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; display: inline-block;">${c.estado}</span>
+                                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+                                                <span style="font-size: 11px; color: #d0d7e0;">←</span>
+                                                <span style="padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; background: ${estadoStyles.bg}; color: ${estadoStyles.color}; display: inline-block;">${c.estado}</span>
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
