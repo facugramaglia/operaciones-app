@@ -145,6 +145,27 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .skeleton-box { background: linear-gradient(90deg, #e2e8f0 25%, #f0f4f8 50%, #e2e8f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* ── DEUDAS ──────────────────────────────────────────────── */
+        .deudas-filter-bar { display: flex; gap: 8px; margin-bottom: 12px; }
+        .deudas-filter-btn { flex: 1; padding: 10px 8px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 600; color: #718096; transition: all 0.3s; }
+        .deudas-filter-btn.active { background: white; color: #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .deudas-totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .deudas-total-box { border-radius: 14px; padding: 14px 16px; }
+        .deudas-total-box.usd { background: linear-gradient(135deg, #e8eeff 0%, #d4dcff 100%); border: 2px solid #b0bdff; }
+        .deudas-total-box.ars { background: linear-gradient(135deg, #e6f9ee 0%, #c8f0d8 100%); border: 2px solid #86d9a8; }
+        .deudas-total-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .deudas-total-box.usd .deudas-total-label { color: #4c63d2; }
+        .deudas-total-box.ars .deudas-total-label { color: #2d8a57; }
+        .deudas-total-amount { font-size: 20px; font-weight: 800; }
+        .deudas-total-box.usd .deudas-total-amount { color: #3b4fbf; }
+        .deudas-total-box.ars .deudas-total-amount { color: #276349; }
+        .moneda-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .moneda-btn { padding: 14px; border: 3px solid #e2e8f0; background: white; border-radius: 14px; font-size: 16px; font-weight: 700; transition: all 0.3s; }
+        .moneda-btn.usd.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
+        .moneda-btn.ars.active { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border-color: #48bb78; box-shadow: 0 4px 12px rgba(72,187,120,0.3); }
+        .deuda-row { border-bottom: 1px solid #f0f0f0; }
+        .deuda-row:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -356,15 +377,151 @@
                     <button class="btn-primary" id="btn-save-config">Guardar Cambios</button>
                 </div>
             </div>
+
+            <!-- ══ DEUDAS SCREEN ══════════════════════════════════════ -->
+            <div id="deudas-screen" class="screen">
+
+                <!-- Formulario nueva deuda -->
+                <div class="card">
+                    <div class="card-title">💰 Registrar Deuda</div>
+                    <div class="form-group">
+                        <label class="form-label">Fecha</label>
+                        <div style="position: relative;">
+                            <input type="date" class="form-input" id="deuda-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+                            <div id="deuda-fecha-display" style="padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 17px; background: white; color: #2d3748; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                                <span id="deuda-fecha-text">Hoy</span>
+                                <span style="color: #a0aec0; font-size: 18px;">📅</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="deuda-cliente" placeholder="Nombre del cliente"></div>
+                    <div class="form-group">
+                        <label class="form-label">Monto</label>
+                        <input type="number" class="form-input" id="deuda-monto" placeholder="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Moneda</label>
+                        <div class="moneda-toggle">
+                            <button class="moneda-btn usd active" id="deuda-moneda-usd" onclick="setDeudaMoneda('USD')">🇺🇸 USD</button>
+                            <button class="moneda-btn ars" id="deuda-moneda-ars" onclick="setDeudaMoneda('ARS')">🇦🇷 ARS</button>
+                        </div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="deuda-obs" rows="2" placeholder="Notas adicionales (opcional)"></textarea></div>
+                    <button class="btn-submit" id="btn-deuda-submit" onclick="agregarDeuda()">💰 Registrar Deuda</button>
+                </div>
+
+                <!-- Totales por moneda (solo pendientes) -->
+                <div class="deudas-totals">
+                    <div class="deudas-total-box usd">
+                        <div class="deudas-total-label">💵 Pendiente USD</div>
+                        <div class="deudas-total-amount" id="deudas-total-usd">USD 0</div>
+                    </div>
+                    <div class="deudas-total-box ars">
+                        <div class="deudas-total-label">💵 Pendiente ARS</div>
+                        <div class="deudas-total-amount" id="deudas-total-ars">ARS 0</div>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 12px; color: #a0aec0; margin-bottom: 12px;" id="deudas-count-pendientes">0 pendientes</div>
+
+                <!-- Búsqueda -->
+                <div style="margin-bottom: 10px;">
+                    <input type="text" id="search-deuda" placeholder="🔍  Buscar cliente..." style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;">
+                </div>
+
+                <!-- Filtros -->
+                <div class="deudas-filter-bar">
+                    <button class="deudas-filter-btn active" id="filter-deuda-todas" onclick="setDeudaFilter('todas')">Todas</button>
+                    <button class="deudas-filter-btn" id="filter-deuda-pendientes" onclick="setDeudaFilter('pendientes')">⏳ Pendientes</button>
+                    <button class="deudas-filter-btn" id="filter-deuda-cobradas" onclick="setDeudaFilter('cobradas')">✅ Cobradas</button>
+                </div>
+
+                <!-- Lista -->
+                <div class="card" style="padding: 0;">
+                    <div style="padding: 16px 16px 8px; font-size: 16px; font-weight: 700; color: #2d3748; border-bottom: 1px solid #f0f0f0;">Lista de Deudas</div>
+                    <div id="deudas-list" style="padding: 4px 0;"></div>
+                </div>
+
+            </div>
+            <!-- ══ FIN DEUDAS SCREEN ════════════════════════════════════ -->
+
         </div>
         
         <div class="bottom-nav">
             <button class="nav-item active" id="nav-dashboard"><div class="nav-icon">📊</div><div>Dashboard</div></button>
             <button class="nav-item" id="nav-cargar"><div class="nav-icon">➕</div><div>Cargar</div></button>
             <button class="nav-item" id="nav-historial"><div class="nav-icon">📋</div><div>Historial</div></button>
+            <button class="nav-item" id="nav-deudas"><div class="nav-icon">💰</div><div>Deudas</div></button>
         </div>
     </div>
     
+    <!-- DEUDA DETAIL MODAL -->
+    <div id="deuda-detail-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeDeudaDetailModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0; font-size: 20px; color: #667eea;">💰 Deuda</h2>
+                <button onclick="closeDeudaDetailModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-row"><span class="detail-label">Cliente</span><span class="detail-value" id="deuda-detail-cliente">-</span></div>
+                <div class="detail-row"><span class="detail-label">Fecha</span><span class="detail-value" id="deuda-detail-fecha">-</span></div>
+                <div class="detail-row"><span class="detail-label">Estado</span><span id="deuda-detail-estado" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;">-</span></div>
+                <div class="detail-divider"></div>
+                <div style="text-align: center; padding: 16px 0;">
+                    <div style="font-size: 13px; color: #718096; margin-bottom: 6px;">Monto</div>
+                    <div style="font-size: 36px; font-weight: 800;" id="deuda-detail-monto">-</div>
+                </div>
+                <div class="detail-divider"></div>
+                <div id="deuda-detail-obs" class="detail-obs" style="display: none; margin-top: 0; margin-bottom: 12px;"></div>
+                <div style="font-size: 11px; color: #a0aec0; margin-bottom: 6px;" id="deuda-detail-creado"></div>
+                <div id="deuda-detail-cobro" style="font-size: 11px; color: #48bb78; font-weight: 600; margin-bottom: 12px; display: none;"></div>
+                <button id="deuda-detail-action-btn" style="width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; color: white; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s;"></button>
+                <button id="deuda-detail-edit-btn" style="width: 100%; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #667eea;">✏️ Editar deuda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEUDA EDIT MODAL -->
+    <div id="deuda-edit-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeDeudaEditModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0; font-size: 20px;">✏️ Editar Deuda</h2>
+                <button onclick="closeDeudaEditModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="deuda-edit-id">
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Fecha</label>
+                    <input type="date" id="deuda-edit-fecha" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Cliente</label>
+                    <input type="text" id="deuda-edit-cliente" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Monto</label>
+                    <input type="number" id="deuda-edit-monto" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Moneda</label>
+                    <select id="deuda-edit-moneda" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-weight: 600; background: white;">
+                        <option value="USD">🇺🇸 USD</option>
+                        <option value="ARS">🇦🇷 ARS</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 18px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Observaciones</label>
+                    <textarea id="deuda-edit-obs" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button onclick="closeDeudaEditModal()" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #718096;">Cancelar</button>
+                    <button onclick="guardarEdicionDeuda()" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(102,126,234,0.3);">💾 Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- OPERATION DETAIL MODAL -->
     <div id="operation-modal" class="modal hidden">
         <div class="modal-overlay" onclick="closeModal()"></div>
@@ -473,7 +630,9 @@
 
         // ── INIT ──────────────────────────────────────────────────
         window.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('form-fecha').value = new Date().toISOString().split('T')[0];
+            const todayISO = new Date().toISOString().split('T')[0];
+            document.getElementById('form-fecha').value = todayISO;
+            document.getElementById('deuda-fecha').value = todayISO;
             setupEventListeners();
             const pinVerified = localStorage.getItem('pinVerified');
             setTimeout(() => {
@@ -491,6 +650,7 @@
             document.getElementById('nav-dashboard').addEventListener('click', () => showScreen('dashboard'));
             document.getElementById('nav-cargar').addEventListener('click', () => { showScreen('cargar'); const lp = getLastPrice(); const pi = document.getElementById('form-precio'); if (lp && !pi.value) { pi.value = lp; calcularTotal(); } });
             document.getElementById('nav-historial').addEventListener('click', () => showScreen('historial'));
+            document.getElementById('nav-deudas').addEventListener('click', () => showScreen('deudas'));
             document.getElementById('btn-config-header').addEventListener('click', () => showScreen('config'));
             const fechaInput = document.getElementById('form-fecha');
             const fechaText = document.getElementById('fecha-text');
@@ -517,6 +677,19 @@
             document.getElementById('filter-select').addEventListener('change', function() { changeFilter(this.value === 'ultimo' ? 'ultimo' : parseInt(this.value)); });
             document.getElementById('btn-save-config').addEventListener('click', saveConfig);
             document.getElementById('search-cliente').addEventListener('input', function() { searchQuery = this.value.toLowerCase().trim(); updateHistorial(); });
+            document.getElementById('search-deuda').addEventListener('input', function() { searchDeudaQuery = this.value.toLowerCase().trim(); updateDeudas(); });
+            // Deuda fecha display
+            const deudaFechaInput = document.getElementById('deuda-fecha');
+            const deudaFechaText = document.getElementById('deuda-fecha-text');
+            function updateDeudaFechaDisplay() {
+                if (deudaFechaInput.value) {
+                    const [y,m,d] = deudaFechaInput.value.split('-');
+                    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                    deudaFechaText.textContent = `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+                    deudaFechaText.style.color = '#2d3748';
+                }
+            }
+            deudaFechaInput.addEventListener('change', updateDeudaFechaDisplay);
         }
         
         function checkPIN() {
@@ -545,7 +718,7 @@
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
         function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinVerified'); currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
-        function showMainApp() { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; loadData(); }
+        function showMainApp() { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; loadData(); loadDeudas(); }
         
         async function loadData() {
             const skeleton = document.getElementById('skeleton-overlay');
@@ -727,7 +900,7 @@
             setTimeout(()=>loadData(),2000);
         }
         
-        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');document.body.style.background=s==='historial'?(currentTab==='compras'?'#e5d4d4':'#d4e5d4'):'#d4e5d4';}
+        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#e5d4d4':'#d4e5d4';else if(s==='deudas') document.body.style.background='#f0eaf8';else document.body.style.background='#d4e5d4';}
         function switchTab(t){currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#d4e5d4';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#e5d4d4';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
         function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');if(t==='VENTA'){document.getElementById('tipo-venta').classList.add('active');document.getElementById('tipo-compra').classList.remove('active');btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{document.getElementById('tipo-venta').classList.remove('active');document.getElementById('tipo-compra').classList.add('active');btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
@@ -753,6 +926,150 @@
         }
         
         function saveConfig(){const ak=document.getElementById('config-api-key').value.trim(),su=document.getElementById('config-script-url').value.trim();if(!ak){alert('Ingresa la API Key');return;}config.apiKey=ak;config.scriptUrl=su;localStorage.setItem('apiKey',ak);localStorage.setItem('scriptUrl',su);showToast('✅ Configuración guardada','#48bb78');}
+
+        // ═══════════════════════════════════════════════════════════
+        //  DEUDAS
+        // ═══════════════════════════════════════════════════════════
+        let deudas = [];
+        let currentDeudaFilter = 'todas';
+        let searchDeudaQuery = '';
+        let currentDeudaMoneda = 'USD';
+
+        function loadDeudas() {
+            try { const s = localStorage.getItem('deudas'); deudas = s ? JSON.parse(s) : []; } catch(e) { deudas = []; }
+            updateDeudas();
+        }
+
+        function saveDeudas() { localStorage.setItem('deudas', JSON.stringify(deudas)); }
+
+        function setDeudaMoneda(m) {
+            currentDeudaMoneda = m;
+            document.getElementById('deuda-moneda-usd').classList.toggle('active', m === 'USD');
+            document.getElementById('deuda-moneda-ars').classList.toggle('active', m === 'ARS');
+        }
+
+        function setDeudaFilter(f) {
+            currentDeudaFilter = f;
+            ['todas','pendientes','cobradas'].forEach(x => {
+                document.getElementById('filter-deuda-' + x).classList.toggle('active', x === f);
+            });
+            updateDeudas();
+        }
+
+        function agregarDeuda() {
+            const cliente = document.getElementById('deuda-cliente').value.trim();
+            const monto = parseFloat(document.getElementById('deuda-monto').value);
+            const fechaVal = document.getElementById('deuda-fecha').value;
+            const obs = document.getElementById('deuda-obs').value.trim();
+            if (!cliente || !monto || !fechaVal) { alert('⚠️ Completá fecha, cliente y monto'); return; }
+            const [y,m,d] = fechaVal.split('-');
+            const fechaStr = `${parseInt(d)}/${parseInt(m)}/${y}`;
+            const deuda = { id: Date.now(), fecha: fechaStr, cliente, monto, moneda: currentDeudaMoneda, observaciones: obs, estado: 'PENDIENTE', creadoPor: currentUser, fechaCreacion: new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) };
+            deudas.unshift(deuda);
+            saveDeudas();
+            document.getElementById('deuda-cliente').value = '';
+            document.getElementById('deuda-monto').value = '';
+            document.getElementById('deuda-obs').value = '';
+            updateDeudas();
+            showToast('✅ Deuda registrada','#667eea');
+        }
+
+        function getFilteredDeudas() {
+            let f = [...deudas];
+            if (currentDeudaFilter === 'pendientes') f = f.filter(d => d.estado === 'PENDIENTE');
+            else if (currentDeudaFilter === 'cobradas') f = f.filter(d => d.estado === 'COBRADA');
+            if (searchDeudaQuery) f = f.filter(d => d.cliente.toLowerCase().includes(searchDeudaQuery));
+            return f;
+        }
+
+        function updateDeudas() {
+            const filtered = getFilteredDeudas();
+            const list = document.getElementById('deudas-list');
+            // Totals (pendientes only)
+            const pend = deudas.filter(d => d.estado === 'PENDIENTE');
+            const tUSD = pend.filter(d => d.moneda === 'USD').reduce((s,d) => s + d.monto, 0);
+            const tARS = pend.filter(d => d.moneda === 'ARS').reduce((s,d) => s + d.monto, 0);
+            document.getElementById('deudas-total-usd').textContent = 'USD ' + tUSD.toLocaleString('es-AR');
+            document.getElementById('deudas-total-ars').textContent = 'ARS ' + tARS.toLocaleString('es-AR');
+            document.getElementById('deudas-count-pendientes').textContent = pend.length + ' pendiente' + (pend.length !== 1 ? 's' : '');
+            if (!filtered.length) { list.innerHTML = '<div style="text-align:center;color:#a0aec0;padding:30px 20px;">No hay deudas registradas</div>'; return; }
+            list.innerHTML = '';
+            filtered.forEach(deuda => {
+                const esPend = deuda.estado === 'PENDIENTE';
+                const esColor = esPend ? {bg:'#FEF3C7',color:'#92400E'} : {bg:'#86EFAC',color:'#166534'};
+                const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : '#276349';
+                const actionLabel = esPend ? 'COBRADA' : 'PENDIENTE';
+                const actionColor = esPend ? {bg:'#86EFAC',color:'#166534'} : {bg:'#FEF3C7',color:'#92400E'};
+                const row = document.createElement('div');
+                row.className = 'swipe-row deuda-row';
+                row.style.cssText = 'position:relative;overflow:hidden;';
+                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${deuda.cliente}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${deuda.estado}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${deuda.moneda} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${deuda.fecha}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${deuda.observaciones}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda(${deuda.id},'${actionLabel}');event.stopPropagation();">${actionLabel}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeuda(${deuda.id});event.stopPropagation();">EDITAR</button></div>`;
+                row.addEventListener('click', () => showDeudaDetail(deuda));
+                setupSwipe(row);
+                list.appendChild(row);
+            });
+        }
+
+        function cambiarEstadoDeuda(id, nuevoEstado) {
+            const idx = deudas.findIndex(d => d.id === id);
+            if (idx === -1) return;
+            const deuda = deudas[idx];
+            if (!confirm(`¿Marcar deuda de "${deuda.cliente}" como ${nuevoEstado}?`)) { updateDeudas(); return; }
+            deudas[idx].estado = nuevoEstado;
+            if (nuevoEstado === 'COBRADA') { deudas[idx].fechaCobro = new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); deudas[idx].cobradoPor = currentUser; }
+            saveDeudas(); updateDeudas(); showToast('✅ Marcada como ' + nuevoEstado,'#48bb78');
+        }
+
+        function editarDeuda(id) {
+            const deuda = deudas.find(d => d.id === id);
+            if (!deuda) return;
+            document.getElementById('deuda-edit-id').value = id;
+            const parts = deuda.fecha.split('/');
+            document.getElementById('deuda-edit-fecha').value = `${parts[2]}-${String(parts[1]).padStart(2,'0')}-${String(parts[0]).padStart(2,'0')}`;
+            document.getElementById('deuda-edit-cliente').value = deuda.cliente;
+            document.getElementById('deuda-edit-monto').value = deuda.monto;
+            document.getElementById('deuda-edit-moneda').value = deuda.moneda;
+            document.getElementById('deuda-edit-obs').value = deuda.observaciones || '';
+            document.getElementById('deuda-edit-modal').classList.remove('hidden');
+        }
+
+        function guardarEdicionDeuda() {
+            const id = parseInt(document.getElementById('deuda-edit-id').value);
+            const idx = deudas.findIndex(d => d.id === id);
+            if (idx === -1) return;
+            const fechaVal = document.getElementById('deuda-edit-fecha').value;
+            const monto = parseFloat(document.getElementById('deuda-edit-monto').value);
+            const cliente = document.getElementById('deuda-edit-cliente').value.trim();
+            if (!cliente || !monto || !fechaVal) { alert('Completá todos los campos'); return; }
+            const [y,m,d] = fechaVal.split('-');
+            deudas[idx] = { ...deudas[idx], fecha: `${parseInt(d)}/${parseInt(m)}/${y}`, cliente, monto, moneda: document.getElementById('deuda-edit-moneda').value, observaciones: document.getElementById('deuda-edit-obs').value.trim(), modificadoPor: currentUser, fechaModificacion: new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) };
+            saveDeudas();
+            document.getElementById('deuda-edit-modal').classList.add('hidden');
+            updateDeudas();
+            showToast('✅ Deuda actualizada','#667eea');
+        }
+
+        function showDeudaDetail(deuda) {
+            const esPend = deuda.estado === 'PENDIENTE';
+            const esColor = esPend ? {bg:'#FEF3C7',color:'#92400E'} : {bg:'#86EFAC',color:'#166534'};
+            const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : '#276349';
+            document.getElementById('deuda-detail-cliente').textContent = deuda.cliente;
+            document.getElementById('deuda-detail-monto').textContent = deuda.moneda + ' ' + deuda.monto.toLocaleString('es-AR');
+            document.getElementById('deuda-detail-monto').style.color = mColor;
+            document.getElementById('deuda-detail-fecha').textContent = deuda.fecha;
+            const el = document.getElementById('deuda-detail-estado'); el.textContent = deuda.estado; el.style.background = esColor.bg; el.style.color = esColor.color;
+            document.getElementById('deuda-detail-creado').textContent = (deuda.creadoPor||'') + (deuda.fechaCreacion?' · '+deuda.fechaCreacion:'');
+            const obsEl = document.getElementById('deuda-detail-obs'); if(deuda.observaciones){obsEl.textContent=deuda.observaciones;obsEl.style.display='block';}else{obsEl.style.display='none';}
+            const cobroEl = document.getElementById('deuda-detail-cobro'); if(deuda.estado==='COBRADA'&&deuda.cobradoPor){cobroEl.textContent=`Cobrado por ${deuda.cobradoPor}${deuda.fechaCobro?' · '+deuda.fechaCobro:''}`;cobroEl.style.display='block';}else{cobroEl.style.display='none';}
+            const actionBtn = document.getElementById('deuda-detail-action-btn');
+            if (esPend) { actionBtn.textContent='✅ Marcar como COBRADA'; actionBtn.style.background='linear-gradient(135deg,#48bb78 0%,#38a169 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(deuda.id,'COBRADA');}; }
+            else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='linear-gradient(135deg,#f59e0b 0%,#d97706 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(deuda.id,'PENDIENTE');}; }
+            document.getElementById('deuda-detail-edit-btn').onclick = () => { closeDeudaDetailModal(); editarDeuda(deuda.id); };
+            document.getElementById('deuda-detail-modal').classList.remove('hidden');
+        }
+
+        function closeDeudaDetailModal() { document.getElementById('deuda-detail-modal').classList.add('hidden'); }
+        function closeDeudaEditModal() { document.getElementById('deuda-edit-modal').classList.add('hidden'); }
         
         (function(){
             let sy=0,pulling=false,refreshing=false;
