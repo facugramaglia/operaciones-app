@@ -956,17 +956,13 @@
             btn.disabled=true; const ot=btn.textContent; btn.textContent='⏳ Guardando...'; btn.style.opacity='0.6';
             try {
                 const params=new URLSearchParams({action:'add_operation',tipo:currentTipo,fecha,operador:currentUser,cliente,cantidad,precio,total,observaciones:obs});
-                const res=await fetch(config.scriptUrl+'?'+params.toString());
-                const data=await res.json();
-                if(data.success===false){
-                    showToast('❌ Error al guardar '+currentTipo+': '+(data.error||'sin detalle'),'#e53e3e');
-                } else {
-                    showToast('✅ '+currentTipo+' agregada','#48bb78');
-                    ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
-                    document.getElementById('total-preview').classList.add('hidden');
-                    setTimeout(()=>loadData(),2500);
-                }
-            } catch(e){showToast('❌ Error de red: '+e.message,'#e53e3e');}
+                const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
+                setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
+                showToast('✅ '+currentTipo+' agregada','#48bb78');
+                ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
+                document.getElementById('total-preview').classList.add('hidden');
+                setTimeout(()=>loadData(),3000);
+            } catch(e){showToast('❌ Error: '+e.message,'#e53e3e');}
             finally{setTimeout(()=>{btn.disabled=false;btn.textContent=ot;btn.style.opacity='1';},2000);}
         }
         
