@@ -598,7 +598,7 @@
             sheetId: '1Fn3iiKSMeDH8PAh1C-8SSLrcuikOSHTx7-ZIZXqeDnE',
             ventasRange: 'VENTAS!A2:M1000',
             comprasRange: 'COMPRAS!A2:M1000',
-            deudasRange: 'DEUDAS!A2:J1000',
+            deudasRange: 'DEUDAS!A2:M1000',
             balanceCell: 'CALCULO!D3',
             scriptUrl: localStorage.getItem('scriptUrl') || '',
             separador: '---SEPARADOR---'
@@ -752,19 +752,18 @@
         }
 
         function processDeudas(rows) {
-            // Columns: A=Fecha B=Cliente C=Monto D=Moneda E=Estado F=Obs G=CreadoPor H=FechaCreacion I=CobradoPor J=FechaCobro
-            return (rows || []).filter(row => row && row[1] && row[2]).map((row, idx) => ({
+            // Columns: A=Fecha B=Operador C=Cliente D=Monto E=Moneda F=Estado G=Obs K(10)=Timestamp L(11)=UsuarioMod M(12)=FechaMod
+            return (rows || []).filter(row => row && row[2] && row[3]).map((row, idx) => ({
                 _idx: idx,
                 fecha: String(row[0]||'').trim(),
-                cliente: String(row[1]||'').trim(),
-                monto: parseFloat(String(row[2]||'0').replace(/[$,]/g,'')) || 0,
-                moneda: String(row[3]||'USD').trim(),
-                estado: String(row[4]||'PENDIENTE').trim().toUpperCase(),
-                observaciones: String(row[5]||'').trim(),
-                creadoPor: String(row[6]||'').trim(),
-                fechaCreacion: String(row[7]||'').trim(),
-                cobradoPor: String(row[8]||'').trim(),
-                fechaCobro: String(row[9]||'').trim(),
+                operador: String(row[1]||'').trim(),
+                cliente: String(row[2]||'').trim(),
+                monto: parseFloat(String(row[3]||'0').replace(/[$,]/g,'')) || 0,
+                moneda: String(row[4]||'USD').trim(),
+                estado: String(row[5]||'PENDIENTE').trim().toUpperCase(),
+                observaciones: String(row[6]||'').trim(),
+                modificadoPor: String(row[11]||'').trim(),
+                fechaModificacion: String(row[12]||'').trim(),
             }));
         }
         
@@ -987,7 +986,7 @@
             const fechaStr = `${parseInt(d)}/${parseInt(m)}/${y}`;
             const btn = document.getElementById('btn-deuda-submit');
             btn.disabled = true; btn.textContent = '⏳ Guardando...'; btn.style.opacity = '0.6';
-            const params = new URLSearchParams({ action:'add_deuda', fecha:fechaStr, cliente, monto, moneda:currentDeudaMoneda, observaciones:obs, creadoPor:currentUser });
+            const params = new URLSearchParams({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, observaciones:obs });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 4000);
             document.getElementById('deuda-cliente').value = '';
@@ -1077,7 +1076,7 @@
             const [origFecha, origCliente, origMonto] = decodeURIComponent(key).split('|');
             const moneda = document.getElementById('deuda-edit-moneda').value;
             const obs = document.getElementById('deuda-edit-obs').value.trim();
-            const params = new URLSearchParams({ action:'edit_deuda', fechaOriginal:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoCliente:cliente, nuevoMonto:monto, nuevaMoneda:moneda, nuevasObs:obs, usuario:currentUser });
+            const params = new URLSearchParams({ action:'edit_deuda', fecha:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoMonto:monto, nuevaMoneda:moneda, nuevasObs:obs, usuario:currentUser });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 3000);
             document.getElementById('deuda-edit-modal').classList.add('hidden');
@@ -1094,7 +1093,7 @@
             document.getElementById('deuda-detail-monto').style.color = mColor;
             document.getElementById('deuda-detail-fecha').textContent = deuda.fecha;
             const el = document.getElementById('deuda-detail-estado'); el.textContent = deuda.estado; el.style.background = esColor.bg; el.style.color = esColor.color;
-            document.getElementById('deuda-detail-creado').textContent = (deuda.creadoPor||'') + (deuda.fechaCreacion?' · '+deuda.fechaCreacion:'');
+            document.getElementById('deuda-detail-creado').textContent = (deuda.operador||'') + (deuda.fechaModificacion?' · '+deuda.fechaModificacion:'');
             const obsEl = document.getElementById('deuda-detail-obs'); if(deuda.observaciones){obsEl.textContent=deuda.observaciones;obsEl.style.display='block';}else{obsEl.style.display='none';}
             const cobroEl = document.getElementById('deuda-detail-cobro'); if(deuda.estado==='COBRADA'&&deuda.cobradoPor){cobroEl.textContent=`Cobrado por ${deuda.cobradoPor}${deuda.fechaCobro?' · '+deuda.fechaCobro:''}`;cobroEl.style.display='block';}else{cobroEl.style.display='none';}
             const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
@@ -1111,7 +1110,7 @@
         (function(){
             let sy=0,pulling=false,refreshing=false;
             const ind=document.getElementById('pull-indicator'),pt=document.getElementById('pull-text'),ps=document.getElementById('pull-spinner');
-            document.addEventListener('touchstart',e=>{if(window.scrollY===0&&!refreshing){sy=e.touches[0].clientY;pulling=true;}},{passive:true});
+            document.addEventListener('touchstart',e=>{if(window.scrollY===0&&!refreshing&&currentUser){sy=e.touches[0].clientY;pulling=true;}},{passive:true});
             document.addEventListener('touchmove',e=>{if(!pulling||refreshing)return;const d=e.touches[0].clientY-sy;if(d>10){ind.classList.add('visible');if(d>80){pt.textContent='↑ Suelta para actualizar';ind.style.background='#f0f4ff';}else{pt.textContent='↓ Desliza para actualizar';ind.style.background='white';}}},{passive:true});
             document.addEventListener('touchend',async e=>{if(!pulling||refreshing)return;pulling=false;const d=e.changedTouches[0].clientY-sy;if(d>80){refreshing=true;pt.style.display='none';ps.style.display='block';ind.classList.add('visible');try{await loadData();}catch(e){}setTimeout(()=>{ind.classList.remove('visible');pt.style.display='block';ps.style.display='none';pt.textContent='↓ Desliza para actualizar';ind.style.background='white';refreshing=false;},600);}else{ind.classList.remove('visible');}},{passive:true});
         })();
