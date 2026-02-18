@@ -80,7 +80,7 @@
         .balance-amount { font-size: 32px; font-weight: bold; margin-top: 5px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #a0aec0; font-size: 12px; padding: 0; transition: all 0.3s; }
-        .nav-icon { width: 60px; height: 60px; border-radius: 50%; background: #f7fafc; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: all 0.3s; }
+        .nav-icon { width: 48px; height: 48px; border-radius: 50%; background: #f7fafc; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
         .nav-item.active .nav-icon { background: #667eea; transform: scale(1.05); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
         .nav-item.active { color: #667eea; font-weight: 600; }
         .content { padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px; }
@@ -598,12 +598,13 @@
             sheetId: '1Fn3iiKSMeDH8PAh1C-8SSLrcuikOSHTx7-ZIZXqeDnE',
             ventasRange: 'VENTAS!A2:M1000',
             comprasRange: 'COMPRAS!A2:M1000',
+            deudasRange: 'DEUDAS!A2:J1000',
             balanceCell: 'CALCULO!D3',
             scriptUrl: localStorage.getItem('scriptUrl') || '',
             separador: '---SEPARADOR---'
         };
         const MASTER_PIN = '630500';
-        let currentUser = null, ventas = [], compras = [], ventasRaw = [], comprasRaw = [];
+        let currentUser = null, ventas = [], compras = [], ventasRaw = [], comprasRaw = [], deudasRaw = [];
         let balanceTotal = 0, currentTipo = 'VENTA', currentFilter = 'ultimo', currentTab = 'ventas';
 
         // ── SPLASH ────────────────────────────────────────────────
@@ -731,7 +732,13 @@
                 ventasRaw = (await ventasRes.json()).values || []; ventas = processData(ventasRaw);
                 const comprasRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.comprasRange}?key=${config.apiKey}`);
                 comprasRaw = (await comprasRes.json()).values || []; compras = processData(comprasRaw);
+                try {
+                    const deudasRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.deudasRange}?key=${config.apiKey}`);
+                    deudasRaw = (await deudasRes.json()).values || [];
+                } catch(e) { deudasRaw = []; }
+                deudas = processDeudas(deudasRaw);
                 updateUI();
+                updateDeudas();
             } catch(e) { console.error(e); showToast('❌ Error al cargar datos', '#e53e3e'); }
             finally { skeleton.style.display = 'none'; }
         }
@@ -742,6 +749,23 @@
                 const n = s => parseFloat(String(s||'0').replace(/[$,]/g,'').trim()) || 0;
                 return { fecha: String(row[0]||'').trim(), operador: String(row[1]||'').trim().toUpperCase(), cliente: String(row[2]||'').trim(), cantidad: n(row[3]), precio: n(row[4]), total: n(row[5]), estado: String(row[6]||'PENDIENTE').trim(), observaciones: String(row[7]||'').trim(), modificadoPor: String(row[11]||'').trim(), fechaModificacion: String(row[12]||'').trim() };
             });
+        }
+
+        function processDeudas(rows) {
+            // Columns: A=Fecha B=Cliente C=Monto D=Moneda E=Estado F=Obs G=CreadoPor H=FechaCreacion I=CobradoPor J=FechaCobro
+            return (rows || []).filter(row => row && row[1] && row[2]).map((row, idx) => ({
+                _idx: idx,
+                fecha: String(row[0]||'').trim(),
+                cliente: String(row[1]||'').trim(),
+                monto: parseFloat(String(row[2]||'0').replace(/[$,]/g,'')) || 0,
+                moneda: String(row[3]||'USD').trim(),
+                estado: String(row[4]||'PENDIENTE').trim().toUpperCase(),
+                observaciones: String(row[5]||'').trim(),
+                creadoPor: String(row[6]||'').trim(),
+                fechaCreacion: String(row[7]||'').trim(),
+                cobradoPor: String(row[8]||'').trim(),
+                fechaCobro: String(row[9]||'').trim(),
+            }));
         }
         
         function updateUI() {
@@ -928,19 +952,15 @@
         function saveConfig(){const ak=document.getElementById('config-api-key').value.trim(),su=document.getElementById('config-script-url').value.trim();if(!ak){alert('Ingresa la API Key');return;}config.apiKey=ak;config.scriptUrl=su;localStorage.setItem('apiKey',ak);localStorage.setItem('scriptUrl',su);showToast('✅ Configuración guardada','#48bb78');}
 
         // ═══════════════════════════════════════════════════════════
-        //  DEUDAS
+        //  DEUDAS  (Google Sheets via Apps Script)
         // ═══════════════════════════════════════════════════════════
         let deudas = [];
         let currentDeudaFilter = 'todas';
         let searchDeudaQuery = '';
         let currentDeudaMoneda = 'USD';
 
-        function loadDeudas() {
-            try { const s = localStorage.getItem('deudas'); deudas = s ? JSON.parse(s) : []; } catch(e) { deudas = []; }
-            updateDeudas();
-        }
-
-        function saveDeudas() { localStorage.setItem('deudas', JSON.stringify(deudas)); }
+        // loadDeudas() ya no es necesario — los datos vienen de loadData()
+        function loadDeudas() { updateDeudas(); }
 
         function setDeudaMoneda(m) {
             currentDeudaMoneda = m;
@@ -957,6 +977,7 @@
         }
 
         function agregarDeuda() {
+            if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script primero'); return; }
             const cliente = document.getElementById('deuda-cliente').value.trim();
             const monto = parseFloat(document.getElementById('deuda-monto').value);
             const fechaVal = document.getElementById('deuda-fecha').value;
@@ -964,14 +985,17 @@
             if (!cliente || !monto || !fechaVal) { alert('⚠️ Completá fecha, cliente y monto'); return; }
             const [y,m,d] = fechaVal.split('-');
             const fechaStr = `${parseInt(d)}/${parseInt(m)}/${y}`;
-            const deuda = { id: Date.now(), fecha: fechaStr, cliente, monto, moneda: currentDeudaMoneda, observaciones: obs, estado: 'PENDIENTE', creadoPor: currentUser, fechaCreacion: new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) };
-            deudas.unshift(deuda);
-            saveDeudas();
+            const btn = document.getElementById('btn-deuda-submit');
+            btn.disabled = true; btn.textContent = '⏳ Guardando...'; btn.style.opacity = '0.6';
+            const params = new URLSearchParams({ action:'add_deuda', fecha:fechaStr, cliente, monto, moneda:currentDeudaMoneda, observaciones:obs, creadoPor:currentUser });
+            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
+            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 4000);
             document.getElementById('deuda-cliente').value = '';
             document.getElementById('deuda-monto').value = '';
             document.getElementById('deuda-obs').value = '';
-            updateDeudas();
             showToast('✅ Deuda registrada','#667eea');
+            setTimeout(() => { btn.disabled=false; btn.textContent='💰 Registrar Deuda'; btn.style.opacity='1'; }, 2000);
+            setTimeout(() => loadData(), 2500);
         }
 
         function getFilteredDeudas() {
@@ -985,14 +1009,14 @@
         function updateDeudas() {
             const filtered = getFilteredDeudas();
             const list = document.getElementById('deudas-list');
-            // Totals (pendientes only)
+            // Totales (solo pendientes)
             const pend = deudas.filter(d => d.estado === 'PENDIENTE');
             const tUSD = pend.filter(d => d.moneda === 'USD').reduce((s,d) => s + d.monto, 0);
             const tARS = pend.filter(d => d.moneda === 'ARS').reduce((s,d) => s + d.monto, 0);
             document.getElementById('deudas-total-usd').textContent = 'USD ' + tUSD.toLocaleString('es-AR');
             document.getElementById('deudas-total-ars').textContent = 'ARS ' + tARS.toLocaleString('es-AR');
             document.getElementById('deudas-count-pendientes').textContent = pend.length + ' pendiente' + (pend.length !== 1 ? 's' : '');
-            if (!filtered.length) { list.innerHTML = '<div style="text-align:center;color:#a0aec0;padding:30px 20px;">No hay deudas registradas</div>'; return; }
+            if (!filtered.length) { list.innerHTML = '<div style="text-align:center;color:#a0aec0;padding:30px 20px;">No hay deudas' + (deudas.length ? ' para este filtro' : ' — la hoja DEUDAS está vacía o no existe') + '</div>'; return; }
             list.innerHTML = '';
             filtered.forEach(deuda => {
                 const esPend = deuda.estado === 'PENDIENTE';
@@ -1000,30 +1024,38 @@
                 const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : '#276349';
                 const actionLabel = esPend ? 'COBRADA' : 'PENDIENTE';
                 const actionColor = esPend ? {bg:'#86EFAC',color:'#166534'} : {bg:'#FEF3C7',color:'#92400E'};
+                const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
                 const row = document.createElement('div');
                 row.className = 'swipe-row deuda-row';
                 row.style.cssText = 'position:relative;overflow:hidden;';
-                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${deuda.cliente}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${deuda.estado}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${deuda.moneda} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${deuda.fecha}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${deuda.observaciones}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda(${deuda.id},'${actionLabel}');event.stopPropagation();">${actionLabel}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeuda(${deuda.id});event.stopPropagation();">EDITAR</button></div>`;
+                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${deuda.cliente}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${deuda.estado}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${deuda.moneda} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${deuda.fecha}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${deuda.observaciones}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','${actionLabel}');event.stopPropagation();">${actionLabel}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
                 row.addEventListener('click', () => showDeudaDetail(deuda));
                 setupSwipe(row);
                 list.appendChild(row);
             });
         }
 
-        function cambiarEstadoDeuda(id, nuevoEstado) {
-            const idx = deudas.findIndex(d => d.id === id);
-            if (idx === -1) return;
-            const deuda = deudas[idx];
-            if (!confirm(`¿Marcar deuda de "${deuda.cliente}" como ${nuevoEstado}?`)) { updateDeudas(); return; }
-            deudas[idx].estado = nuevoEstado;
-            if (nuevoEstado === 'COBRADA') { deudas[idx].fechaCobro = new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); deudas[idx].cobradoPor = currentUser; }
-            saveDeudas(); updateDeudas(); showToast('✅ Marcada como ' + nuevoEstado,'#48bb78');
+        function getDeudaByKey(key) {
+            const [fecha, cliente, monto] = decodeURIComponent(key).split('|');
+            return deudas.find(d => d.fecha === fecha && d.cliente === cliente && String(d.monto) === monto);
         }
 
-        function editarDeuda(id) {
-            const deuda = deudas.find(d => d.id === id);
+        function cambiarEstadoDeuda(key, nuevoEstado) {
+            if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
+            const deuda = getDeudaByKey(key);
             if (!deuda) return;
-            document.getElementById('deuda-edit-id').value = id;
+            if (!confirm(`¿Marcar deuda de "${deuda.cliente}" como ${nuevoEstado}?`)) { updateDeudas(); return; }
+            const params = new URLSearchParams({ action:'update_deuda_status', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto, nuevoEstado, usuario:currentUser });
+            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
+            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 3000);
+            showToast('✅ Marcada como ' + nuevoEstado,'#48bb78');
+            setTimeout(() => loadData(), 2000);
+        }
+
+        function editarDeudaByKey(key) { const deuda = getDeudaByKey(key); if(deuda) editarDeuda(deuda); }
+
+        function editarDeuda(deuda) {
+            document.getElementById('deuda-edit-id').value = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
             const parts = deuda.fecha.split('/');
             document.getElementById('deuda-edit-fecha').value = `${parts[2]}-${String(parts[1]).padStart(2,'0')}-${String(parts[0]).padStart(2,'0')}`;
             document.getElementById('deuda-edit-cliente').value = deuda.cliente;
@@ -1034,19 +1066,23 @@
         }
 
         function guardarEdicionDeuda() {
-            const id = parseInt(document.getElementById('deuda-edit-id').value);
-            const idx = deudas.findIndex(d => d.id === id);
-            if (idx === -1) return;
+            if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
+            const key = document.getElementById('deuda-edit-id').value;
             const fechaVal = document.getElementById('deuda-edit-fecha').value;
             const monto = parseFloat(document.getElementById('deuda-edit-monto').value);
             const cliente = document.getElementById('deuda-edit-cliente').value.trim();
             if (!cliente || !monto || !fechaVal) { alert('Completá todos los campos'); return; }
-            const [y,m,d] = fechaVal.split('-');
-            deudas[idx] = { ...deudas[idx], fecha: `${parseInt(d)}/${parseInt(m)}/${y}`, cliente, monto, moneda: document.getElementById('deuda-edit-moneda').value, observaciones: document.getElementById('deuda-edit-obs').value.trim(), modificadoPor: currentUser, fechaModificacion: new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) };
-            saveDeudas();
+            const [y,mv,dv] = fechaVal.split('-');
+            const fechaStr = `${parseInt(dv)}/${parseInt(mv)}/${y}`;
+            const [origFecha, origCliente, origMonto] = decodeURIComponent(key).split('|');
+            const moneda = document.getElementById('deuda-edit-moneda').value;
+            const obs = document.getElementById('deuda-edit-obs').value.trim();
+            const params = new URLSearchParams({ action:'edit_deuda', fechaOriginal:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoCliente:cliente, nuevoMonto:monto, nuevaMoneda:moneda, nuevasObs:obs, usuario:currentUser });
+            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
+            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 3000);
             document.getElementById('deuda-edit-modal').classList.add('hidden');
-            updateDeudas();
             showToast('✅ Deuda actualizada','#667eea');
+            setTimeout(() => loadData(), 2000);
         }
 
         function showDeudaDetail(deuda) {
@@ -1061,10 +1097,11 @@
             document.getElementById('deuda-detail-creado').textContent = (deuda.creadoPor||'') + (deuda.fechaCreacion?' · '+deuda.fechaCreacion:'');
             const obsEl = document.getElementById('deuda-detail-obs'); if(deuda.observaciones){obsEl.textContent=deuda.observaciones;obsEl.style.display='block';}else{obsEl.style.display='none';}
             const cobroEl = document.getElementById('deuda-detail-cobro'); if(deuda.estado==='COBRADA'&&deuda.cobradoPor){cobroEl.textContent=`Cobrado por ${deuda.cobradoPor}${deuda.fechaCobro?' · '+deuda.fechaCobro:''}`;cobroEl.style.display='block';}else{cobroEl.style.display='none';}
+            const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
             const actionBtn = document.getElementById('deuda-detail-action-btn');
-            if (esPend) { actionBtn.textContent='✅ Marcar como COBRADA'; actionBtn.style.background='linear-gradient(135deg,#48bb78 0%,#38a169 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(deuda.id,'COBRADA');}; }
-            else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='linear-gradient(135deg,#f59e0b 0%,#d97706 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(deuda.id,'PENDIENTE');}; }
-            document.getElementById('deuda-detail-edit-btn').onclick = () => { closeDeudaDetailModal(); editarDeuda(deuda.id); };
+            if (esPend) { actionBtn.textContent='✅ Marcar como COBRADA'; actionBtn.style.background='linear-gradient(135deg,#48bb78 0%,#38a169 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA');}; }
+            else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='linear-gradient(135deg,#f59e0b 0%,#d97706 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'PENDIENTE');}; }
+            document.getElementById('deuda-detail-edit-btn').onclick = () => { closeDeudaDetailModal(); editarDeuda(deuda); };
             document.getElementById('deuda-detail-modal').classList.remove('hidden');
         }
 
