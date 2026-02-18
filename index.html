@@ -166,6 +166,9 @@
         .moneda-btn.ars.active { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border-color: #48bb78; box-shadow: 0 4px 12px rgba(72,187,120,0.3); }
         .deuda-row { border-bottom: 1px solid #f0f0f0; }
         .deuda-row:last-child { border-bottom: none; }
+        .deudas-fab { position: fixed; bottom: 80px; right: 20px; z-index: 100; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; font-size: 28px; box-shadow: 0 4px 16px rgba(102,126,234,0.45); display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .deudas-fab:active { transform: scale(0.93); }
+        #deudas-screen.active ~ .deudas-fab, #deudas-screen.active + .deudas-fab { display: flex; }
     </style>
 </head>
 <body>
@@ -381,35 +384,6 @@
             <!-- ══ DEUDAS SCREEN ══════════════════════════════════════ -->
             <div id="deudas-screen" class="screen">
 
-                <!-- Formulario nueva deuda -->
-                <div class="card">
-                    <div class="card-title">💰 Registrar Deuda</div>
-                    <div class="form-group">
-                        <label class="form-label">Fecha</label>
-                        <div style="position: relative;">
-                            <input type="date" class="form-input" id="deuda-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
-                            <div id="deuda-fecha-display" style="padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 17px; background: white; color: #2d3748; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
-                                <span id="deuda-fecha-text">Hoy</span>
-                                <span style="color: #a0aec0; font-size: 18px;">📅</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="deuda-cliente" placeholder="Nombre del cliente"></div>
-                    <div class="form-group">
-                        <label class="form-label">Monto</label>
-                        <input type="number" class="form-input" id="deuda-monto" placeholder="0" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Moneda</label>
-                        <div class="moneda-toggle">
-                            <button class="moneda-btn usd active" id="deuda-moneda-usd" onclick="setDeudaMoneda('USD')">🇺🇸 USD</button>
-                            <button class="moneda-btn ars" id="deuda-moneda-ars" onclick="setDeudaMoneda('ARS')">🇦🇷 ARS</button>
-                        </div>
-                    </div>
-                    <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="deuda-obs" rows="2" placeholder="Notas adicionales (opcional)"></textarea></div>
-                    <button class="btn-submit" id="btn-deuda-submit" onclick="agregarDeuda()">💰 Registrar Deuda</button>
-                </div>
-
                 <!-- Totales por moneda (solo pendientes) -->
                 <div class="deudas-totals">
                     <div class="deudas-total-box usd">
@@ -436,10 +410,13 @@
                 </div>
 
                 <!-- Lista -->
-                <div class="card" style="padding: 0;">
+                <div class="card" style="padding: 0; margin-bottom: 80px;">
                     <div style="padding: 16px 16px 8px; font-size: 16px; font-weight: 700; color: #2d3748; border-bottom: 1px solid #f0f0f0;">Lista de Deudas</div>
                     <div id="deudas-list" style="padding: 4px 0;"></div>
                 </div>
+
+                <!-- FAB: Nueva Deuda -->
+                <button class="deudas-fab" id="btn-fab-deuda" onclick="openNuevaDeudaModal()" style="display: flex;">+</button>
 
             </div>
             <!-- ══ FIN DEUDAS SCREEN ════════════════════════════════════ -->
@@ -518,6 +495,43 @@
                     <button onclick="closeDeudaEditModal()" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #718096;">Cancelar</button>
                     <button onclick="guardarEdicionDeuda()" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(102,126,234,0.3);">💾 Guardar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVA DEUDA MODAL -->
+    <div id="nueva-deuda-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeNuevaDeudaModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0; font-size: 20px; color: #667eea;">💰 Nueva Deuda</h2>
+                <button onclick="closeNuevaDeudaModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Fecha</label>
+                    <div style="position: relative;">
+                        <input type="date" class="form-input" id="deuda-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+                        <div id="deuda-fecha-display" style="padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 17px; background: white; color: #2d3748; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                            <span id="deuda-fecha-text">Hoy</span>
+                            <span style="color: #a0aec0; font-size: 18px;">📅</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="deuda-cliente" placeholder="Nombre del cliente"></div>
+                <div class="form-group">
+                    <label class="form-label">Monto</label>
+                    <input type="number" class="form-input" id="deuda-monto" placeholder="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Moneda</label>
+                    <div class="moneda-toggle">
+                        <button class="moneda-btn usd active" id="deuda-moneda-usd" onclick="setDeudaMoneda('USD')">🇺🇸 USD</button>
+                        <button class="moneda-btn ars" id="deuda-moneda-ars" onclick="setDeudaMoneda('ARS')">🇦🇷 ARS</button>
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="deuda-obs" rows="2" placeholder="Notas adicionales (opcional)"></textarea></div>
+                <button class="btn-submit" id="btn-deuda-submit" onclick="agregarDeuda()">💰 Registrar Deuda</button>
             </div>
         </div>
     </div>
@@ -729,9 +743,13 @@
                 const balanceData = await balanceRes.json();
                 if (balanceData.values && balanceData.values[0]) { balanceTotal = parseFloat(String(balanceData.values[0][0]).replace(/[$,]/g,'').trim()) || 0; }
                 const ventasRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.ventasRange}?key=${config.apiKey}`);
-                ventasRaw = (await ventasRes.json()).values || []; ventas = processData(ventasRaw);
+                const ventasData = await ventasRes.json();
+                if (ventasData.error) { showToast('⚠️ Hoja VENTAS no encontrada: verificá el nombre de la pestaña','#e53e3e'); }
+                ventasRaw = ventasData.values || []; ventas = processData(ventasRaw);
                 const comprasRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.comprasRange}?key=${config.apiKey}`);
-                comprasRaw = (await comprasRes.json()).values || []; compras = processData(comprasRaw);
+                const comprasData = await comprasRes.json();
+                if (comprasData.error) { showToast('⚠️ Hoja COMPRAS no encontrada: verificá el nombre de la pestaña','#e53e3e'); }
+                comprasRaw = comprasData.values || []; compras = processData(comprasRaw);
                 try {
                     const deudasRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.deudasRange}?key=${config.apiKey}`);
                     deudasRaw = (await deudasRes.json()).values || [];
@@ -938,13 +956,17 @@
             btn.disabled=true; const ot=btn.textContent; btn.textContent='⏳ Guardando...'; btn.style.opacity='0.6';
             try {
                 const params=new URLSearchParams({action:'add_operation',tipo:currentTipo,fecha,operador:currentUser,cliente,cantidad,precio,total,observaciones:obs});
-                const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-                setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},4000);
-                showToast('✅ '+currentTipo+' agregada','#48bb78');
-                ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
-                document.getElementById('total-preview').classList.add('hidden');
-                setTimeout(()=>loadData(),2500);
-            } catch(e){alert('Error: '+e.message);}
+                const res=await fetch(config.scriptUrl+'?'+params.toString());
+                const data=await res.json();
+                if(data.success===false){
+                    showToast('❌ Error al guardar '+currentTipo+': '+(data.error||'sin detalle'),'#e53e3e');
+                } else {
+                    showToast('✅ '+currentTipo+' agregada','#48bb78');
+                    ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
+                    document.getElementById('total-preview').classList.add('hidden');
+                    setTimeout(()=>loadData(),2500);
+                }
+            } catch(e){showToast('❌ Error de red: '+e.message,'#e53e3e');}
             finally{setTimeout(()=>{btn.disabled=false;btn.textContent=ot;btn.style.opacity='1';},2000);}
         }
         
@@ -960,6 +982,21 @@
 
         // loadDeudas() ya no es necesario — los datos vienen de loadData()
         function loadDeudas() { updateDeudas(); }
+
+        function openNuevaDeudaModal() {
+            const todayISO = new Date().toISOString().split('T')[0];
+            document.getElementById('deuda-fecha').value = todayISO;
+            document.getElementById('deuda-fecha-text').textContent = 'Hoy';
+            document.getElementById('deuda-cliente').value = '';
+            document.getElementById('deuda-monto').value = '';
+            document.getElementById('deuda-obs').value = '';
+            setDeudaMoneda('USD');
+            document.getElementById('nueva-deuda-modal').classList.remove('hidden');
+        }
+
+        function closeNuevaDeudaModal() {
+            document.getElementById('nueva-deuda-modal').classList.add('hidden');
+        }
 
         function setDeudaMoneda(m) {
             currentDeudaMoneda = m;
@@ -993,6 +1030,7 @@
             document.getElementById('deuda-monto').value = '';
             document.getElementById('deuda-obs').value = '';
             showToast('✅ Deuda registrada','#667eea');
+            closeNuevaDeudaModal();
             setTimeout(() => { btn.disabled=false; btn.textContent='💰 Registrar Deuda'; btn.style.opacity='1'; }, 2000);
             setTimeout(() => loadData(), 2500);
         }
