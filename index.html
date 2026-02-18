@@ -60,7 +60,7 @@
         .banner-install-steps { margin-top: 10px; font-size: 12px; color: #718096; background: #f7fafc; border-radius: 8px; padding: 8px 10px; line-height: 1.8; }
 
         /* ── RESTO DE ESTILOS ORIGINALES ─────────────────────── */
-        .login-container { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .login-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 500; overflow-y: auto; }
         .login-card { background: white; border-radius: 20px; padding: 40px 30px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         .login-logo h1 { font-size: 28px; color: #667eea; margin-bottom: 5px; text-align: center; }
         .login-logo p { color: #718096; font-size: 14px; text-align: center; margin-bottom: 30px; }
@@ -638,7 +638,7 @@
             const pinVerified = localStorage.getItem('pinVerified');
             setTimeout(() => {
                 hideSplash();
-                if (pinVerified === 'true') { checkInitialSetup(); }
+                if (pinVerified === 'true') { document.getElementById('pin-screen').classList.add('hidden'); checkInitialSetup(); }
                 checkInstallPrompt();
             }, 1800);
         });
@@ -719,7 +719,7 @@
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
         function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinVerified'); currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
-        function showMainApp() { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; loadData(); loadDeudas(); }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; loadData(); loadDeudas(); }
         
         async function loadData() {
             const skeleton = document.getElementById('skeleton-overlay');
