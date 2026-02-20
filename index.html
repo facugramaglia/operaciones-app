@@ -819,7 +819,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.8';
+        const APP_VERSION = 'v3.9';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -976,7 +976,7 @@
             const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
             _midnightTimer = setTimeout(() => { if (currentUser) handleLogout(); }, midnight - now);
         }
-        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); fetchDolarBlue(); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); _dolarBlueInterval = setInterval(fetchDolarBlue, 5 * 60 * 1000); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 5 * 60 * 1000); loadData(); loadDeudas(); }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); fetchDolarBlue(); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); _dolarBlueInterval = setInterval(fetchDolarBlue, 5 * 60 * 1000); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
         
         async function loadData(silent = false) {
             const skeleton = document.getElementById('skeleton-overlay');
