@@ -253,6 +253,7 @@
                 align-items: start;
             }
             #dashboard-screen .balance-card       { grid-column: 1 / -1; }
+            #dashboard-screen #card-dolar-blue    { grid-column: 1 / -1; }
             #dashboard-screen > .card:last-child  { grid-column: 1 / -1; }
 
             /* Picker: centrado, proporciones desktop */
@@ -416,6 +417,22 @@
                     <div style="text-align: right;">
                         <div style="font-size: 12px; opacity: 0.8;" id="current-date">--/--/----</div>
                         <div style="font-size: 20px; font-weight: bold; margin-top: 5px;" id="current-time">--:--</div>
+                    </div>
+                </div>
+                <div class="card" id="card-dolar-blue" style="padding: 14px 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+                        💵 Dólar Blue
+                        <span id="dolar-blue-updated" style="float:right; font-weight:400; text-transform:none; letter-spacing:0; color:#a0aec0;"></span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: #ebf8ff; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #3182ce; font-weight: 700; margin-bottom: 4px;">↓ COMPRA</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-compra">–</div>
+                        </div>
+                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #38a169; font-weight: 700; margin-bottom: 4px;">↑ VENTA</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-venta">–</div>
+                        </div>
                     </div>
                 </div>
                 <div class="card" id="card-ventas-pendientes" style="cursor: pointer;">
@@ -773,7 +790,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.8';
+        const APP_VERSION = 'v2.9';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -901,6 +918,23 @@
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
         function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinVerified'); currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
+        let _dolarBlueInterval = null;
+        async function fetchDolarBlue() {
+            try {
+                const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+                const data = await res.json();
+                const fmt = v => '$ ' + Number(v).toLocaleString('es-AR');
+                document.getElementById('dolar-blue-compra').textContent = fmt(data.compra);
+                document.getElementById('dolar-blue-venta').textContent = fmt(data.venta);
+                const now = new Date();
+                document.getElementById('dolar-blue-updated').textContent =
+                    'Act. ' + now.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+            } catch(e) {
+                document.getElementById('dolar-blue-compra').textContent = '–';
+                document.getElementById('dolar-blue-venta').textContent = '–';
+                document.getElementById('dolar-blue-updated').textContent = 'Sin conexión';
+            }
+        }
         let _midnightTimer = null;
         function scheduleMidnightLogout() {
             if (_midnightTimer) clearTimeout(_midnightTimer);
@@ -908,7 +942,7 @@
             const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
             _midnightTimer = setTimeout(() => { if (currentUser) handleLogout(); }, midnight - now);
         }
-        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); loadData(); loadDeudas(); }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); fetchDolarBlue(); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); _dolarBlueInterval = setInterval(fetchDolarBlue, 5 * 60 * 1000); loadData(); loadDeudas(); }
         
         async function loadData() {
             const skeleton = document.getElementById('skeleton-overlay');
