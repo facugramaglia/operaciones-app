@@ -44,6 +44,7 @@ function doGet(e) {
         nuevoPrecio: parseFloat(params.nuevoPrecio),
         nuevoTotal: parseFloat(params.nuevoTotal),
         nuevasObs: params.nuevasObs || '',
+        nuevoOperador: params.nuevoOperador || '',
         usuario: params.usuario
       };
       return editOperation(ss, data);
@@ -279,6 +280,7 @@ function editOperation(ss, data) {
       sheet.getRange(i + 1, 5).setValue('$' + data.nuevoPrecio.toFixed(2));
       // No se sobreescribe columna F — la fórmula de la planilla calcula el total
       sheet.getRange(i + 1, 8).setValue(data.nuevasObs);
+      if (data.nuevoOperador) sheet.getRange(i + 1, 2).setValue(data.nuevoOperador);
       sheet.getRange(i + 1, 12).setValue(data.usuario);
       sheet.getRange(i + 1, 13).setValue(new Date());
       return ContentService.createTextOutput(JSON.stringify({
