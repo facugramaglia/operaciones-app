@@ -548,6 +548,8 @@
                         <option value="10">Últimas 10</option>
                         <option value="20">Últimas 20</option>
                         <option value="30">Últimas 30</option>
+                        <option value="50">Últimas 50</option>
+                        <option value="100">Últimas 100</option>
                     </select>
                     <button id="btn-pending-only" class="pending-only-btn" onclick="togglePendingOnly()" style="flex:1;">Todos los estados</button>
                 </div>
@@ -809,7 +811,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.2';
+        const APP_VERSION = 'v3.3';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
