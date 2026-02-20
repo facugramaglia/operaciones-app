@@ -171,18 +171,18 @@
         .btn-nueva-deuda { width: 100%; padding: 15px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(72,187,120,0.35); transition: transform 0.15s; }
         .btn-nueva-deuda:active { transform: scale(0.98); }
         @keyframes glow-venta {
-            0%, 100% { box-shadow: 0 8px 28px rgba(72,187,120,0.45), inset 0 1px 0 rgba(255,255,255,0.2); }
-            50%       { box-shadow: 0 14px 44px rgba(72,187,120,0.72), inset 0 1px 0 rgba(255,255,255,0.2); }
+            0%, 100% { box-shadow: 0 8px 28px rgba(114,201,154,0.4), inset 0 1px 0 rgba(255,255,255,0.3); }
+            50%       { box-shadow: 0 14px 44px rgba(114,201,154,0.65), inset 0 1px 0 rgba(255,255,255,0.3); }
         }
         @keyframes glow-compra {
-            0%, 100% { box-shadow: 0 8px 28px rgba(245,101,101,0.45), inset 0 1px 0 rgba(255,255,255,0.2); }
-            50%       { box-shadow: 0 14px 44px rgba(245,101,101,0.72), inset 0 1px 0 rgba(255,255,255,0.2); }
+            0%, 100% { box-shadow: 0 8px 28px rgba(232,120,120,0.4), inset 0 1px 0 rgba(255,255,255,0.3); }
+            50%       { box-shadow: 0 14px 44px rgba(232,120,120,0.65), inset 0 1px 0 rgba(255,255,255,0.3); }
         }
         .btn-pick { width: 100%; border: none; border-radius: 22px; font-size: 21px; font-weight: 700; transition: transform 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; letter-spacing: 0.3px; }
-        .btn-pick .pick-icon { font-size: 52px; line-height: 1; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.22)); }
+        .btn-pick .pick-icon { font-size: 52px; line-height: 1; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15)); }
         .btn-pick:active { transform: scale(0.97); }
-        .btn-pick.venta  { background: linear-gradient(160deg, #56d08a 0%, #38a169 55%, #2e7d52 100%); color: white; animation: glow-venta  3s ease-in-out infinite; }
-        .btn-pick.compra { background: linear-gradient(160deg, #fc7272 0%, #e53e3e 55%, #b83030 100%); color: white; animation: glow-compra 3s ease-in-out infinite; }
+        .btn-pick.venta  { background: linear-gradient(160deg, #a8dfbf 0%, #72c99a 55%, #55b882 100%); color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.15); animation: glow-venta  3s ease-in-out infinite; }
+        .btn-pick.compra { background: linear-gradient(160deg, #f5aaaa 0%, #e87878 55%, #d45858 100%); color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.15); animation: glow-compra 3s ease-in-out infinite; }
     </style>
 </head>
 <body>
@@ -661,7 +661,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.1';
+        const APP_VERSION = 'v2.2';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
