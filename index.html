@@ -773,7 +773,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.7';
+        const APP_VERSION = 'v2.8';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -901,7 +901,14 @@
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
         function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinVerified'); currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
-        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; loadData(); loadDeudas(); }
+        let _midnightTimer = null;
+        function scheduleMidnightLogout() {
+            if (_midnightTimer) clearTimeout(_midnightTimer);
+            const now = new Date();
+            const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+            _midnightTimer = setTimeout(() => { if (currentUser) handleLogout(); }, midnight - now);
+        }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); loadData(); loadDeudas(); }
         
         async function loadData() {
             const skeleton = document.getElementById('skeleton-overlay');
