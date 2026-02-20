@@ -331,12 +331,12 @@
             <div id="cargar-screen" class="screen">
 
                 <!-- Picker de tipo -->
-                <div id="cargar-picker" style="display:flex; flex-direction:column; gap:16px; height:calc(100vh - 220px); min-height:300px;">
-                    <button class="btn-pick venta" onclick="selectTipoForm('VENTA')" style="flex:1;">
+                <div id="cargar-picker" style="display:flex; flex-direction:column; gap:16px; padding-top:8px;">
+                    <button class="btn-pick venta" onclick="selectTipoForm('VENTA')" style="height:calc(50vh - 130px); min-height:150px;">
                         <span class="pick-icon">⬆️</span>
                         <span>Cargar Venta</span>
                     </button>
-                    <button class="btn-pick compra" onclick="selectTipoForm('COMPRA')" style="flex:1;">
+                    <button class="btn-pick compra" onclick="selectTipoForm('COMPRA')" style="height:calc(50vh - 130px); min-height:150px;">
                         <span class="pick-icon">⬇️</span>
                         <span>Cargar Compra</span>
                     </button>
@@ -653,7 +653,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v1.9';
+        const APP_VERSION = 'v2.0';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
