@@ -170,11 +170,19 @@
         .deuda-row:last-child { border-bottom: none; }
         .btn-nueva-deuda { width: 100%; padding: 15px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(72,187,120,0.35); transition: transform 0.15s; }
         .btn-nueva-deuda:active { transform: scale(0.98); }
-        .btn-pick { width: 100%; border: none; border-radius: 22px; font-size: 21px; font-weight: 700; transition: transform 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
-        .btn-pick .pick-icon { font-size: 46px; line-height: 1; }
+        @keyframes glow-venta {
+            0%, 100% { box-shadow: 0 8px 28px rgba(72,187,120,0.45), inset 0 1px 0 rgba(255,255,255,0.2); }
+            50%       { box-shadow: 0 14px 44px rgba(72,187,120,0.72), inset 0 1px 0 rgba(255,255,255,0.2); }
+        }
+        @keyframes glow-compra {
+            0%, 100% { box-shadow: 0 8px 28px rgba(245,101,101,0.45), inset 0 1px 0 rgba(255,255,255,0.2); }
+            50%       { box-shadow: 0 14px 44px rgba(245,101,101,0.72), inset 0 1px 0 rgba(255,255,255,0.2); }
+        }
+        .btn-pick { width: 100%; border: none; border-radius: 22px; font-size: 21px; font-weight: 700; transition: transform 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; letter-spacing: 0.3px; }
+        .btn-pick .pick-icon { font-size: 52px; line-height: 1; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.22)); }
         .btn-pick:active { transform: scale(0.97); }
-        .btn-pick.venta { background: linear-gradient(145deg, #48bb78 0%, #38a169 100%); color: white; box-shadow: 0 8px 28px rgba(72,187,120,0.45); }
-        .btn-pick.compra { background: linear-gradient(145deg, #f56565 0%, #e53e3e 100%); color: white; box-shadow: 0 8px 28px rgba(245,101,101,0.45); }
+        .btn-pick.venta  { background: linear-gradient(160deg, #56d08a 0%, #38a169 55%, #2e7d52 100%); color: white; animation: glow-venta  3s ease-in-out infinite; }
+        .btn-pick.compra { background: linear-gradient(160deg, #fc7272 0%, #e53e3e 55%, #b83030 100%); color: white; animation: glow-compra 3s ease-in-out infinite; }
     </style>
 </head>
 <body>
@@ -653,7 +661,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.0';
+        const APP_VERSION = 'v2.1';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1029,8 +1037,8 @@
         function changeFilter(f){currentFilter=f;updateHistorial();}
         function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';updateHistorial();}
         function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='⬆️ Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='⬇️ Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
-        function selectTipoForm(tipo){setTipo(tipo);document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
-        function volverAlPicker(){document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
+        function selectTipoForm(tipo){setTipo(tipo);document.body.style.background=tipo==='VENTA'?'#d4e5d4':'#e5d4d4';document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
+        function volverAlPicker(){document.body.style.background='#d4e5d4';document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
         function calcularTotal(){const c=parseFloat(document.getElementById('form-cantidad').value)||0,p=parseFloat(document.getElementById('form-precio').value)||0,t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
         
         async function agregarOperacion(){
