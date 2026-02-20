@@ -192,6 +192,8 @@
         /* Historial: columnas TC y ARS separadas — mobile: ocultas, desktop: visibles */
         .hist-cell-tc, .hist-cell-ars { display: none; }
         .hist-mobile-extra { display: block; }
+        .hist-mobile-amounts { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .hist-desktop-cantidad { display: none; }
 
         /* ══ DESKTOP LAYOUT (≥ 860px) ══════════════════════════════ */
         @media (min-width: 860px) {
@@ -304,6 +306,8 @@
             /* Historial: mostrar columnas TC y ARS por separado */
             .hist-cell-tc, .hist-cell-ars { display: table-cell; }
             .hist-mobile-extra { display: none !important; }
+            .hist-mobile-amounts { display: none !important; }
+            .hist-desktop-cantidad { display: inline !important; }
         }
     </style>
 </head>
@@ -819,7 +823,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.10';
+        const APP_VERSION = 'v3.11';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1098,7 +1102,7 @@
                     const swipeW = otros.length >= 3 ? 200 : 160;
                     row.dataset.swipeWidth = swipeW;
                     const btns = otros.map(e => { const s=getEstadoStyles(e); return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${op.fecha}','${op.cliente}','${op.cantidad}','${tipo}','${e}');event.stopPropagation();">${e}</button>`; }).join('');
-                    row.innerHTML = `<td colspan="3" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:12px 8px;"><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${op.cliente}</div><div style="font-size:11px;color:#a0aec0;">${op.operador}</div><div class="hist-mobile-extra" style="margin-top:4px;"><span style="font-size:11px;color:#a0aec0;">$${op.cantidad} · TC $${op.precio.toFixed(0)}</span>${(op.total||(op.cantidad*op.precio))>0?' <span style="font-size:11px;color:#718096;font-weight:600;">· '+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</div></td><td style="padding:12px 8px;text-align:right;width:90px;white-space:nowrap;"><span style="font-weight:700;font-size:15px;color:#2d3748;">$${op.cantidad}</span></td><td class="hist-cell-tc" style="padding:12px 8px;text-align:center;width:80px;white-space:nowrap;"><div style="font-size:12px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#b0bec5;">TC</div></td><td class="hist-cell-ars" style="padding:12px 8px;text-align:right;width:130px;white-space:nowrap;">${(op.total||(op.cantidad*op.precio))>0?'<span style="font-size:14px;font-weight:700;color:#4a5568;">'+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</td><td style="padding:12px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:8px 12px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${op.estado}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    row.innerHTML = `<td colspan="3" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:12px 8px;"><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${op.cliente}</div><div style="font-size:11px;color:#a0aec0;">${op.operador}</div></td><td style="padding:12px 8px;text-align:right;white-space:nowrap;"><div class="hist-mobile-amounts"><span style="font-weight:700;font-size:15px;color:#2d3748;">$${op.cantidad}</span><span style="font-size:11px;color:#a0aec0;">TC $${op.precio.toFixed(0)}</span>${(op.total||(op.cantidad*op.precio))>0?'<span style="font-size:11px;color:#718096;font-weight:600;">'+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</div><span class="hist-desktop-cantidad" style="font-weight:700;font-size:15px;color:#2d3748;">$${op.cantidad}</span></td><td class="hist-cell-tc" style="padding:12px 8px;text-align:center;width:80px;white-space:nowrap;"><div style="font-size:12px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#b0bec5;">TC</div></td><td class="hist-cell-ars" style="padding:12px 8px;text-align:right;width:130px;white-space:nowrap;">${(op.total||(op.cantidad*op.precio))>0?'<span style="font-size:14px;font-weight:700;color:#4a5568;">'+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</td><td style="padding:12px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:8px 12px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${op.estado}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
                     const hs = document.createElement('select'); hs.className='estado-select'; hs.style.display='none'; hs.dataset.tipo=tipo; hs.dataset.fecha=op.fecha; hs.dataset.cliente=op.cliente; hs.dataset.cantidad=op.cantidad;
                     estados.forEach(e => { const o=document.createElement('option'); o.value=e; o.textContent=e; if(e===op.estado) o.selected=true; hs.appendChild(o); });
                     row.appendChild(hs);
