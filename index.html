@@ -138,9 +138,14 @@
         .swipe-actions { position: absolute; right: 0; top: 0; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 4px; padding: 0 6px; background: transparent; }
         .swipe-action-btn { padding: 5px 7px; border: none; border-radius: 8px; font-size: 10px; font-weight: 700; white-space: nowrap; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
         .swipe-row.swiped .swipe-action-btn { opacity: 1; pointer-events: auto; }
-        .pull-indicator { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 8px; background: white; color: #667eea; font-size: 14px; font-weight: 600; padding: 12px; transform: translateY(-100%); transition: transform 0.3s; z-index: 200; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .pull-indicator.visible { transform: translateY(0); }
-        .pull-spinner { width: 18px; height: 18px; border: 2px solid #e2e8f0; border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .pull-indicator { position: fixed; top: 0; left: 50%; transform: translateX(-50%) translateY(-110%); transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1); z-index: 200; display: flex; align-items: center; gap: 12px; background: white; border-radius: 0 0 22px 22px; padding: 10px 24px 14px; box-shadow: 0 6px 24px rgba(0,0,0,0.13); white-space: nowrap; }
+        .pull-indicator.visible { transform: translateX(-50%) translateY(0); }
+        .pull-ring-wrap { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
+        .pull-ring-wrap svg { position: absolute; top: 0; left: 0; }
+        .pull-arrow { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(0deg); font-size: 13px; font-weight: 800; color: #667eea; transition: transform 0.3s ease; line-height: 1; }
+        .pull-arrow.ready { transform: translate(-50%,-50%) rotate(180deg); }
+        .pull-spinner-ring { position: absolute; top: 1px; left: 1px; width: 32px; height: 32px; border: 2.5px solid #e2e8f0; border-top-color: #667eea; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .pull-text-label { font-size: 13px; font-weight: 600; color: #667eea; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .skeleton-box { background: linear-gradient(90deg, #e2e8f0 25%, #f0f4f8 50%, #e2e8f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -255,8 +260,15 @@
     </div>
     
     <div class="pull-indicator" id="pull-indicator">
-        <div class="pull-spinner" id="pull-spinner" style="display:none;"></div>
-        <span id="pull-text">↓ Desliza para actualizar</span>
+        <div class="pull-ring-wrap">
+            <svg id="pull-ring-svg" viewBox="0 0 34 34" width="34" height="34">
+                <circle cx="17" cy="17" r="13" fill="none" stroke="#e2e8f0" stroke-width="2.5"/>
+                <circle cx="17" cy="17" r="13" fill="none" stroke="#667eea" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="81.68" stroke-dashoffset="81.68" transform="rotate(-90 17 17)" id="pull-ring-fill"/>
+            </svg>
+            <div class="pull-arrow" id="pull-arrow">↓</div>
+            <div class="pull-spinner-ring" id="pull-spinner-ring" style="display:none;"></div>
+        </div>
+        <span class="pull-text-label" id="pull-text">Desliza para actualizar</span>
     </div>
     
     <div id="skeleton-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.85); z-index: 500; padding: 20px;">
@@ -661,7 +673,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.2';
+        const APP_VERSION = 'v2.3';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1240,11 +1252,57 @@
         function closeDeudaEditModal() { document.getElementById('deuda-edit-modal').classList.add('hidden'); }
         
         (function(){
-            let sy=0,pulling=false,refreshing=false;
-            const ind=document.getElementById('pull-indicator'),pt=document.getElementById('pull-text'),ps=document.getElementById('pull-spinner');
-            document.addEventListener('touchstart',e=>{if(window.scrollY===0&&!refreshing&&currentUser){sy=e.touches[0].clientY;pulling=true;}},{passive:true});
-            document.addEventListener('touchmove',e=>{if(!pulling||refreshing)return;const d=e.touches[0].clientY-sy;if(d>10){ind.classList.add('visible');if(d>80){pt.textContent='↑ Suelta para actualizar';ind.style.background='#f0f4ff';}else{pt.textContent='↓ Desliza para actualizar';ind.style.background='white';}}},{passive:true});
-            document.addEventListener('touchend',async e=>{if(!pulling||refreshing)return;pulling=false;const d=e.changedTouches[0].clientY-sy;if(d>80){refreshing=true;pt.style.display='none';ps.style.display='block';ind.classList.add('visible');try{await loadData();}catch(e){}setTimeout(()=>{ind.classList.remove('visible');pt.style.display='block';ps.style.display='none';pt.textContent='↓ Desliza para actualizar';ind.style.background='white';refreshing=false;},600);}else{ind.classList.remove('visible');}},{passive:true});
+            const CIRC=81.68, THRESHOLD=80;
+            let sy=0, pulling=false, refreshing=false;
+            const ind     = document.getElementById('pull-indicator'),
+                  pt      = document.getElementById('pull-text'),
+                  ring    = document.getElementById('pull-ring-fill'),
+                  svg     = document.getElementById('pull-ring-svg'),
+                  arrow   = document.getElementById('pull-arrow'),
+                  spinner = document.getElementById('pull-spinner-ring');
+            function resetUI(){
+                ring.setAttribute('stroke-dashoffset', CIRC);
+                arrow.classList.remove('ready');
+                arrow.style.display = '';
+                svg.style.display   = '';
+                spinner.style.display = 'none';
+                pt.textContent = 'Desliza para actualizar';
+            }
+            document.addEventListener('touchstart', e => {
+                if(window.scrollY===0 && !refreshing && currentUser){ sy=e.touches[0].clientY; pulling=true; }
+            }, {passive:true});
+            document.addEventListener('touchmove', e => {
+                if(!pulling||refreshing) return;
+                const d = e.touches[0].clientY - sy;
+                if(d > 8){
+                    ind.classList.add('visible');
+                    const progress = Math.min(d / THRESHOLD, 1);
+                    ring.setAttribute('stroke-dashoffset', CIRC - progress * CIRC);
+                    if(d > THRESHOLD){ arrow.classList.add('ready'); pt.textContent = 'Suelta para actualizar'; }
+                    else             { arrow.classList.remove('ready'); pt.textContent = 'Desliza para actualizar'; }
+                }
+            }, {passive:true});
+            document.addEventListener('touchend', async e => {
+                if(!pulling||refreshing) return;
+                pulling = false;
+                const d = e.changedTouches[0].clientY - sy;
+                if(d > THRESHOLD){
+                    refreshing = true;
+                    svg.style.display = 'none';
+                    arrow.style.display = 'none';
+                    spinner.style.display = 'block';
+                    pt.textContent = 'Actualizando...';
+                    ind.classList.add('visible');
+                    try{ await loadData(); }catch(ex){}
+                    setTimeout(() => {
+                        ind.classList.remove('visible');
+                        setTimeout(() => { resetUI(); refreshing = false; }, 320);
+                    }, 800);
+                } else {
+                    ind.classList.remove('visible');
+                    resetUI();
+                }
+            }, {passive:true});
         })();
     </script>
 </body>
