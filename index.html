@@ -252,9 +252,11 @@
                 gap: 16px;
                 align-items: start;
             }
-            #dashboard-screen .balance-card       { grid-column: 1 / -1; }
-            #dashboard-screen #card-dolar-blue    { grid-column: 1 / -1; }
-            #dashboard-screen > .card:last-child  { grid-column: 1 / -1; }
+            #dashboard-screen .balance-card        { grid-column: 1 / -1; }
+            #dashboard-screen #card-hoy            { grid-column: 1 / -1; }
+            #dashboard-screen #card-dolar-blue     { grid-column: 1 / -1; }
+            #dolar-blue-boxes { max-width: 440px; margin: 0 auto; }
+            #dolar-blue-boxes > div { min-height: 70px; }
 
             /* Picker: centrado, proporciones desktop */
             #cargar-picker {
@@ -419,22 +421,6 @@
                         <div style="font-size: 20px; font-weight: bold; margin-top: 5px;" id="current-time">--:--</div>
                     </div>
                 </div>
-                <div class="card" id="card-dolar-blue" style="padding: 14px 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-                        💵 Dólar Blue
-                        <span id="dolar-blue-updated" style="float:right; font-weight:400; text-transform:none; letter-spacing:0; color:#a0aec0;"></span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: #ebf8ff; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #3182ce; font-weight: 700; margin-bottom: 4px;">↓ COMPRA</div>
-                            <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-compra">–</div>
-                        </div>
-                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #38a169; font-weight: 700; margin-bottom: 4px;">↑ VENTA</div>
-                            <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-venta">–</div>
-                        </div>
-                    </div>
-                </div>
                 <div class="card" id="card-ventas-pendientes" style="cursor: pointer;">
                     <div class="card-title" style="color: #48bb78;">📈 Ventas Pendientes</div>
                     <div style="overflow-x: auto;"><table><thead><tr><th>Operador</th><th>Cliente</th><th style="text-align: right;">Cantidad</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
@@ -445,7 +431,7 @@
                     <div style="overflow-x: auto;"><table><thead><tr><th>Operador</th><th>Cliente</th><th style="text-align: right;">Cantidad</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
                     <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
                 </div>
-                <div class="card" style="padding: 14px 16px;">
+                <div class="card" id="card-hoy" style="padding: 14px 16px;">
                     <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
@@ -460,8 +446,24 @@
                         </div>
                     </div>
                 </div>
+                <div class="card" id="card-dolar-blue" style="padding: 14px 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+                        💵 Dólar Blue
+                        <span id="dolar-blue-updated" style="float:right; font-weight:400; text-transform:none; letter-spacing:0; color:#a0aec0;"></span>
+                    </div>
+                    <div id="dolar-blue-boxes" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: #ebf8ff; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #3182ce; font-weight: 700; margin-bottom: 4px;">↓ COMPRA</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-compra">–</div>
+                        </div>
+                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
+                            <div style="font-size: 11px; color: #38a169; font-weight: 700; margin-bottom: 4px;">↑ VENTA</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-venta">–</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
+
             <div id="cargar-screen" class="screen">
 
                 <!-- Picker de tipo -->
@@ -790,7 +792,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.9';
+        const APP_VERSION = 'v3.0';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
