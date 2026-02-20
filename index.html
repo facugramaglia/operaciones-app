@@ -255,12 +255,31 @@
             #dashboard-screen .balance-card       { grid-column: 1 / -1; }
             #dashboard-screen > .card:last-child  { grid-column: 1 / -1; }
 
-            /* Picker: botones lado a lado */
-            #cargar-picker { flex-direction: row !important; }
-            #cargar-picker .btn-pick {
-                height: calc(55vh - 80px) !important;
-                min-height: 220px !important;
+            /* Picker: centrado, proporciones desktop */
+            #cargar-picker {
+                flex-direction: row !important;
+                max-width: 660px;
+                margin: 36px auto 0 !important;
+                padding-top: 0 !important;
+                gap: 20px !important;
             }
+            #cargar-picker .btn-pick {
+                height: 260px !important;
+                min-height: 180px !important;
+                border-radius: 26px !important;
+                font-size: 18px !important;
+            }
+            #cargar-picker .btn-pick .pick-icon { font-size: 42px !important; }
+
+            /* Formulario: centrado y compacto */
+            #cargar-form { max-width: 580px; margin: 0 auto; }
+            .form-2col {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0 18px;
+                margin-bottom: 20px;
+            }
+            .form-2col > .form-group { margin-bottom: 0; }
 
             /* Modales más anchos */
             .modal-content { max-width: 540px; }
@@ -458,18 +477,22 @@
                             </div>
                         </div>
                         <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="form-cliente" placeholder="Nombre del cliente"></div>
-                        <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
-                        <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
-                        <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
-                        <div class="form-group">
-                            <label class="form-label">Operador</label>
-                            <select class="form-input" id="form-operador">
-                                <option value="TOMI">TOMI</option>
-                                <option value="CHOKI">CHOKI</option>
-                                <option value="TURCO">TURCO</option>
-                                <option value="AGU">AGU</option>
-                                <option value="X3">X3</option>
-                            </select>
+                        <div class="form-2col">
+                            <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
+                            <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
+                        </div>
+                        <div class="form-2col">
+                            <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
+                            <div class="form-group">
+                                <label class="form-label">Operador</label>
+                                <select class="form-input" id="form-operador">
+                                    <option value="TOMI">TOMI</option>
+                                    <option value="CHOKI">CHOKI</option>
+                                    <option value="TURCO">TURCO</option>
+                                    <option value="AGU">AGU</option>
+                                    <option value="X3">X3</option>
+                                </select>
+                            </div>
                         </div>
                         <div id="total-preview" class="total-preview hidden"><div class="total-preview-label">Total calculado:</div><div class="total-preview-value" id="total-preview-value">$0</div></div>
                         <button class="btn-submit" id="btn-submit">Registrar VENTA</button>
@@ -750,7 +773,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.6';
+        const APP_VERSION = 'v2.7';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
