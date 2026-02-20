@@ -255,15 +255,39 @@
             #dashboard-screen .balance-card       { grid-column: 1 / -1; }
             #dashboard-screen > .card:last-child  { grid-column: 1 / -1; }
 
-            /* Picker: botones lado a lado */
-            #cargar-picker { flex-direction: row !important; }
-            #cargar-picker .btn-pick {
-                height: calc(55vh - 80px) !important;
-                min-height: 220px !important;
+            /* Picker: centrado, proporciones desktop */
+            #cargar-picker {
+                flex-direction: row !important;
+                max-width: 660px;
+                margin: 36px auto 0 !important;
+                padding-top: 0 !important;
+                gap: 20px !important;
             }
+            #cargar-picker .btn-pick {
+                height: 260px !important;
+                min-height: 180px !important;
+                border-radius: 26px !important;
+                font-size: 18px !important;
+            }
+            #cargar-picker .btn-pick .pick-icon { font-size: 42px !important; }
+
+            /* Formulario: centrado y compacto */
+            #cargar-form { max-width: 580px; margin: 0 auto; }
+            .form-2col {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0 18px;
+                margin-bottom: 20px;
+            }
+            .form-2col > .form-group { margin-bottom: 0; }
 
             /* Modales más anchos */
             .modal-content { max-width: 540px; }
+
+            /* Filtros historial: ancho natural, no mitad pantalla */
+            #historial-filters-row { width: fit-content; }
+            #historial-filters-row #filter-select,
+            #historial-filters-row #btn-pending-only { flex: none; width: auto; }
 
             /* Pull-to-refresh oculto en desktop */
             .pull-indicator { display: none !important; }
@@ -453,18 +477,22 @@
                             </div>
                         </div>
                         <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="form-cliente" placeholder="Nombre del cliente"></div>
-                        <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
-                        <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
-                        <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
-                        <div class="form-group">
-                            <label class="form-label">Operador</label>
-                            <select class="form-input" id="form-operador">
-                                <option value="TOMI">TOMI</option>
-                                <option value="CHOKI">CHOKI</option>
-                                <option value="TURCO">TURCO</option>
-                                <option value="AGU">AGU</option>
-                                <option value="X3">X3</option>
-                            </select>
+                        <div class="form-2col">
+                            <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
+                            <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
+                        </div>
+                        <div class="form-2col">
+                            <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
+                            <div class="form-group">
+                                <label class="form-label">Operador</label>
+                                <select class="form-input" id="form-operador">
+                                    <option value="TOMI">TOMI</option>
+                                    <option value="CHOKI">CHOKI</option>
+                                    <option value="TURCO">TURCO</option>
+                                    <option value="AGU">AGU</option>
+                                    <option value="X3">X3</option>
+                                </select>
+                            </div>
                         </div>
                         <div id="total-preview" class="total-preview hidden"><div class="total-preview-label">Total calculado:</div><div class="total-preview-value" id="total-preview-value">$0</div></div>
                         <button class="btn-submit" id="btn-submit">Registrar VENTA</button>
@@ -478,16 +506,14 @@
                     <button class="filter-btn active" id="tab-ventas" style="flex: 1;">📈 Ventas</button>
                     <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
                 </div>
-                <div style="margin-bottom: 8px;">
-                    <select id="filter-select" style="width: 100%; padding: 10px 14px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white; box-sizing: border-box;">
+                <div id="historial-filters-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                    <select id="filter-select" style="flex:1; padding: 10px 14px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white; min-width:0;">
                         <option value="ultimo">Último día</option>
                         <option value="10">Últimas 10</option>
                         <option value="20">Últimas 20</option>
                         <option value="30">Últimas 30</option>
                     </select>
-                </div>
-                <div style="margin-bottom: 10px;">
-                    <button id="btn-pending-only" class="pending-only-btn" onclick="togglePendingOnly()">Todos los estados</button>
+                    <button id="btn-pending-only" class="pending-only-btn" onclick="togglePendingOnly()" style="flex:1;">Todos los estados</button>
                 </div>
                 <div style="margin-bottom: 10px;"><input type="text" id="search-cliente" placeholder="🔍  Buscar cliente..." style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;"></div>
                 <div id="estado-counters" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
@@ -747,7 +773,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.5';
+        const APP_VERSION = 'v2.8';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -875,7 +901,14 @@
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
         function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinVerified'); currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
-        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; loadData(); loadDeudas(); }
+        let _midnightTimer = null;
+        function scheduleMidnightLogout() {
+            if (_midnightTimer) clearTimeout(_midnightTimer);
+            const now = new Date();
+            const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+            _midnightTimer = setTimeout(() => { if (currentUser) handleLogout(); }, midnight - now);
+        }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); loadData(); loadDeudas(); }
         
         async function loadData() {
             const skeleton = document.getElementById('skeleton-overlay');
