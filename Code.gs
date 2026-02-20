@@ -90,6 +90,23 @@ function doGet(e) {
       return editDeuda(ss, data);
     }
 
+    if (params.action === 'delete_operation') {
+      return deleteOperation(ss, {
+        tipo: params.tipo,
+        fecha: params.fecha,
+        cliente: params.cliente,
+        cantidad: parseFloat(params.cantidad)
+      });
+    }
+
+    if (params.action === 'delete_deuda') {
+      return deleteDeuda(ss, {
+        fecha: params.fecha,
+        cliente: params.cliente,
+        monto: parseFloat(params.monto)
+      });
+    }
+
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: 'Acción no válida'
@@ -143,17 +160,9 @@ function addOperation(ss, data) {
   }
 
   const lastRow = sheet.getRange('B:B').getValues().filter(String).length + 1;
-  const newRow = [
-    fecha,
-    data.operador,
-    data.cliente,
-    '$' + data.cantidad,
-    '$' + data.precio.toFixed(2),
-    '$' + data.total.toFixed(0),
-    'PENDIENTE',
-    data.observaciones || ''
-  ];
-  sheet.getRange(lastRow, 1, 1, 8).setValues([newRow]);
+  // Escribir A-E y G-H; dejar F libre para que la fórmula de la planilla calcule el total
+  sheet.getRange(lastRow, 1, 1, 5).setValues([[fecha, data.operador, data.cliente, '$' + data.cantidad, '$' + data.precio.toFixed(2)]]);
+  sheet.getRange(lastRow, 7, 1, 2).setValues([['PENDIENTE', data.observaciones || '']]);
   sheet.getRange(lastRow, 11).setValue(new Date());
   sheet.getRange(lastRow, 12).setValue(data.operador);
   sheet.getRange(lastRow, 13).setValue(new Date());
@@ -268,7 +277,7 @@ function editOperation(ss, data) {
         diaRow === diaFecha && mesRow === mesFecha) {
       sheet.getRange(i + 1, 4).setValue('$' + data.nuevaCantidad);
       sheet.getRange(i + 1, 5).setValue('$' + data.nuevoPrecio.toFixed(2));
-      sheet.getRange(i + 1, 6).setValue('$' + data.nuevoTotal.toFixed(0));
+      // No se sobreescribe columna F — la fórmula de la planilla calcula el total
       sheet.getRange(i + 1, 8).setValue(data.nuevasObs);
       sheet.getRange(i + 1, 12).setValue(data.usuario);
       sheet.getRange(i + 1, 13).setValue(new Date());
@@ -444,6 +453,57 @@ function editDeuda(ss, data) {
     success: false,
     error: 'Deuda no encontrada para editar'
   })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function deleteOperation(ss, data) {
+  const sheetName = data.tipo === 'VENTA' ? 'VENTAS' : 'COMPRAS';
+  const sheet = ss.getSheetByName(sheetName);
+  if (!sheet) return ContentService.createTextOutput(JSON.stringify({success:false,error:'Hoja '+sheetName+' no encontrada'})).setMimeType(ContentService.MimeType.JSON);
+
+  const values = sheet.getDataRange().getValues();
+  const cantidadBuscada = String(data.cantidad).replace(/[\$,\s]/g,'').trim();
+  let diaFecha='', mesFecha='';
+  if (data.fecha && data.fecha.includes('/')) { const p=data.fecha.split('/'); diaFecha=p[0]; mesFecha=p[1]; }
+
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+    if (!row[2] || !row[3]) continue;
+    const clienteRow = String(row[2]).trim().toLowerCase();
+    const cantidadRow = String(row[3]).replace(/[\$,\s]/g,'').trim();
+    let fechaRow=row[0], diaRow='', mesRow='';
+    if (fechaRow instanceof Date) { diaRow=String(fechaRow.getDate()); mesRow=String(fechaRow.getMonth()+1); }
+    else if (fechaRow && String(fechaRow).includes('/')) { const p=String(fechaRow).split('/'); diaRow=p[0]; mesRow=p[1]; }
+    if (clienteRow===String(data.cliente).trim().toLowerCase() && cantidadRow==cantidadBuscada && diaRow===diaFecha && mesRow===mesFecha) {
+      sheet.deleteRow(i + 1);
+      return ContentService.createTextOutput(JSON.stringify({success:true,message:'Operación eliminada de fila '+(i+1)})).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify({success:false,error:'Operación no encontrada'})).setMimeType(ContentService.MimeType.JSON);
+}
+
+function deleteDeuda(ss, data) {
+  const sheet = ss.getSheetByName('DEUDAS');
+  if (!sheet) return ContentService.createTextOutput(JSON.stringify({success:false,error:'Hoja DEUDAS no encontrada'})).setMimeType(ContentService.MimeType.JSON);
+
+  const values = sheet.getDataRange().getValues();
+  const montoBuscado = String(data.monto).replace(/[\$,\s]/g,'').trim();
+  let diaFecha='', mesFecha='';
+  if (data.fecha && data.fecha.includes('/')) { const p=data.fecha.split('/'); diaFecha=p[0]; mesFecha=p[1]; }
+
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+    if (!row[2] || !row[3]) continue;
+    const clienteRow = String(row[2]).trim().toLowerCase();
+    const montoRow = String(row[3]).replace(/[\$,\s]/g,'').trim();
+    let fechaRow=row[0], diaRow='', mesRow='';
+    if (fechaRow instanceof Date) { diaRow=String(fechaRow.getDate()); mesRow=String(fechaRow.getMonth()+1); }
+    else if (fechaRow && String(fechaRow).includes('/')) { const p=String(fechaRow).split('/'); diaRow=p[0]; mesRow=p[1]; }
+    if (clienteRow===String(data.cliente).trim().toLowerCase() && montoRow==montoBuscado && diaRow===diaFecha && mesRow===mesFecha) {
+      sheet.deleteRow(i + 1);
+      return ContentService.createTextOutput(JSON.stringify({success:true,message:'Deuda eliminada de fila '+(i+1)})).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify({success:false,error:'Deuda no encontrada'})).setMimeType(ContentService.MimeType.JSON);
 }
 
 function onEdit(e) {

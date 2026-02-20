@@ -165,6 +165,9 @@
         .moneda-btn.usd.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
         .moneda-btn.ars.active { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border-color: #48bb78; box-shadow: 0 4px 12px rgba(72,187,120,0.3); }
         .deuda-row { border-bottom: 1px solid #f0f0f0; }
+        .header-balance-strip { background: #f7fafc; border-top: 1px solid #e2e8f0; padding: 6px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .pending-only-btn { padding: 8px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-weight: 700; background: white; color: #a0aec0; transition: all 0.2s; }
+        .pending-only-btn.active { background: #FEF3C7; color: #92400E; border-color: #F59E0B; }
         .deuda-row:last-child { border-bottom: none; }
         .deudas-fab { position: fixed; bottom: 80px; right: 20px; z-index: 100; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; font-size: 28px; box-shadow: 0 4px 16px rgba(102,126,234,0.45); display: none; align-items: center; justify-content: center; transition: transform 0.2s; }
         .deudas-fab:active { transform: scale(0.93); }
@@ -277,6 +280,10 @@
                     <button class="btn-logout" id="btn-logout">Salir</button>
                 </div>
             </div>
+            <div class="header-balance-strip">
+                <span style="font-size: 12px; color: #718096; font-weight: 600; letter-spacing: 0.3px;">BALANCE</span>
+                <span id="header-balance-top" style="font-size: 18px; font-weight: 800; color: #2d3748;">$0</span>
+            </div>
         </div>
         
         <div class="content">
@@ -345,15 +352,18 @@
             </div>
             
             <div id="historial-screen" class="screen">
-                <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                <div style="display: flex; gap: 10px; margin-bottom: 8px; align-items: center;">
                     <button class="filter-btn active" id="tab-ventas" style="flex: 1;">📈 Ventas</button>
                     <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
-                    <select id="filter-select" style="flex: 0 0 140px; padding: 8px 12px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white;">
+                    <select id="filter-select" style="flex: 0 0 130px; padding: 8px 12px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white;">
                         <option value="ultimo">Último día</option>
                         <option value="10">Últimas 10</option>
                         <option value="20">Últimas 20</option>
                         <option value="30">Últimas 30</option>
                     </select>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <button id="btn-pending-only" class="pending-only-btn" onclick="togglePendingOnly()">Todos los estados</button>
                 </div>
                 <div style="margin-bottom: 10px;"><input type="text" id="search-cliente" placeholder="🔍  Buscar cliente..." style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;"></div>
                 <div id="estado-counters" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
@@ -454,6 +464,7 @@
                 <div id="deuda-detail-cobro" style="font-size: 11px; color: #48bb78; font-weight: 600; margin-bottom: 12px; display: none;"></div>
                 <button id="deuda-detail-action-btn" style="width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; color: white; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s;"></button>
                 <button id="deuda-detail-edit-btn" style="width: 100%; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #667eea;">✏️ Editar deuda</button>
+                <button id="deuda-detail-delete-btn" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e53e3e;">🗑️ Borrar deuda</button>
             </div>
         </div>
     </div>
@@ -573,6 +584,7 @@
                     </div>
                 </div>
                 <button id="btn-edit-toggle" style="width: 100%; margin-top: 16px; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #667eea;">✏️ Editar operación</button>
+                <button id="btn-delete-op" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e53e3e;">🗑️ Borrar operación</button>
             </div>
         </div>
     </div>
@@ -620,6 +632,7 @@
         const MASTER_PIN = '630500';
         let currentUser = null, ventas = [], compras = [], ventasRaw = [], comprasRaw = [], deudasRaw = [];
         let balanceTotal = 0, currentTipo = 'VENTA', currentFilter = 'ultimo', currentTab = 'ventas';
+        let showOnlyPending = false;
 
         // ── SPLASH ────────────────────────────────────────────────
         function hideSplash() {
@@ -789,6 +802,9 @@
             const el = document.getElementById('header-balance-main');
             el.textContent = '$' + balanceTotal.toLocaleString('es-AR');
             el.style.color = balanceTotal >= 0 ? '#48bb78' : '#f56565';
+            const top = document.getElementById('header-balance-top');
+            top.textContent = '$' + balanceTotal.toLocaleString('es-AR');
+            top.style.color = balanceTotal >= 0 ? '#48bb78' : '#e53e3e';
             updateDateTime(); updateResumenHoy(); updatePendingTables(); updateHistorial();
         }
         
@@ -810,8 +826,8 @@
         }
         
         function updatePendingTables() {
-            const vp = ventas.filter(v => ['PENDIENTE','LLEVO BILL','LLEVO BILLETES'].includes(v.estado.toUpperCase()));
-            const cp = compras.filter(c => ['PENDIENTE','LLEVO PESOS','PREPARADO'].includes(c.estado.toUpperCase()));
+            const vp = ventas.filter(v => ['PENDIENTE','LLEVO BILL','LLEVO BILLETES'].includes(v.estado.toUpperCase())).reverse();
+            const cp = compras.filter(c => ['PENDIENTE','LLEVO PESOS','PREPARADO'].includes(c.estado.toUpperCase())).reverse();
             const vtb = document.getElementById('ventas-pendientes-tbody'); vtb.innerHTML = '';
             if (!vp.length) vtb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay ventas pendientes</td></tr>';
             else vp.forEach(v => { const r = vtb.insertRow(); r.innerHTML = `<td><strong>${v.operador}</strong></td><td>${v.cliente}</td><td style="text-align:right;font-weight:600;color:#48bb78;">$${v.cantidad.toLocaleString('es-AR')}</td>`; });
@@ -838,6 +854,7 @@
             const vtb = document.getElementById('ventas-tbody'), ctb = document.getElementById('compras-tbody');
             vtb.innerHTML = ''; ctb.innerHTML = '';
             let vf = getFilteredOps(ventas, true).reverse(), cf = getFilteredOps(compras, false).reverse();
+            if (showOnlyPending) { vf = vf.filter(op => op.estado.toUpperCase() !== 'REALIZADA'); cf = cf.filter(op => op.estado.toUpperCase() !== 'REALIZADA'); }
             if (searchQuery) { vf = vf.filter(v => v.cliente.toLowerCase().includes(searchQuery)); cf = cf.filter(c => c.cliente.toLowerCase().includes(searchQuery)); }
             const tab = currentTab==='ventas'?vf:cf, counts={};
             tab.forEach(op => { counts[op.estado]=(counts[op.estado]||0)+1; });
@@ -902,6 +919,7 @@
             document.getElementById('btn-edit-toggle').onclick = () => { document.getElementById('modal-edit-form').style.display='block'; document.getElementById('btn-edit-toggle').style.display='none'; };
             document.getElementById('btn-edit-cancel').onclick = () => { document.getElementById('modal-edit-form').style.display='none'; document.getElementById('btn-edit-toggle').style.display='block'; };
             document.getElementById('btn-edit-save').onclick = () => guardarEdicion(op, tipo);
+            document.getElementById('btn-delete-op').onclick = () => borrarOperacion(op, tipo);
         }
         
         function getOpKey(op,tipo){return `cambios_${tipo}_${op.fecha}_${op.cliente}_${op.cantidad}`.replace(/\s/g,'_');}
@@ -927,6 +945,30 @@
         function showToast(msg,color='#2d3748'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500);}
         function getLastPrice(){const all=[...ventas,...compras].filter(o=>o.precio>0).sort((a,b)=>new Date(b.fecha.split('/').reverse().join('-'))-new Date(a.fecha.split('/').reverse().join('-')));return all.length?all[0].precio:null;}
         function closeModal(){document.getElementById('operation-modal').classList.add('hidden');}
+
+        function borrarOperacion(op, tipo) {
+            if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
+            if (!confirm(`¿Borrar esta ${tipo}?\n\nCliente: ${op.cliente}\nCantidad: $${op.cantidad}\nFecha: ${op.fecha}\n\nEsta acción no se puede deshacer.`)) return;
+            const params = new URLSearchParams({ action:'delete_operation', tipo, fecha:op.fecha, cliente:op.cliente, cantidad:op.cantidad });
+            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
+            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},3000);
+            showToast('🗑️ Operación borrada','#e53e3e');
+            closeModal();
+            setTimeout(()=>loadData(),2000);
+        }
+
+        function borrarDeuda(key) {
+            if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
+            const deuda = getDeudaByKey(key);
+            if (!deuda) return;
+            if (!confirm(`¿Borrar deuda de "${deuda.cliente}"?\nMonto: ${deuda.moneda} ${deuda.monto}\n\nEsta acción no se puede deshacer.`)) return;
+            const params = new URLSearchParams({ action:'delete_deuda', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto });
+            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
+            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},3000);
+            showToast('🗑️ Deuda borrada','#e53e3e');
+            closeDeudaDetailModal();
+            setTimeout(()=>loadData(),2000);
+        }
         function getEstadoStyles(e){const s={'PENDIENTE':{bg:'#FEF3C7',color:'#92400E'},'REALIZADA':{bg:'#86EFAC',color:'#166534'},'LLEVO BILLETES':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO BILL':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO PESOS':{bg:'#FCA5A5',color:'#7F1D1D'},'PREPARADO':{bg:'#FDBA74',color:'#7C2D12'}};return s[e]||{bg:'#E5E7EB',color:'#374151'};}
         
         async function cambiarEstado(sel){
@@ -944,6 +986,7 @@
         function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#e5d4d4':'#d4e5d4';else if(s==='deudas') document.body.style.background='#f0eaf8';else document.body.style.background='#d4e5d4';}
         function switchTab(t){currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#d4e5d4';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#e5d4d4';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
+        function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';updateHistorial();}
         function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');if(t==='VENTA'){document.getElementById('tipo-venta').classList.add('active');document.getElementById('tipo-compra').classList.remove('active');btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{document.getElementById('tipo-venta').classList.remove('active');document.getElementById('tipo-compra').classList.add('active');btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
         function calcularTotal(){const c=parseFloat(document.getElementById('form-cantidad').value)||0,p=parseFloat(document.getElementById('form-precio').value)||0,t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
         
@@ -1135,6 +1178,7 @@
             if (esPend) { actionBtn.textContent='✅ Marcar como COBRADA'; actionBtn.style.background='linear-gradient(135deg,#48bb78 0%,#38a169 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA');}; }
             else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='linear-gradient(135deg,#f59e0b 0%,#d97706 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'PENDIENTE');}; }
             document.getElementById('deuda-detail-edit-btn').onclick = () => { closeDeudaDetailModal(); editarDeuda(deuda); };
+            document.getElementById('deuda-detail-delete-btn').onclick = () => borrarDeuda(key);
             document.getElementById('deuda-detail-modal').classList.remove('hidden');
         }
 
