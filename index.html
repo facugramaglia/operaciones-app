@@ -183,6 +183,91 @@
         .btn-pick:active { transform: scale(0.97); }
         .btn-pick.venta  { background: linear-gradient(160deg, #a8dfbf 0%, #72c99a 55%, #55b882 100%); color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.15); animation: glow-venta  3s ease-in-out infinite; }
         .btn-pick.compra { background: linear-gradient(160deg, #f5aaaa 0%, #e87878 55%, #d45858 100%); color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.15); animation: glow-compra 3s ease-in-out infinite; }
+
+        /* ── SIDEBAR LOGO (solo desktop) ───────────────────────── */
+        .sidebar-logo { display: none; }
+
+        /* ══ DESKTOP LAYOUT (≥ 860px) ══════════════════════════════ */
+        @media (min-width: 860px) {
+
+            /* Convierte bottom-nav en sidebar lateral */
+            .bottom-nav {
+                position: fixed;
+                top: 0; left: 0; bottom: 0; right: auto;
+                width: 230px;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: stretch;
+                padding: 0 12px 24px;
+                border-right: 1px solid #e2e8f0;
+                border-top: none;
+                box-shadow: 2px 0 14px rgba(0,0,0,0.06);
+                gap: 4px;
+                overflow-y: auto;
+            }
+
+            .sidebar-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 22px 14px 18px;
+                font-size: 19px;
+                font-weight: 800;
+                color: #667eea;
+                border-bottom: 1px solid #e2e8f0;
+                margin-bottom: 12px;
+                flex-shrink: 0;
+            }
+
+            .nav-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 12px;
+                padding: 11px 14px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 500;
+                width: 100%;
+                text-align: left;
+            }
+
+            .nav-item.active { background: #f0f4ff; border-radius: 12px; }
+            .nav-item.active .nav-icon { transform: scale(1.0); }
+
+            .nav-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+                flex-shrink: 0;
+            }
+
+            /* Header y contenido se desplazan a la derecha del sidebar */
+            .app-header { margin-left: 230px; }
+            .content    { margin-left: 230px; padding: 28px 36px 32px; }
+
+            /* Dashboard: pendientes en 2 columnas */
+            #dashboard-screen.active {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                align-items: start;
+            }
+            #dashboard-screen .balance-card       { grid-column: 1 / -1; }
+            #dashboard-screen > .card:last-child  { grid-column: 1 / -1; }
+
+            /* Picker: botones lado a lado */
+            #cargar-picker { flex-direction: row !important; }
+            #cargar-picker .btn-pick {
+                height: calc(55vh - 80px) !important;
+                min-height: 220px !important;
+            }
+
+            /* Modales más anchos */
+            .modal-content { max-width: 540px; }
+
+            /* Pull-to-refresh oculto en desktop */
+            .pull-indicator { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -475,6 +560,7 @@
         </div>
         
         <div class="bottom-nav">
+            <div class="sidebar-logo">💱 Operaciones</div>
             <button class="nav-item active" id="nav-dashboard"><div class="nav-icon">📊</div><div>Dashboard</div></button>
             <button class="nav-item" id="nav-cargar"><div class="nav-icon">➕</div><div>Cargar</div></button>
             <button class="nav-item" id="nav-historial"><div class="nav-icon">📋</div><div>Historial</div></button>
@@ -661,7 +747,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v2.4';
+        const APP_VERSION = 'v2.5';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
