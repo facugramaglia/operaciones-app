@@ -170,10 +170,11 @@
         .deuda-row:last-child { border-bottom: none; }
         .btn-nueva-deuda { width: 100%; padding: 15px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(72,187,120,0.35); transition: transform 0.15s; }
         .btn-nueva-deuda:active { transform: scale(0.98); }
-        .btn-pick { width: 100%; padding: 22px; border: none; border-radius: 18px; font-size: 19px; font-weight: 700; margin-bottom: 14px; transition: transform 0.15s; }
+        .btn-pick { width: 100%; border: none; border-radius: 22px; font-size: 21px; font-weight: 700; transition: transform 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+        .btn-pick .pick-icon { font-size: 46px; line-height: 1; }
         .btn-pick:active { transform: scale(0.97); }
-        .btn-pick.venta { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; box-shadow: 0 6px 18px rgba(72,187,120,0.4); }
-        .btn-pick.compra { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); color: white; box-shadow: 0 6px 18px rgba(245,101,101,0.4); }
+        .btn-pick.venta { background: linear-gradient(145deg, #48bb78 0%, #38a169 100%); color: white; box-shadow: 0 8px 28px rgba(72,187,120,0.45); }
+        .btn-pick.compra { background: linear-gradient(145deg, #f56565 0%, #e53e3e 100%); color: white; box-shadow: 0 8px 28px rgba(245,101,101,0.45); }
     </style>
 </head>
 <body>
@@ -330,12 +331,15 @@
             <div id="cargar-screen" class="screen">
 
                 <!-- Picker de tipo -->
-                <div id="cargar-picker">
-                    <div class="card">
-                        <div class="card-title">Nueva Operación</div>
-                        <button class="btn-pick venta" onclick="selectTipoForm('VENTA')">⬆️ Cargar Venta</button>
-                        <button class="btn-pick compra" onclick="selectTipoForm('COMPRA')">⬇️ Cargar Compra</button>
-                    </div>
+                <div id="cargar-picker" style="display:flex; flex-direction:column; gap:16px; height:calc(100vh - 220px); min-height:300px;">
+                    <button class="btn-pick venta" onclick="selectTipoForm('VENTA')" style="flex:1;">
+                        <span class="pick-icon">⬆️</span>
+                        <span>Cargar Venta</span>
+                    </button>
+                    <button class="btn-pick compra" onclick="selectTipoForm('COMPRA')" style="flex:1;">
+                        <span class="pick-icon">⬇️</span>
+                        <span>Cargar Compra</span>
+                    </button>
                 </div>
 
                 <!-- Formulario -->
@@ -377,10 +381,12 @@
             </div>
             
             <div id="historial-screen" class="screen">
-                <div style="display: flex; gap: 10px; margin-bottom: 8px; align-items: center;">
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
                     <button class="filter-btn active" id="tab-ventas" style="flex: 1;">📈 Ventas</button>
                     <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
-                    <select id="filter-select" style="flex: 0 0 130px; padding: 8px 12px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white;">
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <select id="filter-select" style="width: 100%; padding: 10px 14px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white; box-sizing: border-box;">
                         <option value="ultimo">Último día</option>
                         <option value="10">Últimas 10</option>
                         <option value="20">Últimas 20</option>
@@ -647,7 +653,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v1.8';
+        const APP_VERSION = 'v1.9';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
