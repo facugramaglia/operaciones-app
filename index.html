@@ -548,6 +548,8 @@
                         <option value="10">Últimas 10</option>
                         <option value="20">Últimas 20</option>
                         <option value="30">Últimas 30</option>
+                        <option value="50">Últimas 50</option>
+                        <option value="100">Últimas 100</option>
                     </select>
                     <button id="btn-pending-only" class="pending-only-btn" onclick="togglePendingOnly()" style="flex:1;">Todos los estados</button>
                 </div>
@@ -809,7 +811,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.2';
+        const APP_VERSION = 'v3.4';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1049,10 +1051,10 @@
             const cp = compras.filter(c => ['PENDIENTE','LLEVO PESOS','PREPARADO'].includes(c.estado.toUpperCase())).reverse();
             const vtb = document.getElementById('ventas-pendientes-tbody'); vtb.innerHTML = '';
             if (!vp.length) vtb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay ventas pendientes</td></tr>';
-            else vp.forEach(v => { const r = vtb.insertRow(); r.innerHTML = `<td><strong>${v.operador}</strong></td><td>${v.cliente}</td><td style="text-align:right;font-weight:600;color:#48bb78;">$${v.cantidad.toLocaleString('es-AR')}</td>`; });
+            else vp.forEach(v => { const r = vtb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${v.operador}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${v.cliente}</td><td style="text-align:right;font-weight:700;color:#1a202c;">$${v.cantidad.toLocaleString('es-AR')}</td>`; });
             const ctb = document.getElementById('compras-pendientes-tbody'); ctb.innerHTML = '';
             if (!cp.length) ctb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay compras pendientes</td></tr>';
-            else cp.forEach(c => { const r = ctb.insertRow(); r.innerHTML = `<td><strong>${c.operador}</strong></td><td>${c.cliente}</td><td style="text-align:right;font-weight:600;color:#f56565;">$${c.cantidad.toLocaleString('es-AR')}</td>`; });
+            else cp.forEach(c => { const r = ctb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${c.operador}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${c.cliente}</td><td style="text-align:right;font-weight:700;color:#1a202c;">$${c.cantidad.toLocaleString('es-AR')}</td>`; });
         }
         
         function getFilteredOps(ops, isVentas) {
