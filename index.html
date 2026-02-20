@@ -647,7 +647,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v1.7';
+        const APP_VERSION = 'v1.8';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -726,8 +726,6 @@
             document.getElementById('card-ventas-pendientes').addEventListener('click', () => { showScreen('historial'); switchTab('ventas'); });
             document.getElementById('card-compras-pendientes').addEventListener('click', () => { showScreen('historial'); switchTab('compras'); });
             document.getElementById('btn-logout').addEventListener('click', handleLogout);
-            document.getElementById('tipo-venta').addEventListener('click', () => setTipo('VENTA'));
-            document.getElementById('tipo-compra').addEventListener('click', () => setTipo('COMPRA'));
             document.getElementById('form-cantidad').addEventListener('input', calcularTotal);
             document.getElementById('form-precio').addEventListener('input', calcularTotal);
             document.getElementById('btn-submit').addEventListener('click', agregarOperacion);
