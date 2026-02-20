@@ -170,6 +170,10 @@
         .deuda-row:last-child { border-bottom: none; }
         .btn-nueva-deuda { width: 100%; padding: 15px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(72,187,120,0.35); transition: transform 0.15s; }
         .btn-nueva-deuda:active { transform: scale(0.98); }
+        .btn-pick { width: 100%; padding: 22px; border: none; border-radius: 18px; font-size: 19px; font-weight: 700; margin-bottom: 14px; transition: transform 0.15s; }
+        .btn-pick:active { transform: scale(0.97); }
+        .btn-pick.venta { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; box-shadow: 0 6px 18px rgba(72,187,120,0.4); }
+        .btn-pick.compra { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); color: white; box-shadow: 0 6px 18px rgba(245,101,101,0.4); }
     </style>
 </head>
 <body>
@@ -324,29 +328,52 @@
             </div>
             
             <div id="cargar-screen" class="screen">
-                <div class="card">
-                    <div class="card-title">Nueva Operación</div>
-                    <div class="tipo-buttons">
-                        <button class="tipo-btn active" id="tipo-venta">⬆️ VENTA</button>
-                        <button class="tipo-btn compra" id="tipo-compra">⬇️ COMPRA</button>
+
+                <!-- Picker de tipo -->
+                <div id="cargar-picker">
+                    <div class="card">
+                        <div class="card-title">Nueva Operación</div>
+                        <button class="btn-pick venta" onclick="selectTipoForm('VENTA')">⬆️ Cargar Venta</button>
+                        <button class="btn-pick compra" onclick="selectTipoForm('COMPRA')">⬇️ Cargar Compra</button>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Fecha</label>
-                        <div style="position: relative;">
-                            <input type="date" class="form-input" id="form-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
-                            <div id="fecha-display" style="padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 17px; background: white; color: #2d3748; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
-                                <span id="fecha-text">Hoy</span>
-                                <span style="color: #a0aec0; font-size: 18px;">📅</span>
+                </div>
+
+                <!-- Formulario -->
+                <div id="cargar-form" style="display:none;">
+                    <div class="card">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+                            <button onclick="volverAlPicker()" style="background:none;border:none;font-size:22px;padding:4px 8px;color:#718096;cursor:pointer;">←</button>
+                            <div class="card-title" id="form-tipo-title" style="margin:0;">Nueva Operación</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Fecha</label>
+                            <div style="position: relative;">
+                                <input type="date" class="form-input" id="form-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+                                <div id="fecha-display" style="padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 17px; background: white; color: #2d3748; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                                    <span id="fecha-text">Hoy</span>
+                                    <span style="color: #a0aec0; font-size: 18px;">📅</span>
+                                </div>
                             </div>
                         </div>
+                        <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="form-cliente" placeholder="Nombre del cliente"></div>
+                        <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
+                        <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
+                        <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
+                        <div class="form-group">
+                            <label class="form-label">Operador</label>
+                            <select class="form-input" id="form-operador">
+                                <option value="TOMI">TOMI</option>
+                                <option value="CHOKI">CHOKI</option>
+                                <option value="TURCO">TURCO</option>
+                                <option value="AGU">AGU</option>
+                                <option value="X3">X3</option>
+                            </select>
+                        </div>
+                        <div id="total-preview" class="total-preview hidden"><div class="total-preview-label">Total calculado:</div><div class="total-preview-value" id="total-preview-value">$0</div></div>
+                        <button class="btn-submit" id="btn-submit">Registrar VENTA</button>
                     </div>
-                    <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="form-cliente" placeholder="Nombre del cliente"></div>
-                    <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
-                    <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
-                    <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
-                    <div id="total-preview" class="total-preview hidden"><div class="total-preview-label">Total calculado:</div><div class="total-preview-value" id="total-preview-value">$0</div></div>
-                    <button class="btn-submit" id="btn-submit">Registrar VENTA</button>
                 </div>
+
             </div>
             
             <div id="historial-screen" class="screen">
@@ -577,7 +604,8 @@
                     <div style="font-size: 14px; font-weight: 700; color: #2d3748; margin-bottom: 16px;">✏️ Editar Operación</div>
                     <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Cantidad (USD)</label><input type="number" id="edit-cantidad" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
                     <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Precio (ARS)</label><input type="number" id="edit-precio" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
-                    <div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Observaciones</label><textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Observaciones</label><textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea></div>
+                    <div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Operador</label><select id="edit-operador" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-weight: 600; background: white;"><option value="TOMI">TOMI</option><option value="CHOKI">CHOKI</option><option value="TURCO">TURCO</option><option value="AGU">AGU</option><option value="X3">X3</option></select></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <button id="btn-edit-cancel" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #718096;">Cancelar</button>
                         <button id="btn-edit-save" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(102,126,234,0.3);">💾 Guardar</button>
@@ -619,7 +647,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v1.6';
+        const APP_VERSION = 'v1.7';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -679,7 +707,7 @@
             document.getElementById('btn-login').addEventListener('click', handleLogin);
             document.getElementById('btn-reconfig').addEventListener('click', showConfigPrompt);
             document.getElementById('nav-dashboard').addEventListener('click', () => showScreen('dashboard'));
-            document.getElementById('nav-cargar').addEventListener('click', () => { showScreen('cargar'); const lp = getLastPrice(); const pi = document.getElementById('form-precio'); if (lp && !pi.value) { pi.value = lp; calcularTotal(); } });
+            document.getElementById('nav-cargar').addEventListener('click', () => { showScreen('cargar'); volverAlPicker(); });
             document.getElementById('nav-historial').addEventListener('click', () => showScreen('historial'));
             document.getElementById('nav-deudas').addEventListener('click', () => showScreen('deudas'));
             document.getElementById('btn-config-header').addEventListener('click', () => showScreen('config'));
@@ -921,6 +949,7 @@
             document.getElementById('edit-cantidad').value=op.cantidad;
             document.getElementById('edit-precio').value=op.precio;
             document.getElementById('edit-observaciones').value=op.observaciones||'';
+            document.getElementById('edit-operador').value=op.operador||currentUser;
             renderCambios(getOpKey(op,tipo));
             document.getElementById('btn-edit-toggle').onclick = () => { document.getElementById('modal-edit-form').style.display='block'; document.getElementById('btn-edit-toggle').style.display='none'; };
             document.getElementById('btn-edit-cancel').onclick = () => { document.getElementById('modal-edit-form').style.display='none'; document.getElementById('btn-edit-toggle').style.display='block'; };
@@ -935,6 +964,7 @@
         
         async function guardarEdicion(op,tipo){
             const nc=parseFloat(document.getElementById('edit-cantidad').value), np=parseFloat(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
+            const nuevoOperador=document.getElementById('edit-operador').value||op.operador;
             if(!nc||!np){alert('⚠️ Cantidad y precio son requeridos');return;}
             const nt=nc*np;
             if(!confirm(`¿Guardar cambios?\n\nCantidad: $${nc}\nPrecio: $${np}\nTotal: $${nt.toLocaleString('es-AR')}`))return;
@@ -942,7 +972,8 @@
             if(nc!==op.cantidad) guardarCambio(k,'cantidad','$'+op.cantidad,'$'+nc,currentUser);
             if(np!==op.precio) guardarCambio(k,'precio','$'+op.precio,'$'+np,currentUser);
             if(no!==(op.observaciones||'')) guardarCambio(k,'observaciones',op.observaciones||'(vacío)',no||'(vacío)',currentUser);
-            const params=new URLSearchParams({action:'edit_operation',tipo,fecha:op.fecha,clienteOriginal:op.cliente,cantidadOriginal:op.cantidad,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,usuario:currentUser});
+            if(nuevoOperador!==op.operador) guardarCambio(k,'operador',op.operador,nuevoOperador,currentUser);
+            const params=new URLSearchParams({action:'edit_operation',tipo,fecha:op.fecha,clienteOriginal:op.cliente,cantidadOriginal:op.cantidad,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,nuevoOperador,usuario:currentUser});
             const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},3000);
             showToast('✅ Operación actualizada','#667eea'); closeModal(); setTimeout(()=>loadData(),1500);
@@ -993,7 +1024,9 @@
         function switchTab(t){currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#d4e5d4';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#e5d4d4';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
         function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';updateHistorial();}
-        function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');if(t==='VENTA'){document.getElementById('tipo-venta').classList.add('active');document.getElementById('tipo-compra').classList.remove('active');btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{document.getElementById('tipo-venta').classList.remove('active');document.getElementById('tipo-compra').classList.add('active');btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
+        function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='⬆️ Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='⬇️ Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
+        function selectTipoForm(tipo){setTipo(tipo);document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
+        function volverAlPicker(){document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
         function calcularTotal(){const c=parseFloat(document.getElementById('form-cantidad').value)||0,p=parseFloat(document.getElementById('form-precio').value)||0,t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
         
         async function agregarOperacion(){
@@ -1004,11 +1037,13 @@
             const fecha=document.getElementById('form-fecha').value, obs=document.getElementById('form-observaciones').value, total=cantidad*precio;
             btn.disabled=true; const ot=btn.textContent; btn.textContent='⏳ Guardando...'; btn.style.opacity='0.6';
             try {
-                const params=new URLSearchParams({action:'add_operation',tipo:currentTipo,fecha,operador:currentUser,cliente,cantidad,precio,total,observaciones:obs});
+                const operador=document.getElementById('form-operador').value||currentUser;
+                const params=new URLSearchParams({action:'add_operation',tipo:currentTipo,fecha,operador,cliente,cantidad,precio,total,observaciones:obs});
                 const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
                 setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
                 showToast('✅ '+currentTipo+' agregada','#48bb78');
                 ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
+                volverAlPicker();
                 document.getElementById('total-preview').classList.add('hidden');
                 setTimeout(()=>loadData(),3000);
             } catch(e){showToast('❌ Error: '+e.message,'#e53e3e');}
