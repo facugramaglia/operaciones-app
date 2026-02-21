@@ -9,6 +9,7 @@
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="Sistema de Operaciones de Cambio">
     <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://sheets.googleapis.com https://dolarapi.com; frame-src https:; img-src 'self' data: blob:;">
     <title>Sistema de Operaciones</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
@@ -823,7 +824,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.11';
+        const APP_VERSION = 'v3.12';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -836,9 +837,14 @@
             separador: '---SEPARADOR---'
         };
         const MASTER_PIN = '630500';
+        let pinAttempts = 0, pinLocked = false;
+        const MAX_PIN_ATTEMPTS = 5;
+        async function hashPin(pin) { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
         let currentUser = null, ventas = [], compras = [], ventasRaw = [], comprasRaw = [], deudasRaw = [];
         let balanceTotal = 0, currentTipo = 'VENTA', currentFilter = 'ultimo', currentTab = 'ventas';
         let showOnlyPending = false;
+
+        function escHTML(s) { if (s == null) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
         // ── SPLASH ────────────────────────────────────────────────
         function hideSplash() {
@@ -863,16 +869,17 @@
         }
 
         // ── INIT ──────────────────────────────────────────────────
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', async function() {
             const todayISO = new Date().toISOString().split('T')[0];
             document.getElementById('form-fecha').value = todayISO;
             document.getElementById('deuda-fecha').value = todayISO;
             document.getElementById('app-version-display').textContent = APP_VERSION;
             setupEventListeners();
-            const pinVerified = localStorage.getItem('pinVerified');
+            const storedHash = localStorage.getItem('pinHash');
+            const pinValid = storedHash ? storedHash === await hashPin(MASTER_PIN) : false;
             setTimeout(() => {
                 hideSplash();
-                if (pinVerified === 'true') { document.getElementById('pin-screen').classList.add('hidden'); checkInitialSetup(); }
+                if (pinValid) { document.getElementById('pin-screen').classList.add('hidden'); checkInitialSetup(); }
                 checkInstallPrompt();
             }, 1800);
         });
@@ -925,10 +932,25 @@
             deudaFechaInput.addEventListener('change', updateDeudaFechaDisplay);
         }
         
-        function checkPIN() {
+        async function checkPIN() {
+            if (pinLocked) { showToast('❌ Demasiados intentos. Recargá la página.', '#e53e3e'); return; }
             const pin = document.getElementById('pin-input').value;
-            if (pin === MASTER_PIN) { localStorage.setItem('pinVerified', 'true'); document.getElementById('pin-screen').classList.add('hidden'); checkInitialSetup(); }
-            else { alert('❌ PIN incorrecto'); document.getElementById('pin-input').value = ''; }
+            if (pin === MASTER_PIN) {
+                pinAttempts = 0;
+                localStorage.setItem('pinHash', await hashPin(pin));
+                document.getElementById('pin-screen').classList.add('hidden');
+                checkInitialSetup();
+            } else {
+                pinAttempts++;
+                document.getElementById('pin-input').value = '';
+                if (pinAttempts >= MAX_PIN_ATTEMPTS) {
+                    pinLocked = true;
+                    document.getElementById('btn-pin').disabled = true;
+                    showToast('❌ Demasiados intentos fallidos. Recargá la página.', '#e53e3e');
+                } else {
+                    showToast(`❌ PIN incorrecto · ${MAX_PIN_ATTEMPTS - pinAttempts} intento${MAX_PIN_ATTEMPTS - pinAttempts !== 1 ? 's' : ''} restante${MAX_PIN_ATTEMPTS - pinAttempts !== 1 ? 's' : ''}`, '#e53e3e');
+                }
+            }
         }
         function checkInitialSetup() {
             const savedUser = localStorage.getItem('currentUser');
@@ -940,7 +962,10 @@
             if (!apiKey || !apiKey.trim()) { alert('❌ La API Key es obligatoria'); return; }
             config.apiKey = apiKey.trim(); localStorage.setItem('apiKey', config.apiKey);
             const scriptUrl = prompt('URL del Google Apps Script (opcional):');
-            if (scriptUrl && scriptUrl.trim()) { config.scriptUrl = scriptUrl.trim(); localStorage.setItem('scriptUrl', config.scriptUrl); }
+            if (scriptUrl && scriptUrl.trim()) {
+                if (!isValidHttpsUrl(scriptUrl.trim())) { alert('❌ La URL del Script debe comenzar con https://'); return; }
+                config.scriptUrl = scriptUrl.trim(); localStorage.setItem('scriptUrl', config.scriptUrl);
+            }
             alert('✅ Configuración guardada');
         }
         function handleLogin() {
@@ -950,7 +975,7 @@
             currentUser = username; localStorage.setItem('currentUser', username); showMainApp();
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
-        function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinVerified'); currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
+        function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
         let _dolarBlueInterval = null;
         let _dataRefreshInterval = null;
         async function fetchDolarBlue() {
@@ -1064,10 +1089,10 @@
             const cp = compras.filter(c => ['PENDIENTE','LLEVO PESOS','PREPARADO'].includes(c.estado.toUpperCase())).reverse();
             const vtb = document.getElementById('ventas-pendientes-tbody'); vtb.innerHTML = '';
             if (!vp.length) vtb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay ventas pendientes</td></tr>';
-            else vp.forEach(v => { const tARS=v.total||(v.cantidad*v.precio); const r = vtb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${v.operador}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${v.cliente}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${v.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
+            else vp.forEach(v => { const tARS=v.total||(v.cantidad*v.precio); const r = vtb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${escHTML(v.operador)}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${escHTML(v.cliente)}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${v.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
             const ctb = document.getElementById('compras-pendientes-tbody'); ctb.innerHTML = '';
             if (!cp.length) ctb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay compras pendientes</td></tr>';
-            else cp.forEach(c => { const tARS=c.total||(c.cantidad*c.precio); const r = ctb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${c.operador}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${c.cliente}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${c.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
+            else cp.forEach(c => { const tARS=c.total||(c.cantidad*c.precio); const r = ctb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${escHTML(c.operador)}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${escHTML(c.cliente)}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${c.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
         }
         
         function getFilteredOps(ops, isVentas) {
@@ -1092,7 +1117,7 @@
             if (searchQuery) { vf = vf.filter(v => v.cliente.toLowerCase().includes(searchQuery)); cf = cf.filter(c => c.cliente.toLowerCase().includes(searchQuery)); }
             const tab = currentTab==='ventas'?vf:cf, counts={};
             tab.forEach(op => { counts[op.estado]=(counts[op.estado]||0)+1; });
-            document.getElementById('estado-counters').innerHTML = Object.entries(counts).map(([e,n]) => { const s=getEstadoStyles(e); return `<span style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${s.bg};color:${s.color};">${e} · ${n}</span>`; }).join('');
+            document.getElementById('estado-counters').innerHTML = Object.entries(counts).map(([e,n]) => { const s=getEstadoStyles(e); return `<span style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${s.bg};color:${s.color};">${escHTML(e)} · ${n}</span>`; }).join('');
             
             function addRows(data, tbody, estados, tipo) {
                 data.forEach(op => {
@@ -1102,7 +1127,7 @@
                     const swipeW = otros.length >= 3 ? 200 : 160;
                     row.dataset.swipeWidth = swipeW;
                     const btns = otros.map(e => { const s=getEstadoStyles(e); return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${op.fecha}','${op.cliente}','${op.cantidad}','${tipo}','${e}');event.stopPropagation();">${e}</button>`; }).join('');
-                    row.innerHTML = `<td colspan="3" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:12px 8px;"><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${op.cliente}</div><div style="font-size:11px;color:#a0aec0;">${op.operador}</div></td><td style="padding:12px 8px;text-align:right;white-space:nowrap;"><div class="hist-mobile-amounts"><span style="font-weight:700;font-size:15px;color:#2d3748;">$${op.cantidad}</span><span style="font-size:11px;color:#a0aec0;">TC $${op.precio.toFixed(0)}</span>${(op.total||(op.cantidad*op.precio))>0?'<span style="font-size:11px;color:#718096;font-weight:600;">'+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</div><span class="hist-desktop-cantidad" style="font-weight:700;font-size:15px;color:#2d3748;">$${op.cantidad}</span></td><td class="hist-cell-tc" style="padding:12px 8px;text-align:center;width:80px;white-space:nowrap;"><div style="font-size:12px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#b0bec5;">TC</div></td><td class="hist-cell-ars" style="padding:12px 8px;text-align:right;width:130px;white-space:nowrap;">${(op.total||(op.cantidad*op.precio))>0?'<span style="font-size:14px;font-weight:700;color:#4a5568;">'+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</td><td style="padding:12px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:8px 12px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${op.estado}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    row.innerHTML = `<td colspan="3" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:12px 8px;"><div style="font-weight:600;font-size:15px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:12px 8px;text-align:right;white-space:nowrap;"><div class="hist-mobile-amounts"><span style="font-weight:700;font-size:15px;color:#2d3748;">$${op.cantidad}</span><span style="font-size:11px;color:#a0aec0;">TC $${op.precio.toFixed(0)}</span>${(op.total||(op.cantidad*op.precio))>0?'<span style="font-size:11px;color:#718096;font-weight:600;">'+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</div><span class="hist-desktop-cantidad" style="font-weight:700;font-size:15px;color:#2d3748;">$${op.cantidad}</span></td><td class="hist-cell-tc" style="padding:12px 8px;text-align:center;width:80px;white-space:nowrap;"><div style="font-size:12px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#b0bec5;">TC</div></td><td class="hist-cell-ars" style="padding:12px 8px;text-align:right;width:130px;white-space:nowrap;">${(op.total||(op.cantidad*op.precio))>0?'<span style="font-size:14px;font-weight:700;color:#4a5568;">'+(op.total||(op.cantidad*op.precio)).toLocaleString('es-AR')+' ARS</span>':''}</td><td style="padding:12px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:8px 12px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${escHTML(op.estado)}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
                     const hs = document.createElement('select'); hs.className='estado-select'; hs.style.display='none'; hs.dataset.tipo=tipo; hs.dataset.fecha=op.fecha; hs.dataset.cliente=op.cliente; hs.dataset.cantidad=op.cantidad;
                     estados.forEach(e => { const o=document.createElement('option'); o.value=e; o.textContent=e; if(e===op.estado) o.selected=true; hs.appendChild(o); });
                     row.appendChild(hs);
@@ -1141,11 +1166,11 @@
             document.getElementById('modal-total').style.color = tipo==='VENTA'?'#48bb78':'#f56565';
             const mss = document.getElementById('modal-estado-select'), ns = mss.cloneNode(true);
             mss.parentNode.replaceChild(ns, mss);
-            ns.innerHTML = estadosDisponibles.map(e=>`<option value="${e}" ${op.estado===e?'selected':''}>${e}</option>`).join('');
+            ns.innerHTML = estadosDisponibles.map(e=>`<option value="${escHTML(e)}" ${op.estado===e?'selected':''}>${escHTML(e)}</option>`).join('');
             ns.style.background=es.bg; ns.style.color=es.color; ns.dataset.tipo=tipo; ns.dataset.fecha=op.fecha; ns.dataset.cliente=op.cliente; ns.dataset.cantidad=op.cantidad;
             ns.onchange = function() { const k=getOpKey(op,tipo); guardarCambio(k,'estado',op.estado,this.value,currentUser); cambiarEstado(this); setTimeout(()=>closeModal(),500); };
             const od=document.getElementById('modal-observaciones'); if(op.observaciones){od.textContent=op.observaciones;od.style.display='block';}else{od.style.display='none';}
-            const md=document.getElementById('modal-modificado'); if(op.modificadoPor){md.innerHTML=`Modificado por <strong>${op.modificadoPor}</strong>${op.fechaModificacion?' • '+op.fechaModificacion:''}`;md.style.display='block';}else{md.style.display='none';}
+            const md=document.getElementById('modal-modificado'); if(op.modificadoPor){md.innerHTML=`Modificado por <strong>${escHTML(op.modificadoPor)}</strong>${op.fechaModificacion?' • '+escHTML(op.fechaModificacion):''}`;md.style.display='block';}else{md.style.display='none';}
             document.getElementById('operation-modal').classList.remove('hidden');
             document.getElementById('modal-edit-form').style.display='none';
             document.getElementById('btn-edit-toggle').style.display='block';
@@ -1163,7 +1188,7 @@
         function getOpKey(op,tipo){return `cambios_${tipo}_${op.fecha}_${op.cliente}_${op.cantidad}`.replace(/\s/g,'_');}
         function guardarCambio(k,campo,ant,nvo,usr){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}h.unshift({campo,anterior:ant,nuevo:nvo,usuario:usr,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});if(h.length>10)h=h.slice(0,10);try{localStorage.setItem(k,JSON.stringify(h));}catch(e){}}
         function toggleCambios(){const l=document.getElementById('modal-cambios-lista'),a=document.getElementById('cambios-arrow'),o=l.style.display!=='none';l.style.display=o?'none':'block';a.textContent=o?'▼':'▲';}
-        function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#667eea',cantidad:'#48bb78',precio:'#f59e0b',observaciones:'#a0aec0'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[x.campo]||'#a0aec0'};"></div><div class="cambio-content"><div class="cambio-tipo">${x.campo.charAt(0).toUpperCase()+x.campo.slice(1)}</div><div class="cambio-detalle"><span style="color:#a0aec0;text-decoration:line-through;">${x.anterior}</span><span style="margin:0 4px;">→</span><strong>${x.nuevo}</strong></div><div class="cambio-meta">👤 ${x.usuario} · ${x.fecha}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
+        function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#667eea',cantidad:'#48bb78',precio:'#f59e0b',observaciones:'#a0aec0'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[escHTML(x.campo)]||'#a0aec0'};"></div><div class="cambio-content"><div class="cambio-tipo">${escHTML(x.campo.charAt(0).toUpperCase()+x.campo.slice(1))}</div><div class="cambio-detalle"><span style="color:#a0aec0;text-decoration:line-through;">${escHTML(x.anterior)}</span><span style="margin:0 4px;">→</span><strong>${escHTML(x.nuevo)}</strong></div><div class="cambio-meta">👤 ${escHTML(x.usuario)} · ${escHTML(x.fecha)}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
         
         async function guardarEdicion(op,tipo){
             const nc=parseFloat(document.getElementById('edit-cantidad').value), np=parseFloat(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
@@ -1253,7 +1278,8 @@
             finally{setTimeout(()=>{btn.disabled=false;btn.textContent=ot;btn.style.opacity='1';},2000);}
         }
         
-        function saveConfig(){const ak=document.getElementById('config-api-key').value.trim(),su=document.getElementById('config-script-url').value.trim();if(!ak){alert('Ingresa la API Key');return;}config.apiKey=ak;config.scriptUrl=su;localStorage.setItem('apiKey',ak);localStorage.setItem('scriptUrl',su);showToast('✅ Configuración guardada','#48bb78');}
+        function isValidHttpsUrl(url) { try { return new URL(url).protocol === 'https:'; } catch { return false; } }
+        function saveConfig(){const ak=document.getElementById('config-api-key').value.trim(),su=document.getElementById('config-script-url').value.trim();if(!ak){alert('Ingresa la API Key');return;}if(su&&!isValidHttpsUrl(su)){alert('❌ La URL del Script debe comenzar con https://');return;}config.apiKey=ak;config.scriptUrl=su;localStorage.setItem('apiKey',ak);localStorage.setItem('scriptUrl',su);showToast('✅ Configuración guardada','#48bb78');}
 
         // ═══════════════════════════════════════════════════════════
         //  DEUDAS  (Google Sheets via Apps Script)
@@ -1349,7 +1375,7 @@
                 row.className = 'swipe-row deuda-row';
                 row.style.cssText = 'position:relative;overflow:hidden;';
                 row.dataset.swipeWidth = 160;
-                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${deuda.cliente}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${deuda.estado}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${deuda.moneda} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${deuda.fecha}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${deuda.observaciones}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','${actionLabel}');event.stopPropagation();">${actionLabel}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
+                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${escHTML(deuda.estado)}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','${actionLabel}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
                 row.addEventListener('click', () => showDeudaDetail(deuda));
                 setupSwipe(row);
                 list.appendChild(row);
