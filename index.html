@@ -197,6 +197,11 @@
         .hist-desktop-cantidad { display: none; }
 
         /* ══ DESKTOP LAYOUT (≥ 860px) ══════════════════════════════ */
+        /* Page title desktop — oculto en mobile */
+        .desktop-page-header { display: none; }
+        .dph-title  { font-size: 26px; font-weight: 800; color: #1a2e1a; margin: 0 0 3px; }
+        .dph-subtitle { font-size: 14px; color: #8a9e8a; margin: 0; }
+
         @media (min-width: 860px) {
 
             /* Convierte bottom-nav en sidebar lateral */
@@ -309,6 +314,108 @@
             .hist-mobile-extra { display: none !important; }
             .hist-mobile-amounts { display: none !important; }
             .hist-desktop-cantidad { display: inline !important; }
+        }
+
+        /* ═══════════════════════════════════════════════
+           NUEVO DISEÑO DESKTOP — solo min-width: 860px
+        ═══════════════════════════════════════════════ */
+        @media (min-width: 860px) {
+
+            /* Fondo general */
+            body { background: #edf2ed; }
+
+            /* ── Sidebar: verde oscuro ─────────────────────── */
+            .bottom-nav {
+                background: #1a3328 !important;
+                border-right: none !important;
+                box-shadow: 4px 0 24px rgba(0,0,0,0.18) !important;
+            }
+            .sidebar-logo {
+                color: white !important;
+                border-bottom-color: rgba(255,255,255,0.1) !important;
+                font-size: 17px !important;
+            }
+            .nav-item {
+                color: rgba(255,255,255,0.58) !important;
+                background: transparent !important;
+            }
+            .nav-item:hover {
+                background: rgba(255,255,255,0.07) !important;
+                color: rgba(255,255,255,0.88) !important;
+            }
+            .nav-item.active {
+                background: rgba(255,255,255,0.13) !important;
+                color: white !important;
+            }
+            .nav-icon { background: transparent !important; box-shadow: none !important; }
+
+            /* ── Header: blanco limpio ─────────────────────── */
+            .app-header {
+                background: white !important;
+                box-shadow: 0 1px 0 #dce8dc !important;
+            }
+            .header-balance-strip {
+                background: #fafcfa !important;
+                border-top-color: #dce8dc !important;
+            }
+
+            /* ── Cards ─────────────────────────────────────── */
+            .card {
+                border: 1px solid #dce8dc !important;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+                border-radius: 14px !important;
+            }
+            .balance-card {
+                border-radius: 16px !important;
+                box-shadow: 0 6px 24px rgba(26,51,40,0.22) !important;
+            }
+            .card-title {
+                font-size: 15px !important;
+                color: #1a3328 !important;
+                padding-left: 10px !important;
+                border-left: 3px solid #27ae60 !important;
+                margin-bottom: 16px !important;
+            }
+
+            /* ── Títulos de página ─────────────────────────── */
+            .desktop-page-header {
+                display: block;
+                margin-bottom: 22px;
+                grid-column: 1 / -1;
+            }
+
+            /* ── Hoy: metric boxes más grandes ────────────── */
+            #hoy-ventas-box, #hoy-compras-box {
+                padding: 18px 20px !important;
+                border-radius: 12px !important;
+            }
+            #hoy-ventas-total, #hoy-compras-total { font-size: 24px !important; }
+            #hoy-ventas-count,  #hoy-compras-count  { font-size: 12px !important; margin-top: 2px; }
+
+            /* ── Historial: tabla limpia estilo dashboard ───── */
+            #ventas-table th, #compras-table th {
+                background: #f4f8f4 !important;
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+                color: #9ab09a !important;
+                padding: 12px 10px !important;
+                border-bottom: 2px solid #dce8dc !important;
+            }
+            #ventas-table, #compras-table { border-collapse: separate; border-spacing: 0; }
+
+            /* Filters & search en historial */
+            #historial-filters-row #filter-select {
+                border-color: #dce8dc !important;
+                color: #2d5a3d !important;
+                border-radius: 10px !important;
+            }
+            #historial-filters-row #btn-pending-only { border-radius: 10px !important; }
+            #search-cliente, #search-deuda {
+                border-color: #dce8dc !important;
+                border-radius: 12px !important;
+            }
         }
     </style>
 </head>
@@ -426,6 +533,10 @@
         
         <div class="content">
             <div id="dashboard-screen" class="screen active">
+                <div class="desktop-page-header">
+                    <div class="dph-title">Dashboard</div>
+                    <div class="dph-subtitle">Resumen de operaciones en tiempo real</div>
+                </div>
                 <div class="balance-card" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div class="balance-label">Balance Total</div>
@@ -464,12 +575,12 @@
                 <div class="card" id="card-hoy" style="padding: 14px 16px;">
                     <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
+                        <div id="hoy-ventas-box" style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
                             <div style="font-size: 11px; color: #48bb78; font-weight: 700; margin-bottom: 4px;">↑ VENTAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-ventas-total">$0</div>
                             <div style="font-size: 11px; color: #a0aec0;" id="hoy-ventas-count">0 operaciones</div>
                         </div>
-                        <div style="background: #fff5f5; border-radius: 10px; padding: 10px 14px;">
+                        <div id="hoy-compras-box" style="background: #fff5f5; border-radius: 10px; padding: 10px 14px;">
                             <div style="font-size: 11px; color: #f56565; font-weight: 700; margin-bottom: 4px;">↓ COMPRAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-compras-total">$0</div>
                             <div style="font-size: 11px; color: #a0aec0;" id="hoy-compras-count">0 operaciones</div>
@@ -551,6 +662,10 @@
             </div>
             
             <div id="historial-screen" class="screen">
+                <div class="desktop-page-header">
+                    <div class="dph-title">Historial</div>
+                    <div class="dph-subtitle">Últimas operaciones de compra y venta</div>
+                </div>
                 <div style="display: flex; gap: 10px; margin-bottom: 8px;">
                     <button class="filter-btn active" id="tab-ventas" style="flex: 1;">📈 Ventas</button>
                     <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
