@@ -1196,16 +1196,42 @@
         }
         
         function updatePesosEnCaja() {
-            const ingresados = ventas
-                .filter(v => v.estado.toUpperCase() === 'REALIZADA')
-                .reduce((s, v) => s + (v.total || v.cantidad * v.precio), 0);
-            const egresados = compras
-                .filter(c => c.estado.toUpperCase() !== 'PENDIENTE')
-                .reduce((s, c) => s + (c.total || c.cantidad * c.precio), 0);
-            const deudaARS = deudas
-                .filter(d => d.moneda === 'ARS' && d.estado === 'PENDIENTE')
-                .reduce((s, d) => s + d.monto, 0);
-            const total = ingresados - egresados - deudaARS;
+            const n = s => parseFloat(String(s||'0').replace(/[$,]/g,'').trim()) || 0;
+            const isSep   = row => row && String(row[1]||'').includes('SEPARADOR');
+            const isValid = row => row && row[2] && row[3] && !isSep(row);
+
+            // Índice del último separador
+            const lastSepIdx = raw => {
+                let idx = -1;
+                for (let i = 0; i < raw.length; i++) { if (isSep(raw[i])) idx = i; }
+                return idx;
+            };
+            const vSep = lastSepIdx(ventasRaw);
+            const cSep = lastSepIdx(comprasRaw);
+
+            const parse = row => ({
+                total: n(row[5]) || n(row[3]) * n(row[4]),
+                estado: String(row[6]||'PENDIENTE').trim().toUpperCase()
+            });
+
+            // Operaciones del día actual (después del último separador)
+            const ventasHoy  = ventasRaw.filter((r,i)  => i > vSep && isValid(r)).map(parse);
+            const comprasHoy = comprasRaw.filter((r,i) => i > cSep && isValid(r)).map(parse);
+
+            // Operaciones de días anteriores (antes del último separador)
+            const ventasAnt  = ventasRaw.filter((r,i)  => i < vSep && isValid(r)).map(parse);
+            const comprasAnt = comprasRaw.filter((r,i) => i < cSep && isValid(r)).map(parse);
+
+            const sum = (arr, fn) => arr.filter(fn).reduce((s,r) => s + r.total, 0);
+
+            const ingresosHoy    = sum(ventasHoy,  v => v.estado === 'REALIZADA');  // ventas cobradas hoy
+            const egresosHoy     = sum(comprasHoy, c => c.estado !== 'PENDIENTE');  // compras pagadas hoy
+            const ventasPendAnt  = sum(ventasAnt,  v => v.estado === 'PENDIENTE');  // ventas viejas sin cobrar → restan
+            const comprasPendAnt = sum(comprasAnt, c => c.estado === 'PENDIENTE');  // compras viejas sin pagar → suman
+            const deudaARS       = deudas.filter(d => d.moneda === 'ARS' && d.estado === 'PENDIENTE')
+                                         .reduce((s,d) => s + d.monto, 0);
+
+            const total = ingresosHoy - egresosHoy - ventasPendAnt + comprasPendAnt - deudaARS;
             const el = document.getElementById('pesos-en-caja-amount');
             if (el) {
                 el.textContent = '$ ' + Math.round(total).toLocaleString('es-AR', {maximumFractionDigits: 0});
