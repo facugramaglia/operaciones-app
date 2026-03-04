@@ -316,7 +316,7 @@ function addDeuda(ss, data) {
   }
 
   const lastRow = sheet.getRange('C:C').getValues().filter(String).length + 1;
-  // A=Fecha, B=Operador, C=Cliente, D=Monto, E=Moneda, F=Estado, G=Observaciones
+  // A=Fecha, B=Operador, C=Cliente, D=Monto, E=Moneda, F=Estado, G=Observaciones, H=Tipo
   const newRow = [
     fecha,
     data.operador,
@@ -324,9 +324,10 @@ function addDeuda(ss, data) {
     data.monto,
     data.moneda,
     'PENDIENTE',
-    data.observaciones || ''
+    data.observaciones || '',
+    data.tipo || 'COBRAR'
   ];
-  sheet.getRange(lastRow, 1, 1, 7).setValues([newRow]);
+  sheet.getRange(lastRow, 1, 1, 8).setValues([newRow]);
   sheet.getRange(lastRow, 11).setValue(new Date());
   sheet.getRange(lastRow, 12).setValue(data.operador);
   sheet.getRange(lastRow, 13).setValue(new Date());
@@ -442,6 +443,7 @@ function editDeuda(ss, data) {
       sheet.getRange(i + 1, 4).setValue(data.nuevoMonto);   // D: Monto
       sheet.getRange(i + 1, 5).setValue(data.nuevaMoneda);  // E: Moneda
       sheet.getRange(i + 1, 7).setValue(data.nuevasObs);    // G: Observaciones
+      if (data.nuevoTipo) sheet.getRange(i + 1, 8).setValue(data.nuevoTipo); // H: Tipo
       sheet.getRange(i + 1, 12).setValue(data.usuario);
       sheet.getRange(i + 1, 13).setValue(new Date());
       return ContentService.createTextOutput(JSON.stringify({
@@ -541,6 +543,7 @@ DEUDAS:
   A: Fecha          B: Operador       C: Cliente
   D: Monto          E: Moneda (USD/ARS)
   F: Estado (PENDIENTE/COBRADA)       G: Observaciones
+  H: Tipo (COBRAR/PAGAR)
   K: Timestamp      L: Usuario modificó    M: Fecha modificación
 ═══════════════════════════════════════════════════════════════════════════
 */
