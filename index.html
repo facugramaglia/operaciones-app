@@ -678,6 +678,7 @@
                         <option value="30">Últimas 30</option>
                         <option value="50">Últimas 50</option>
                         <option value="100">Últimas 100</option>
+                        <option value="todas">Todas</option>
                     </select>
                     <button id="btn-pending-only" class="pending-only-btn" onclick="togglePendingOnly()" style="flex:1;">Todos los estados</button>
                 </div>
@@ -1211,6 +1212,7 @@
         }
         
         function getFilteredOps(ops, isVentas) {
+            if (currentFilter === 'todas') return ops;
             if (currentFilter === 'ultimo') {
                 const raw = isVentas ? ventasRaw : comprasRaw;
                 let li = -1;
@@ -1368,7 +1370,7 @@
         function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#e5d4d4':'#d4e5d4';else if(s==='deudas') document.body.style.background='#f0eaf8';else document.body.style.background='#d4e5d4';}
         function switchTab(t){currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#d4e5d4';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#e5d4d4';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
-        function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';updateHistorial();}
+        function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';if(showOnlyPending){currentFilter='todas';document.getElementById('filter-select').value='todas';}updateHistorial();}
         function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='⬆️ Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='⬇️ Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
         function selectTipoForm(tipo){setTipo(tipo);document.body.style.background=tipo==='VENTA'?'#d4e5d4':'#e5d4d4';document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
         function volverAlPicker(){document.body.style.background='#d4e5d4';document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
