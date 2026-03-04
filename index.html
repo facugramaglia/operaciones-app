@@ -77,7 +77,7 @@
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
         .btn-logout { padding: 8px 16px; background: #f56565; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; }
         .balance-card { background: transparent; padding: 0; border-radius: 0; margin-top: 10px; }
-        .bm-row { display: flex; gap: 10px; }
+        .bm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .bm-item { flex: 1; display: flex; flex-direction: column; padding: 13px 15px; background: #f0faf5; border-radius: 16px; }
         .bm-item.bm-blue { background: #eef2ff; }
         .bm-item.bm-gray { background: #f4f6f9; }
@@ -209,6 +209,12 @@
         .hist-mobile-amounts { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
         .hist-desktop-cantidad { display: none; }
 
+        /* ── MOBILE: ocultar cabeceras de tablas (se usan card-rows) */
+        #card-ventas-pendientes thead,
+        #card-compras-pendientes thead,
+        #ventas-table thead,
+        #compras-table thead { display: none; }
+
         /* ══ DESKTOP LAYOUT (≥ 860px) ══════════════════════════════ */
         /* Page title desktop — oculto en mobile */
         .desktop-page-header { display: none; }
@@ -272,6 +278,9 @@
             .app-header { margin-left: 230px; }
             .content    { margin-left: 230px; padding: 28px 36px 32px; }
 
+            /* Balance card: 4 en fila en desktop */
+            .bm-row { grid-template-columns: repeat(4, 1fr); }
+
             /* Dashboard: pendientes en 2 columnas */
             #dashboard-screen.active {
                 display: grid;
@@ -321,6 +330,12 @@
 
             /* Pull-to-refresh oculto en desktop */
             .pull-indicator { display: none !important; }
+
+            /* Mostrar cabeceras de tabla en desktop */
+            #card-ventas-pendientes thead,
+            #card-compras-pendientes thead,
+            #ventas-table thead,
+            #compras-table thead { display: table-header-group; }
 
             /* Historial: mostrar columnas TC y ARS por separado */
             .hist-cell-tc, .hist-cell-ars { display: table-cell; }
@@ -1290,7 +1305,12 @@
                     const btns = otros.map(e => { const s=getEstadoStyles(e); return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${op.fecha}','${op.cliente}','${op.cantidad}','${tipo}','${e}');event.stopPropagation();">${e}</button>`; }).join('');
                     const montoVal = op.total || (op.cantidad * op.precio);
                     const montoStr = montoVal > 0 ? '$ ' + Math.round(montoVal).toLocaleString('es-AR', {maximumFractionDigits: 0}) : '';
-                    row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">$${op.cantidad}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${escHTML(op.estado)}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    const isMobile = window.innerWidth < 860;
+                    if (isMobile) {
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:13px 14px;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;color:#2d3748;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</span><span style="padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};white-space:nowrap;flex-shrink:0;">${escHTML(op.estado)}</span></div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:#a0aec0;">${escHTML(op.fecha)} · ${escHTML(op.operador)}</span><span style="font-size:16px;font-weight:800;color:#2d3748;">${montoStr}</span></div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">USD $${op.cantidad} · TC $${op.precio.toFixed(0)}</div></div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    } else {
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">$${op.cantidad}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${escHTML(op.estado)}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    }
                     const hs = document.createElement('select'); hs.className='estado-select'; hs.style.display='none'; hs.dataset.tipo=tipo; hs.dataset.fecha=op.fecha; hs.dataset.cliente=op.cliente; hs.dataset.cantidad=op.cantidad;
                     estados.forEach(e => { const o=document.createElement('option'); o.value=e; o.textContent=e; if(e===op.estado) o.selected=true; hs.appendChild(o); });
                     row.appendChild(hs);
@@ -1338,7 +1358,12 @@
                     const btns = otros.map(e => { const s=getEstadoStyles(e); return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${op.fecha}','${op.cliente}','${op.cantidad}','${tipo}','${e}');event.stopPropagation();">${e}</button>`; }).join('');
                     const montoVal = op.total || (op.cantidad * op.precio);
                     const montoStr = montoVal > 0 ? '$ ' + Math.round(montoVal).toLocaleString('es-AR', {maximumFractionDigits: 0}) : '';
-                    row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">$${op.cantidad}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${escHTML(op.estado)}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    const isMobile = window.innerWidth < 860;
+                    if (isMobile) {
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:13px 14px;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;color:#2d3748;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</span><span style="padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};white-space:nowrap;flex-shrink:0;">${escHTML(op.estado)}</span></div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:#a0aec0;">${escHTML(op.fecha)} · ${escHTML(op.operador)}</span><span style="font-size:16px;font-weight:800;color:#2d3748;">${montoStr}</span></div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">USD $${op.cantidad} · TC $${op.precio.toFixed(0)}</div></div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    } else {
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">$${op.cantidad}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${escHTML(op.estado)}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    }
                     const hs = document.createElement('select'); hs.className='estado-select'; hs.style.display='none'; hs.dataset.tipo=tipo; hs.dataset.fecha=op.fecha; hs.dataset.cliente=op.cliente; hs.dataset.cantidad=op.cantidad;
                     estados.forEach(e => { const o=document.createElement('option'); o.value=e; o.textContent=e; if(e===op.estado) o.selected=true; hs.appendChild(o); });
                     row.appendChild(hs);
