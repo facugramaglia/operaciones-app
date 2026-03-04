@@ -61,6 +61,7 @@ function doGet(e) {
         cliente: params.cliente,
         monto: parseFloat(params.monto),
         moneda: params.moneda,
+        tipo: params.tipo || 'COBRAR',
         observaciones: params.observaciones || ''
       };
       return addDeuda(ss, data);
@@ -85,6 +86,7 @@ function doGet(e) {
         nuevoMonto: parseFloat(params.nuevoMonto),
         nuevaMoneda: params.nuevaMoneda,
         nuevaFecha: params.nuevaFecha,
+        nuevoTipo: params.nuevoTipo || '',
         nuevasObs: params.nuevasObs || '',
         usuario: params.usuario
       };
