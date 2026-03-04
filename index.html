@@ -76,9 +76,14 @@
         .user-info { display: flex; align-items: center; gap: 10px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
         .btn-logout { padding: 8px 16px; background: #f56565; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; }
-        .balance-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; color: white; margin-top: 10px; }
-        .balance-label { font-size: 14px; opacity: 0.9; }
-        .balance-amount { font-size: 32px; font-weight: bold; margin-top: 5px; }
+        .balance-card { background: #1a3328; padding: 16px 18px; border-radius: 15px; color: white; margin-top: 10px; }
+        .bm-row { display: flex; align-items: stretch; gap: 0; }
+        .bm-item { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 6px 12px; }
+        .bm-item:first-child { padding-left: 0; }
+        .bm-item:last-child { padding-right: 0; }
+        .bm-sep { width: 1px; background: rgba(255,255,255,0.15); margin: 4px 0; flex-shrink: 0; }
+        .balance-label { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
+        .balance-amount { font-size: 22px; font-weight: 800; color: white; line-height: 1; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #a0aec0; font-size: 12px; padding: 0; transition: all 0.3s; }
         .nav-icon { width: 48px; height: 48px; border-radius: 50%; background: #f7fafc; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
@@ -189,6 +194,7 @@
         .sidebar-logo { display: none; }
         #card-dolar-blue  { display: none; }
         #balance-datetime { display: none; }
+        #balance-datetime-sep { display: none; }
 
         /* Historial: columnas TC y ARS separadas — mobile: ocultas, desktop: visibles */
         .hist-cell-tc, .hist-cell-ars { display: none; }
@@ -268,9 +274,9 @@
             }
             #dashboard-screen .balance-card        { grid-column: 1 / -1; }
             #dashboard-screen #card-hoy            { grid-column: 1 / -1; }
-            #dolar-blue-hero  { display: block !important; }
             #card-dolar-blue  { display: none !important; }
-            #balance-datetime { display: block; }
+            #balance-datetime { display: flex !important; }
+            #balance-datetime-sep { display: block !important; }
 
             /* Picker: centrado, proporciones desktop */
             #cargar-picker {
@@ -367,8 +373,10 @@
             }
             .balance-card {
                 border-radius: 16px !important;
-                box-shadow: 0 6px 24px rgba(26,51,40,0.22) !important;
+                box-shadow: 0 6px 24px rgba(0,0,0,0.25) !important;
             }
+            .balance-amount { font-size: 26px !important; }
+            .bm-item { padding: 6px 20px !important; }
             .card-title {
                 font-size: 15px !important;
                 color: #1a3328 !important;
@@ -537,40 +545,37 @@
                     <div class="dph-title">Dashboard</div>
                     <div class="dph-subtitle">Resumen de operaciones en tiempo real</div>
                 </div>
-                <div class="balance-card" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div class="balance-label">Balance Total</div>
-                        <div class="balance-amount" id="header-balance-main">$0</div>
-                    </div>
-                    <div id="dolar-blue-hero" style="text-align:center;">
-                        <div style="font-size:11px; opacity:0.7; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:6px;">💵 Dólar Blue</div>
-                        <div style="display:flex; gap:20px; justify-content:center; align-items:center;">
-                            <div>
-                                <div style="font-size:10px; opacity:0.6; margin-bottom:2px;">Compra</div>
-                                <div style="font-size:20px; font-weight:800;" id="dolar-blue-compra-hero">–</div>
-                            </div>
-                            <div style="width:1px; height:32px; background:rgba(255,255,255,0.3); border-radius:2px;"></div>
-                            <div>
-                                <div style="font-size:10px; opacity:0.6; margin-bottom:2px;">Venta</div>
-                                <div style="font-size:20px; font-weight:800;" id="dolar-blue-venta-hero">–</div>
-                            </div>
+                <div class="balance-card">
+                    <div class="bm-row">
+                        <div class="bm-item">
+                            <div class="balance-label">Balance Total</div>
+                            <div class="balance-amount" id="header-balance-main">$0</div>
                         </div>
-                        <div style="font-size:10px; opacity:0.45; margin-top:5px;" id="dolar-blue-updated-hero"></div>
+                        <div class="bm-sep"></div>
+                        <div class="bm-item" id="dolar-blue-compra-box">
+                            <div class="balance-label">💵 Compra</div>
+                            <div class="balance-amount" id="dolar-blue-compra-hero">–</div>
+                        </div>
+                        <div class="bm-sep"></div>
+                        <div class="bm-item" id="dolar-blue-venta-box">
+                            <div class="balance-label">💵 Venta</div>
+                            <div class="balance-amount" id="dolar-blue-venta-hero">–</div>
+                        </div>
+                        <div class="bm-sep" id="balance-datetime-sep"></div>
+                        <div class="bm-item" id="balance-datetime" style="text-align:right; align-items:flex-end;">
+                            <div class="balance-label" id="current-date">--/--/----</div>
+                            <div class="balance-amount" id="current-time">--:--</div>
+                        </div>
                     </div>
-                    <div id="balance-datetime" style="text-align: right;">
-                        <div style="font-size: 12px; opacity: 0.8;" id="current-date">--/--/----</div>
-                        <div style="font-size: 20px; font-weight: bold; margin-top: 5px;" id="current-time">--:--</div>
-                    </div>
+                    <div style="font-size:10px; color:rgba(255,255,255,0.35); margin-top:6px; text-align:right;" id="dolar-blue-updated-hero"></div>
                 </div>
-                <div class="card" id="card-ventas-pendientes" style="cursor: pointer;">
-                    <div class="card-title" style="color: #48bb78;">📈 Ventas Pendientes</div>
-                    <div style="overflow-x: auto;"><table><thead><tr><th>Operador</th><th>Cliente</th><th style="text-align: right;">Cantidad</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
-                    <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
+                <div class="card" id="card-ventas-pendientes">
+                    <div class="card-title" style="color: #48bb78; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">📈 Ventas Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
+                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
                 </div>
-                <div class="card" id="card-compras-pendientes" style="cursor: pointer;">
-                    <div class="card-title" style="color: #f56565;">📉 Compras Pendientes</div>
-                    <div style="overflow-x: auto;"><table><thead><tr><th>Operador</th><th>Cliente</th><th style="text-align: right;">Cantidad</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
-                    <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
+                <div class="card" id="card-compras-pendientes">
+                    <div class="card-title" style="color: #f56565; cursor: pointer;" onclick="showScreen('historial'); switchTab('compras');">📉 Compras Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
+                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
                 </div>
                 <div class="card" id="card-hoy" style="padding: 14px 16px;">
                     <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
@@ -1022,8 +1027,6 @@
             }
             fechaInput.addEventListener('change', updateFechaDisplay);
             updateFechaDisplay();
-            document.getElementById('card-ventas-pendientes').addEventListener('click', () => { showScreen('historial'); switchTab('ventas'); });
-            document.getElementById('card-compras-pendientes').addEventListener('click', () => { showScreen('historial'); switchTab('compras'); });
             document.getElementById('btn-logout').addEventListener('click', handleLogout);
             document.getElementById('form-cantidad').addEventListener('input', calcularTotal);
             document.getElementById('form-precio').addEventListener('input', calcularTotal);
@@ -1201,14 +1204,32 @@
         }
         
         function updatePendingTables() {
+            const ev = ['PENDIENTE','REALIZADA','LLEVO BILL'], ec = ['PENDIENTE','REALIZADA','LLEVO PESOS','PREPARADO'];
             const vp = ventas.filter(v => ['PENDIENTE','LLEVO BILL','LLEVO BILLETES'].includes(v.estado.toUpperCase())).reverse();
             const cp = compras.filter(c => ['PENDIENTE','LLEVO PESOS','PREPARADO'].includes(c.estado.toUpperCase())).reverse();
-            const vtb = document.getElementById('ventas-pendientes-tbody'); vtb.innerHTML = '';
-            if (!vp.length) vtb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay ventas pendientes</td></tr>';
-            else vp.forEach(v => { const tARS=v.total||(v.cantidad*v.precio); const r = vtb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${escHTML(v.operador)}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${escHTML(v.cliente)}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${v.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
-            const ctb = document.getElementById('compras-pendientes-tbody'); ctb.innerHTML = '';
-            if (!cp.length) ctb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay compras pendientes</td></tr>';
-            else cp.forEach(c => { const tARS=c.total||(c.cantidad*c.precio); const r = ctb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${escHTML(c.operador)}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${escHTML(c.cliente)}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${c.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
+            function addPendingRows(data, tbodyId, estados, tipo) {
+                const tbody = document.getElementById(tbodyId); tbody.innerHTML = '';
+                if (!data.length) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#a0aec0;padding:20px;">No hay ${tipo === 'VENTA' ? 'ventas' : 'compras'} pendientes</td></tr>`; return; }
+                data.forEach(op => {
+                    const row = tbody.insertRow(), es = getEstadoStyles(op.estado);
+                    row.className = 'swipe-row'; row.style.cursor='pointer'; row.style.position='relative'; row.style.overflow='hidden';
+                    const otros = estados.filter(e=>e!==op.estado);
+                    const swipeW = otros.length >= 3 ? 200 : 160;
+                    row.dataset.swipeWidth = swipeW;
+                    const btns = otros.map(e => { const s=getEstadoStyles(e); return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${op.fecha}','${op.cliente}','${op.cantidad}','${tipo}','${e}');event.stopPropagation();">${e}</button>`; }).join('');
+                    const montoVal = op.total || (op.cantidad * op.precio);
+                    const montoStr = montoVal > 0 ? '$ ' + Math.round(montoVal).toLocaleString('es-AR', {maximumFractionDigits: 0}) : '';
+                    row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">$${op.cantidad}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${escHTML(op.estado)}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    const hs = document.createElement('select'); hs.className='estado-select'; hs.style.display='none'; hs.dataset.tipo=tipo; hs.dataset.fecha=op.fecha; hs.dataset.cliente=op.cliente; hs.dataset.cantidad=op.cantidad;
+                    estados.forEach(e => { const o=document.createElement('option'); o.value=e; o.textContent=e; if(e===op.estado) o.selected=true; hs.appendChild(o); });
+                    row.appendChild(hs);
+                    setupSwipe(row);
+                    row.addEventListener('click', () => showOperationDetail(op, tipo, estados));
+                });
+                tbody.querySelectorAll('.estado-select').forEach(s => s.addEventListener('change', function(e) { cambiarEstado(e.target); }));
+            }
+            addPendingRows(vp, 'ventas-pendientes-tbody', ev, 'VENTA');
+            addPendingRows(cp, 'compras-pendientes-tbody', ec, 'COMPRA');
         }
         
         function getFilteredOps(ops, isVentas) {
