@@ -77,11 +77,16 @@
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
         .btn-logout { padding: 8px 16px; background: #f56565; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; }
         .balance-card { background: transparent; padding: 0; border-radius: 0; margin-top: 10px; }
-        .bm-row { display: flex; gap: 8px; }
-        .bm-item { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 14px; background: rgba(26,51,40,0.55); border-radius: 12px; color: white; }
+        .bm-row { display: flex; gap: 10px; }
+        .bm-item { flex: 1; display: flex; flex-direction: column; padding: 13px 15px; background: #f0faf5; border-radius: 16px; }
+        .bm-item.bm-blue { background: #eef2ff; }
+        .bm-item.bm-gray { background: #f4f6f9; }
         .bm-sep { display: none; }
-        .balance-label { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
-        .balance-amount { font-size: 20px; font-weight: 800; color: white; line-height: 1; }
+        .balance-label { font-size: 11px; font-weight: 600; color: #718096; margin-bottom: 6px; }
+        .balance-amount { font-size: 22px; font-weight: 800; color: #1a4d35; line-height: 1; }
+        .bm-item.bm-blue .balance-amount { color: #2c3eb5; }
+        .bm-item.bm-gray .balance-amount { color: #2d3748; }
+        .bm-subtitle { font-size: 11px; color: #a0aec0; margin-top: 4px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #a0aec0; font-size: 12px; padding: 0; transition: all 0.3s; }
         .nav-icon { width: 48px; height: 48px; border-radius: 50%; background: #f7fafc; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
@@ -370,7 +375,7 @@
                 border-radius: 14px !important;
             }
             .balance-amount { font-size: 24px !important; }
-            .bm-item { padding: 14px 18px !important; border-radius: 14px !important; }
+            .bm-item { padding: 16px 18px !important; border-radius: 16px !important; }
             .card-title {
                 font-size: 15px !important;
                 color: #1a3328 !important;
@@ -542,26 +547,26 @@
                 <div class="balance-card">
                     <div class="bm-row">
                         <div class="bm-item">
-                            <div class="balance-label">Balance Total</div>
+                            <div class="balance-label">△ Balance Total</div>
                             <div class="balance-amount" id="header-balance-main">$0</div>
+                            <div class="bm-subtitle">ARS</div>
                         </div>
-                        <div class="bm-sep"></div>
-                        <div class="bm-item" id="dolar-blue-compra-box">
-                            <div class="balance-label">💵 Compra</div>
+                        <div class="bm-item bm-blue" id="dolar-blue-compra-box">
+                            <div class="balance-label">↘ Compra</div>
                             <div class="balance-amount" id="dolar-blue-compra-hero">–</div>
+                            <div class="bm-subtitle" id="dolar-blue-updated-hero"></div>
                         </div>
-                        <div class="bm-sep"></div>
                         <div class="bm-item" id="dolar-blue-venta-box">
-                            <div class="balance-label">💵 Venta</div>
+                            <div class="balance-label">↗ Venta</div>
                             <div class="balance-amount" id="dolar-blue-venta-hero">–</div>
+                            <div class="bm-subtitle">USD blue</div>
                         </div>
-                        <div class="bm-sep" id="balance-datetime-sep"></div>
-                        <div class="bm-item" id="balance-datetime" style="text-align:right; align-items:flex-end;">
-                            <div class="balance-label" id="current-date">--/--/----</div>
-                            <div class="balance-amount" id="current-time">--:--</div>
+                        <div class="bm-item bm-gray" id="pesos-en-caja-box">
+                            <div class="balance-label">◎ Pesos en Caja</div>
+                            <div class="balance-amount" id="pesos-en-caja-amount">$0</div>
+                            <div class="bm-subtitle">ARS efectivo</div>
                         </div>
                     </div>
-                    <div style="font-size:10px; color:rgba(255,255,255,0.35); margin-top:6px; text-align:right;" id="dolar-blue-updated-hero"></div>
                 </div>
                 <div class="card" id="card-ventas-pendientes">
                     <div class="card-title" style="color: #48bb78; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">📈 Ventas Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
@@ -939,7 +944,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.12';
+        const APP_VERSION = 'v3.13';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1177,7 +1182,7 @@
             const top = document.getElementById('header-balance-top');
             top.textContent = '$' + balanceTotal.toLocaleString('es-AR');
             top.style.color = balanceTotal >= 0 ? '#48bb78' : '#e53e3e';
-            updateDateTime(); updateResumenHoy(); updatePendingTables(); updateHistorial();
+            updateDateTime(); updateResumenHoy(); updatePendingTables(); updateHistorial(); updatePesosEnCaja();
         }
         
         function updateResumenHoy() {
@@ -1190,6 +1195,24 @@
             document.getElementById('hoy-compras-count').textContent = ch.length + ' operación' + (ch.length!==1?'es':'');
         }
         
+        function updatePesosEnCaja() {
+            const ingresados = ventas
+                .filter(v => v.estado.toUpperCase() === 'REALIZADA')
+                .reduce((s, v) => s + (v.total || v.cantidad * v.precio), 0);
+            const egresados = compras
+                .filter(c => c.estado.toUpperCase() !== 'PENDIENTE')
+                .reduce((s, c) => s + (c.total || c.cantidad * c.precio), 0);
+            const deudaARS = deudas
+                .filter(d => d.moneda === 'ARS' && d.estado === 'PENDIENTE')
+                .reduce((s, d) => s + d.monto, 0);
+            const total = ingresados - egresados - deudaARS;
+            const el = document.getElementById('pesos-en-caja-amount');
+            if (el) {
+                el.textContent = '$ ' + Math.round(total).toLocaleString('es-AR', {maximumFractionDigits: 0});
+                el.style.color = total >= 0 ? '#1a4d35' : '#c53030';
+            }
+        }
+
         function updateDateTime() {
             const now = new Date();
             document.getElementById('current-date').textContent = now.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
