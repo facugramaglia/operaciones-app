@@ -562,15 +562,13 @@
                         <div style="font-size: 20px; font-weight: bold; margin-top: 5px;" id="current-time">--:--</div>
                     </div>
                 </div>
-                <div class="card" id="card-ventas-pendientes" style="cursor: pointer;">
-                    <div class="card-title" style="color: #48bb78;">📈 Ventas Pendientes</div>
-                    <div style="overflow-x: auto;"><table><thead><tr><th>Operador</th><th>Cliente</th><th style="text-align: right;">Cantidad</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
-                    <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
+                <div class="card" id="card-ventas-pendientes">
+                    <div class="card-title" style="color: #48bb78; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">📈 Ventas Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
+                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
                 </div>
-                <div class="card" id="card-compras-pendientes" style="cursor: pointer;">
-                    <div class="card-title" style="color: #f56565;">📉 Compras Pendientes</div>
-                    <div style="overflow-x: auto;"><table><thead><tr><th>Operador</th><th>Cliente</th><th style="text-align: right;">Cantidad</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
-                    <div style="text-align: center; margin-top: 12px; font-size: 13px; color: #a0aec0;">Toca para ver historial →</div>
+                <div class="card" id="card-compras-pendientes">
+                    <div class="card-title" style="color: #f56565; cursor: pointer;" onclick="showScreen('historial'); switchTab('compras');">📉 Compras Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
+                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
                 </div>
                 <div class="card" id="card-hoy" style="padding: 14px 16px;">
                     <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
@@ -1022,8 +1020,6 @@
             }
             fechaInput.addEventListener('change', updateFechaDisplay);
             updateFechaDisplay();
-            document.getElementById('card-ventas-pendientes').addEventListener('click', () => { showScreen('historial'); switchTab('ventas'); });
-            document.getElementById('card-compras-pendientes').addEventListener('click', () => { showScreen('historial'); switchTab('compras'); });
             document.getElementById('btn-logout').addEventListener('click', handleLogout);
             document.getElementById('form-cantidad').addEventListener('input', calcularTotal);
             document.getElementById('form-precio').addEventListener('input', calcularTotal);
@@ -1201,14 +1197,32 @@
         }
         
         function updatePendingTables() {
+            const ev = ['PENDIENTE','REALIZADA','LLEVO BILL'], ec = ['PENDIENTE','REALIZADA','LLEVO PESOS','PREPARADO'];
             const vp = ventas.filter(v => ['PENDIENTE','LLEVO BILL','LLEVO BILLETES'].includes(v.estado.toUpperCase())).reverse();
             const cp = compras.filter(c => ['PENDIENTE','LLEVO PESOS','PREPARADO'].includes(c.estado.toUpperCase())).reverse();
-            const vtb = document.getElementById('ventas-pendientes-tbody'); vtb.innerHTML = '';
-            if (!vp.length) vtb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay ventas pendientes</td></tr>';
-            else vp.forEach(v => { const tARS=v.total||(v.cantidad*v.precio); const r = vtb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${escHTML(v.operador)}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${escHTML(v.cliente)}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${v.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
-            const ctb = document.getElementById('compras-pendientes-tbody'); ctb.innerHTML = '';
-            if (!cp.length) ctb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#a0aec0;padding:20px;">No hay compras pendientes</td></tr>';
-            else cp.forEach(c => { const tARS=c.total||(c.cantidad*c.precio); const r = ctb.insertRow(); r.innerHTML = `<td style="font-size:11px;color:#b0bec5;font-weight:400;">${escHTML(c.operador)}</td><td style="font-size:14px;font-weight:600;color:#2d3748;">${escHTML(c.cliente)}</td><td style="text-align:right;white-space:nowrap;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><span style="font-size:15px;font-weight:700;color:#1a202c;">$${c.cantidad.toLocaleString('es-AR')}</span>${tARS>0?`<span style="font-size:11px;font-weight:500;color:#a0aec0;">${tARS.toLocaleString('es-AR')} ARS</span>`:''}</div></td>`; });
+            function addPendingRows(data, tbodyId, estados, tipo) {
+                const tbody = document.getElementById(tbodyId); tbody.innerHTML = '';
+                if (!data.length) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#a0aec0;padding:20px;">No hay ${tipo === 'VENTA' ? 'ventas' : 'compras'} pendientes</td></tr>`; return; }
+                data.forEach(op => {
+                    const row = tbody.insertRow(), es = getEstadoStyles(op.estado);
+                    row.className = 'swipe-row'; row.style.cursor='pointer'; row.style.position='relative'; row.style.overflow='hidden';
+                    const otros = estados.filter(e=>e!==op.estado);
+                    const swipeW = otros.length >= 3 ? 200 : 160;
+                    row.dataset.swipeWidth = swipeW;
+                    const btns = otros.map(e => { const s=getEstadoStyles(e); return `<button class="swipe-action-btn" style="background:${s.bg};color:${s.color};" onclick="cambiarEstadoSwipe(this,'${op.fecha}','${op.cliente}','${op.cantidad}','${tipo}','${e}');event.stopPropagation();">${e}</button>`; }).join('');
+                    const montoVal = op.total || (op.cantidad * op.precio);
+                    const montoStr = montoVal > 0 ? '$ ' + Math.round(montoVal).toLocaleString('es-AR', {maximumFractionDigits: 0}) : '';
+                    row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><div style="position:relative;overflow:hidden;"><div class="swipe-inner"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">$${op.cantidad}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-size:11px;color:#d0d7e0;">←</span><span style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;">${escHTML(op.estado)}</span></div></td></tr></table></div><div class="swipe-actions" style="width:${swipeW}px;">${btns}</div></div></td>`;
+                    const hs = document.createElement('select'); hs.className='estado-select'; hs.style.display='none'; hs.dataset.tipo=tipo; hs.dataset.fecha=op.fecha; hs.dataset.cliente=op.cliente; hs.dataset.cantidad=op.cantidad;
+                    estados.forEach(e => { const o=document.createElement('option'); o.value=e; o.textContent=e; if(e===op.estado) o.selected=true; hs.appendChild(o); });
+                    row.appendChild(hs);
+                    setupSwipe(row);
+                    row.addEventListener('click', () => showOperationDetail(op, tipo, estados));
+                });
+                tbody.querySelectorAll('.estado-select').forEach(s => s.addEventListener('change', function(e) { cambiarEstado(e.target); }));
+            }
+            addPendingRows(vp, 'ventas-pendientes-tbody', ev, 'VENTA');
+            addPendingRows(cp, 'compras-pendientes-tbody', ec, 'COMPRA');
         }
         
         function getFilteredOps(ops, isVentas) {
