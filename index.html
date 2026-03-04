@@ -155,6 +155,10 @@
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* ── DEUDAS ──────────────────────────────────────────────── */
+        .deudas-tipo-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .deudas-tipo-btn { padding: 12px 8px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 700; color: #718096; transition: all 0.3s; }
+        .deudas-tipo-btn.active.cobrar { background: white; color: #276349; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .deudas-tipo-btn.active.pagar  { background: white; color: #c53030; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .deudas-filter-bar { display: flex; gap: 8px; margin-bottom: 12px; }
         .deudas-filter-btn { flex: 1; padding: 10px 8px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 600; color: #718096; transition: all 0.3s; }
         .deudas-filter-btn.active { background: white; color: #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -716,14 +720,20 @@
             <!-- ══ DEUDAS SCREEN ══════════════════════════════════════ -->
             <div id="deudas-screen" class="screen">
 
-                <!-- Totales por moneda (solo pendientes) -->
+                <!-- Tabs tipo -->
+                <div class="deudas-tipo-bar">
+                    <button class="deudas-tipo-btn cobrar active" id="tipo-btn-cobrar" onclick="setDeudaTipo('cobrar')">💰 A cobrar</button>
+                    <button class="deudas-tipo-btn pagar" id="tipo-btn-pagar" onclick="setDeudaTipo('pagar')">💸 A pagar</button>
+                </div>
+
+                <!-- Totales (cambian según tipo) -->
                 <div class="deudas-totals">
                     <div class="deudas-total-box usd">
-                        <div class="deudas-total-label">💵 Pendiente USD</div>
+                        <div class="deudas-total-label" id="deudas-total-usd-label">💵 Pendiente USD</div>
                         <div class="deudas-total-amount" id="deudas-total-usd">USD 0</div>
                     </div>
                     <div class="deudas-total-box ars">
-                        <div class="deudas-total-label">💵 Pendiente ARS</div>
+                        <div class="deudas-total-label" id="deudas-total-ars-label">💵 Pendiente ARS</div>
                         <div class="deudas-total-amount" id="deudas-total-ars">ARS 0</div>
                     </div>
                 </div>
@@ -741,7 +751,7 @@
                 <div class="deudas-filter-bar">
                     <button class="deudas-filter-btn active" id="filter-deuda-todas" onclick="setDeudaFilter('todas')">Todas</button>
                     <button class="deudas-filter-btn" id="filter-deuda-pendientes" onclick="setDeudaFilter('pendientes')">⏳ Pendientes</button>
-                    <button class="deudas-filter-btn" id="filter-deuda-cobradas" onclick="setDeudaFilter('cobradas')">✅ Cobradas</button>
+                    <button class="deudas-filter-btn" id="filter-deuda-cobradas" onclick="setDeudaFilter('cobradas')" id="filter-deuda-cobradas">✅ Resueltas</button>
                 </div>
 
                 <!-- Lista -->
@@ -822,6 +832,13 @@
                         <option value="ARS">🇦🇷 ARS</option>
                     </select>
                 </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Tipo</label>
+                    <select id="deuda-edit-tipo" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-weight: 600; background: white;">
+                        <option value="COBRAR">💰 A cobrar</option>
+                        <option value="PAGAR">💸 A pagar</option>
+                    </select>
+                </div>
                 <div style="margin-bottom: 18px;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Observaciones</label>
                     <textarea id="deuda-edit-obs" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea>
@@ -863,6 +880,13 @@
                     <div class="moneda-toggle">
                         <button class="moneda-btn usd active" id="deuda-moneda-usd" onclick="setDeudaMoneda('USD')">🇺🇸 USD</button>
                         <button class="moneda-btn ars" id="deuda-moneda-ars" onclick="setDeudaMoneda('ARS')">🇦🇷 ARS</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo de deuda</label>
+                    <div class="moneda-toggle">
+                        <button class="moneda-btn usd active" id="deuda-tipo-cobrar" onclick="setDeudaTipoForm('COBRAR')">💰 A cobrar</button>
+                        <button class="moneda-btn ars" id="deuda-tipo-pagar" onclick="setDeudaTipoForm('PAGAR')">💸 A pagar</button>
                     </div>
                 </div>
                 <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="deuda-obs" rows="2" placeholder="Notas adicionales (opcional)"></textarea></div>
@@ -1160,7 +1184,7 @@
         }
 
         function processDeudas(rows) {
-            // Columns: A=Fecha B=Operador C=Cliente D=Monto E=Moneda F=Estado G=Obs K(10)=Timestamp L(11)=UsuarioMod M(12)=FechaMod
+            // Columns: A=Fecha B=Operador C=Cliente D=Monto E=Moneda F=Estado G=Obs H=Tipo K(10)=Timestamp L(11)=UsuarioMod M(12)=FechaMod
             return (rows || []).filter(row => row && row[2] && row[3]).map((row, idx) => ({
                 _idx: idx,
                 fecha: String(row[0]||'').trim(),
@@ -1170,6 +1194,7 @@
                 moneda: String(row[4]||'USD').trim(),
                 estado: String(row[5]||'PENDIENTE').trim().toUpperCase(),
                 observaciones: String(row[6]||'').trim(),
+                tipo: String(row[7]||'COBRAR').trim().toUpperCase(),
                 modificadoPor: String(row[11]||'').trim(),
                 fechaModificacion: String(row[12]||'').trim(),
             }));
@@ -1228,10 +1253,11 @@
             const egresosHoy     = sum(comprasHoy, c => c.estado !== 'PENDIENTE');  // compras pagadas hoy
             const ventasPendAnt  = sum(ventasAnt,  v => v.estado === 'PENDIENTE');  // ventas viejas sin cobrar → restan
             const comprasPendAnt = sum(comprasAnt, c => c.estado === 'PENDIENTE');  // compras viejas sin pagar → suman
-            const deudaARS       = deudas.filter(d => d.moneda === 'ARS' && d.estado === 'PENDIENTE')
-                                         .reduce((s,d) => s + d.monto, 0);
+            // Deudas ARS pendientes: las de COBRAR restan (plata dada, no devuelta), las de PAGAR suman (plata en caja, aún no pagada)
+            const deudaCobrarARS = deudas.filter(d => d.moneda === 'ARS' && d.estado === 'PENDIENTE' && d.tipo === 'COBRAR').reduce((s,d) => s + d.monto, 0);
+            const deudaPagarARS  = deudas.filter(d => d.moneda === 'ARS' && d.estado === 'PENDIENTE' && d.tipo === 'PAGAR').reduce((s,d) => s + d.monto, 0);
 
-            const total = ingresosHoy - egresosHoy - ventasPendAnt + comprasPendAnt - deudaARS;
+            const total = ingresosHoy - egresosHoy - ventasPendAnt + comprasPendAnt - deudaCobrarARS + deudaPagarARS;
             const el = document.getElementById('pesos-en-caja-amount');
             if (el) {
                 el.textContent = '$ ' + Math.round(total).toLocaleString('es-AR', {maximumFractionDigits: 0});
@@ -1471,6 +1497,8 @@
         // ═══════════════════════════════════════════════════════════
         let deudas = [];
         let currentDeudaFilter = 'todas';
+        let currentDeudaTipo = 'cobrar';   // 'cobrar' | 'pagar'
+        let currentDeudaTipoForm = 'COBRAR';
         let searchDeudaQuery = '';
         let currentDeudaMoneda = 'USD';
 
@@ -1485,7 +1513,25 @@
             document.getElementById('deuda-monto').value = '';
             document.getElementById('deuda-obs').value = '';
             setDeudaMoneda('USD');
+            setDeudaTipoForm(currentDeudaTipo === 'pagar' ? 'PAGAR' : 'COBRAR');
             document.getElementById('nueva-deuda-modal').classList.remove('hidden');
+        }
+
+        function setDeudaTipo(t) {
+            currentDeudaTipo = t;
+            document.getElementById('tipo-btn-cobrar').className = 'deudas-tipo-btn cobrar' + (t === 'cobrar' ? ' active' : '');
+            document.getElementById('tipo-btn-pagar').className  = 'deudas-tipo-btn pagar'  + (t === 'pagar'  ? ' active' : '');
+            // actualizar labels totales
+            const prefix = t === 'cobrar' ? '💰 Cobrar' : '💸 Pagar';
+            document.getElementById('deudas-total-usd-label').textContent = prefix + ' USD';
+            document.getElementById('deudas-total-ars-label').textContent = prefix + ' ARS';
+            updateDeudas();
+        }
+
+        function setDeudaTipoForm(t) {
+            currentDeudaTipoForm = t;
+            document.getElementById('deuda-tipo-cobrar').classList.toggle('active', t === 'COBRAR');
+            document.getElementById('deuda-tipo-pagar').classList.toggle('active', t === 'PAGAR');
         }
 
         function closeNuevaDeudaModal() {
@@ -1506,6 +1552,8 @@
             updateDeudas();
         }
 
+
+
         function agregarDeuda() {
             if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script primero'); return; }
             const cliente = document.getElementById('deuda-cliente').value.trim();
@@ -1517,7 +1565,7 @@
             const fechaStr = `${parseInt(d)}/${parseInt(m)}/${y}`;
             const btn = document.getElementById('btn-deuda-submit');
             btn.disabled = true; btn.textContent = '⏳ Guardando...'; btn.style.opacity = '0.6';
-            const params = new URLSearchParams({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, observaciones:obs });
+            const params = new URLSearchParams({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, tipo:currentDeudaTipoForm, observaciones:obs });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 4000);
             document.getElementById('deuda-cliente').value = '';
@@ -1530,7 +1578,7 @@
         }
 
         function getFilteredDeudas() {
-            let f = [...deudas];
+            let f = deudas.filter(d => d.tipo === currentDeudaTipo.toUpperCase());
             if (currentDeudaFilter === 'pendientes') f = f.filter(d => d.estado === 'PENDIENTE');
             else if (currentDeudaFilter === 'cobradas') f = f.filter(d => d.estado === 'COBRADA');
             if (searchDeudaQuery) f = f.filter(d => d.cliente.toLowerCase().includes(searchDeudaQuery));
@@ -1540,27 +1588,33 @@
         function updateDeudas() {
             const filtered = getFilteredDeudas();
             const list = document.getElementById('deudas-list');
-            // Totales (solo pendientes)
-            const pend = deudas.filter(d => d.estado === 'PENDIENTE');
-            const tUSD = pend.filter(d => d.moneda === 'USD').reduce((s,d) => s + d.monto, 0);
-            const tARS = pend.filter(d => d.moneda === 'ARS').reduce((s,d) => s + d.monto, 0);
+            // Totales del tipo activo (solo pendientes)
+            const tipoActivo = currentDeudaTipo.toUpperCase();
+            const pendTipo = deudas.filter(d => d.tipo === tipoActivo && d.estado === 'PENDIENTE');
+            const tUSD = pendTipo.filter(d => d.moneda === 'USD').reduce((s,d) => s + d.monto, 0);
+            const tARS = pendTipo.filter(d => d.moneda === 'ARS').reduce((s,d) => s + d.monto, 0);
             document.getElementById('deudas-total-usd').textContent = 'USD ' + tUSD.toLocaleString('es-AR');
             document.getElementById('deudas-total-ars').textContent = 'ARS ' + tARS.toLocaleString('es-AR');
-            document.getElementById('deudas-count-pendientes').textContent = pend.length + ' pendiente' + (pend.length !== 1 ? 's' : '');
-            if (!filtered.length) { list.innerHTML = '<div style="text-align:center;color:#a0aec0;padding:30px 20px;">No hay deudas' + (deudas.length ? ' para este filtro' : ' — la hoja DEUDAS está vacía o no existe') + '</div>'; return; }
+            document.getElementById('deudas-count-pendientes').textContent = pendTipo.length + ' pendiente' + (pendTipo.length !== 1 ? 's' : '');
+            if (!filtered.length) { list.innerHTML = '<div style="text-align:center;color:#a0aec0;padding:30px 20px;">No hay deudas para este filtro</div>'; return; }
             list.innerHTML = '';
             filtered.forEach(deuda => {
                 const esPend = deuda.estado === 'PENDIENTE';
-                const esColor = esPend ? {bg:'#FEF3C7',color:'#92400E'} : {bg:'#86EFAC',color:'#166534'};
-                const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : '#276349';
-                const actionLabel = esPend ? 'COBRADA' : 'PENDIENTE';
+                const esPagar = deuda.tipo === 'PAGAR';
+                const esColor = esPend
+                    ? (esPagar ? {bg:'#FEE2E2',color:'#991B1B'} : {bg:'#FEF3C7',color:'#92400E'})
+                    : {bg:'#86EFAC',color:'#166534'};
+                const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : (esPagar ? '#c53030' : '#276349');
+                const resolverLabel = esPagar ? 'PAGADA' : 'COBRADA';
+                const actionLabel = esPend ? resolverLabel : 'PENDIENTE';
                 const actionColor = esPend ? {bg:'#86EFAC',color:'#166534'} : {bg:'#FEF3C7',color:'#92400E'};
                 const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
                 const row = document.createElement('div');
                 row.className = 'swipe-row deuda-row';
                 row.style.cssText = 'position:relative;overflow:hidden;';
                 row.dataset.swipeWidth = 160;
-                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${escHTML(deuda.estado)}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','${actionLabel}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
+                const estadoLabel = deuda.estado === 'COBRADA' ? (esPagar ? 'PAGADA' : 'COBRADA') : deuda.estado;
+                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${estadoLabel}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','COBRADA','${esPagar?'PAGAR':'COBRAR'}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
                 row.addEventListener('click', () => showDeudaDetail(deuda));
                 setupSwipe(row);
                 list.appendChild(row);
@@ -1593,6 +1647,7 @@
             document.getElementById('deuda-edit-cliente').value = deuda.cliente;
             document.getElementById('deuda-edit-monto').value = deuda.monto;
             document.getElementById('deuda-edit-moneda').value = deuda.moneda;
+            document.getElementById('deuda-edit-tipo').value = deuda.tipo || 'COBRAR';
             document.getElementById('deuda-edit-obs').value = deuda.observaciones || '';
             document.getElementById('deuda-edit-modal').classList.remove('hidden');
         }
@@ -1608,8 +1663,9 @@
             const fechaStr = `${parseInt(dv)}/${parseInt(mv)}/${y}`;
             const [origFecha, origCliente, origMonto] = decodeURIComponent(key).split('|');
             const moneda = document.getElementById('deuda-edit-moneda').value;
+            const tipo = document.getElementById('deuda-edit-tipo').value;
             const obs = document.getElementById('deuda-edit-obs').value.trim();
-            const params = new URLSearchParams({ action:'edit_deuda', fecha:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoMonto:monto, nuevaMoneda:moneda, nuevasObs:obs, usuario:currentUser });
+            const params = new URLSearchParams({ action:'edit_deuda', fecha:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoMonto:monto, nuevaMoneda:moneda, nuevoTipo:tipo, nuevasObs:obs, usuario:currentUser });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 3000);
             document.getElementById('deuda-edit-modal').classList.add('hidden');
@@ -1619,20 +1675,25 @@
 
         function showDeudaDetail(deuda) {
             const esPend = deuda.estado === 'PENDIENTE';
-            const esColor = esPend ? {bg:'#FEF3C7',color:'#92400E'} : {bg:'#86EFAC',color:'#166534'};
-            const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : '#276349';
-            document.getElementById('deuda-detail-cliente').textContent = deuda.cliente;
+            const esPagar = deuda.tipo === 'PAGAR';
+            const esColor = esPend
+                ? (esPagar ? {bg:'#FEE2E2',color:'#991B1B'} : {bg:'#FEF3C7',color:'#92400E'})
+                : {bg:'#86EFAC',color:'#166534'};
+            const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : (esPagar ? '#c53030' : '#276349');
+            const resolverLabel = esPagar ? 'PAGADA' : 'COBRADA';
+            const estadoLabel = deuda.estado === 'COBRADA' ? resolverLabel : deuda.estado;
+            document.getElementById('deuda-detail-cliente').textContent = deuda.cliente + (esPagar ? ' 💸' : ' 💰');
             document.getElementById('deuda-detail-monto').textContent = deuda.moneda + ' ' + deuda.monto.toLocaleString('es-AR');
             document.getElementById('deuda-detail-monto').style.color = mColor;
             document.getElementById('deuda-detail-fecha').textContent = deuda.fecha;
-            const el = document.getElementById('deuda-detail-estado'); el.textContent = deuda.estado; el.style.background = esColor.bg; el.style.color = esColor.color;
+            const el = document.getElementById('deuda-detail-estado'); el.textContent = estadoLabel; el.style.background = esColor.bg; el.style.color = esColor.color;
             document.getElementById('deuda-detail-creado').textContent = (deuda.operador||'') + (deuda.fechaModificacion?' · '+deuda.fechaModificacion:'');
             const obsEl = document.getElementById('deuda-detail-obs'); if(deuda.observaciones){obsEl.textContent=deuda.observaciones;obsEl.style.display='block';}else{obsEl.style.display='none';}
-            const cobroEl = document.getElementById('deuda-detail-cobro'); if(deuda.estado==='COBRADA'&&deuda.cobradoPor){cobroEl.textContent=`Cobrado por ${deuda.cobradoPor}${deuda.fechaCobro?' · '+deuda.fechaCobro:''}`;cobroEl.style.display='block';}else{cobroEl.style.display='none';}
+            const cobroEl = document.getElementById('deuda-detail-cobro'); cobroEl.style.display='none';
             const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
             const actionBtn = document.getElementById('deuda-detail-action-btn');
-            if (esPend) { actionBtn.textContent='✅ Marcar como COBRADA'; actionBtn.style.background='linear-gradient(135deg,#48bb78 0%,#38a169 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA');}; }
-            else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='linear-gradient(135deg,#f59e0b 0%,#d97706 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'PENDIENTE');}; }
+            if (esPend) { actionBtn.textContent=`✅ Marcar como ${resolverLabel}`; actionBtn.style.background='linear-gradient(135deg,#48bb78 0%,#38a169 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA',deuda.tipo);}; }
+            else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='linear-gradient(135deg,#f59e0b 0%,#d97706 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'PENDIENTE',deuda.tipo);}; }
             document.getElementById('deuda-detail-edit-btn').onclick = () => { closeDeudaDetailModal(); editarDeuda(deuda); };
             document.getElementById('deuda-detail-delete-btn').onclick = () => borrarDeuda(key);
             document.getElementById('deuda-detail-modal').classList.remove('hidden');
