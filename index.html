@@ -1215,8 +1215,10 @@
 
         function updateDateTime() {
             const now = new Date();
-            document.getElementById('current-date').textContent = now.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
-            document.getElementById('current-time').textContent = now.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+            const cd = document.getElementById('current-date');
+            const ct = document.getElementById('current-time');
+            if (cd) cd.textContent = now.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
+            if (ct) ct.textContent = now.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
             setTimeout(updateDateTime, 60000);
         }
         
