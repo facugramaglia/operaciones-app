@@ -1081,8 +1081,10 @@
             document.getElementById('tab-compras').addEventListener('click', () => switchTab('compras'));
             document.getElementById('filter-select').addEventListener('change', function() { changeFilter(this.value === 'ultimo' ? 'ultimo' : parseInt(this.value)); });
             document.getElementById('btn-save-config').addEventListener('click', saveConfig);
-            document.getElementById('search-cliente').addEventListener('input', function() { searchQuery = this.value.toLowerCase().trim(); updateHistorial(); });
-            document.getElementById('search-deuda').addEventListener('input', function() { searchDeudaQuery = this.value.toLowerCase().trim(); updateDeudas(); });
+            const _elSrchCliente = document.getElementById('search-cliente');
+            const _elSrchDeuda   = document.getElementById('search-deuda');
+            _elSrchCliente.addEventListener('input', debounce(() => { searchQuery = _elSrchCliente.value.toLowerCase().trim(); updateHistorial(); }, 280));
+            _elSrchDeuda.addEventListener('input',   debounce(() => { searchDeudaQuery = _elSrchDeuda.value.toLowerCase().trim(); updateDeudas(); }, 280));
             // Deuda fecha display
             const deudaFechaInput = document.getElementById('deuda-fecha');
             const deudaFechaText = document.getElementById('deuda-fecha-text');
@@ -1140,7 +1142,7 @@
             currentUser = username; localStorage.setItem('currentUser', username); showMainApp();
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
-        function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
+        function handleLogout() { if (_dateTimeTimer) clearTimeout(_dateTimeTimer); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
         let _dolarBlueInterval = null;
         let _dataRefreshInterval = null;
         async function fetchDolarBlue() {
@@ -1172,7 +1174,12 @@
         }
         function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); fetchDolarBlue(); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); _dolarBlueInterval = setInterval(fetchDolarBlue, 5 * 60 * 1000); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
         
+        function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+        let _loadInProgress = false;
         async function loadData(silent = false) {
+            if (_loadInProgress) return;
+            _loadInProgress = true;
             const skeleton = document.getElementById('skeleton-overlay');
             if (!silent) skeleton.style.display = 'block';
             try {
@@ -1195,7 +1202,7 @@
                 updateUI();
                 updateDeudas();
             } catch(e) { console.error(e); showToast('❌ Error al cargar datos', '#e53e3e'); }
-            finally { skeleton.style.display = 'none'; }
+            finally { _loadInProgress = false; skeleton.style.display = 'none'; }
         }
         
         function processData(rows) {
@@ -1288,13 +1295,15 @@
             }
         }
 
+        let _dateTimeTimer = null;
         function updateDateTime() {
             const now = new Date();
             const cd = document.getElementById('current-date');
             const ct = document.getElementById('current-time');
             if (cd) cd.textContent = now.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
             if (ct) ct.textContent = now.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
-            setTimeout(updateDateTime, 60000);
+            if (_dateTimeTimer) clearTimeout(_dateTimeTimer);
+            _dateTimeTimer = setTimeout(updateDateTime, 60000);
         }
         
         function updatePendingTables() {
@@ -1348,7 +1357,8 @@
         function updateHistorial() {
             const ev = ['PENDIENTE','REALIZADA','LLEVO BILL'], ec = ['PENDIENTE','REALIZADA','LLEVO PESOS','PREPARADO'];
             const vtb = document.getElementById('ventas-tbody'), ctb = document.getElementById('compras-tbody');
-            vtb.innerHTML = ''; ctb.innerHTML = '';
+            // Solo limpiar y reconstruir el tab activo
+            if (currentTab === 'ventas') vtb.innerHTML = ''; else ctb.innerHTML = '';
             let vf = getFilteredOps(ventas, true).reverse(), cf = getFilteredOps(compras, false).reverse();
             if (showOnlyPending) { vf = vf.filter(op => op.estado.toUpperCase() !== 'REALIZADA'); cf = cf.filter(op => op.estado.toUpperCase() !== 'REALIZADA'); }
             if (searchQuery) { vf = vf.filter(v => v.cliente.toLowerCase().includes(searchQuery)); cf = cf.filter(c => c.cliente.toLowerCase().includes(searchQuery)); }
@@ -1379,8 +1389,8 @@
                     row.addEventListener('click', () => showOperationDetail(op, tipo, estados));
                 });
             }
-            addRows(vf, vtb, ev, 'VENTA');
-            addRows(cf, ctb, ec, 'COMPRA');
+            if (currentTab === 'ventas') addRows(vf, vtb, ev, 'VENTA');
+            else addRows(cf, ctb, ec, 'COMPRA');
             document.querySelectorAll('.estado-select').forEach(s => s.addEventListener('change', function(e) { cambiarEstado(e.target); }));
         }
         
@@ -1445,10 +1455,15 @@
             if(np!==op.precio) guardarCambio(k,'precio','$'+op.precio,'$'+np,currentUser);
             if(no!==(op.observaciones||'')) guardarCambio(k,'observaciones',op.observaciones||'(vacío)',no||'(vacío)',currentUser);
             if(nuevoOperador!==op.operador) guardarCambio(k,'operador',op.operador,nuevoOperador,currentUser);
+            // Optimistic update: actualizar en memoria inmediatamente
+            const arr=tipo==='VENTA'?ventas:compras;
+            const oi=arr.findIndex(o=>o.fecha===op.fecha&&o.cliente===op.cliente&&o.cantidad===op.cantidad);
+            if(oi>=0){arr[oi].cantidad=nc;arr[oi].precio=np;arr[oi].total=nt;arr[oi].observaciones=no;arr[oi].operador=nuevoOperador;}
+            updateUI();
             const params=new URLSearchParams({action:'edit_operation',tipo,fecha:op.fecha,clienteOriginal:op.cliente,cantidadOriginal:op.cantidad,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,nuevoOperador,usuario:currentUser});
             const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},3000);
-            showToast('✅ Operación actualizada','#667eea'); closeModal(); setTimeout(()=>loadData(),1500);
+            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
+            showToast('✅ Operación actualizada','#667eea'); closeModal(); setTimeout(()=>loadData(true),5000);
         }
         
         function showToast(msg,color='#2d3748'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500);}
@@ -1458,12 +1473,17 @@
         function borrarOperacion(op, tipo) {
             if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
             if (!confirm(`¿Borrar esta ${tipo}?\n\nCliente: ${op.cliente}\nCantidad: $${op.cantidad}\nFecha: ${op.fecha}\n\nEsta acción no se puede deshacer.`)) return;
+            // Optimistic update: quitar de memoria inmediatamente
+            const arr=tipo==='VENTA'?ventas:compras;
+            const oi=arr.findIndex(o=>o.fecha===op.fecha&&o.cliente===op.cliente&&o.cantidad===op.cantidad);
+            if(oi>=0) arr.splice(oi,1);
+            updateUI();
             const params = new URLSearchParams({ action:'delete_operation', tipo, fecha:op.fecha, cliente:op.cliente, cantidad:op.cantidad });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},3000);
+            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
             showToast('🗑️ Operación borrada','#e53e3e');
             closeModal();
-            setTimeout(()=>loadData(),2000);
+            setTimeout(()=>loadData(true),5000);
         }
 
         function borrarDeuda(key) {
@@ -1471,12 +1491,16 @@
             const deuda = getDeudaByKey(key);
             if (!deuda) return;
             if (!confirm(`¿Borrar deuda de "${deuda.cliente}"?\nMonto: ${deuda.moneda} ${deuda.monto}\n\nEsta acción no se puede deshacer.`)) return;
+            // Optimistic update
+            const di=deudas.findIndex(d=>d.fecha===deuda.fecha&&d.cliente===deuda.cliente&&String(d.monto)===String(deuda.monto));
+            if(di>=0) deudas.splice(di,1);
+            updateDeudas();
             const params = new URLSearchParams({ action:'delete_deuda', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},3000);
+            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
             showToast('🗑️ Deuda borrada','#e53e3e');
             closeDeudaDetailModal();
-            setTimeout(()=>loadData(),2000);
+            setTimeout(()=>loadData(true),5000);
         }
         function getEstadoStyles(e){const s={'PENDIENTE':{bg:'#FEF3C7',color:'#92400E'},'REALIZADA':{bg:'#86EFAC',color:'#166534'},'LLEVO BILLETES':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO BILL':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO PESOS':{bg:'#FCA5A5',color:'#7F1D1D'},'PREPARADO':{bg:'#FDBA74',color:'#7C2D12'}};return s[e]||{bg:'#E5E7EB',color:'#374151'};}
         
@@ -1485,11 +1509,16 @@
             const ne=sel.value,tipo=sel.getAttribute('data-tipo'),fecha=sel.getAttribute('data-fecha'),cliente=sel.getAttribute('data-cliente'),cantidad=sel.getAttribute('data-cantidad');
             if(!confirm(`¿Cambiar estado de "${cliente}" a ${ne}?`)){updateHistorial();return;}
             let ff=fecha; if(fecha.includes('-')){const p=fecha.split('-');ff=p[2]+'/'+p[1]+'/'+p[0];}
+            // Optimistic update: actualizar estado en memoria inmediatamente
+            const arr=tipo==='VENTA'?ventas:compras;
+            const oi=arr.findIndex(o=>o.fecha===ff&&o.cliente===cliente&&String(o.cantidad)===String(cantidad).replace('$',''));
+            if(oi>=0) arr[oi].estado=ne;
+            updatePendingTables(); updateHistorial();
             const params=new URLSearchParams({action:'update_status',tipo,fecha:ff,cliente,cantidad:cantidad.replace('$',''),nuevoEstado:ne,usuario:currentUser});
             const iframe=document.createElement('iframe'); iframe.style.cssText='display:none;position:absolute;width:0;height:0;border:none;'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             showToast('✅ Estado → '+ne,'#667eea');
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},3000);
-            setTimeout(()=>loadData(),2000);
+            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
+            setTimeout(()=>loadData(true),5000);
         }
         
         function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#e5d4d4':'#d4e5d4';else if(s==='deudas') document.body.style.background='#f0eaf8';else document.body.style.background='#d4e5d4';}
@@ -1513,11 +1542,16 @@
                 const params=new URLSearchParams({action:'add_operation',tipo:currentTipo,fecha,operador,cliente,cantidad,precio,total,observaciones:obs});
                 const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
                 setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
+                // Optimistic update: agregar a memoria inmediatamente
+                const [fy,fm,fd]=fecha.split('-');
+                const tempOp={fecha:`${parseInt(fd)}/${parseInt(fm)}/${fy}`,operador,cliente,cantidad,precio,total,estado:'PENDIENTE',observaciones:obs,modificadoPor:'',fechaModificacion:''};
+                if(currentTipo==='VENTA') ventas.push(tempOp); else compras.push(tempOp);
+                updateUI();
                 showToast('✅ '+currentTipo+' agregada','#48bb78');
                 ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
                 volverAlPicker();
                 document.getElementById('total-preview').classList.add('hidden');
-                setTimeout(()=>loadData(),3000);
+                setTimeout(()=>loadData(true),5000);
             } catch(e){showToast('❌ Error: '+e.message,'#e53e3e');}
             finally{setTimeout(()=>{btn.disabled=false;btn.textContent=ot;btn.style.opacity='1';},2000);}
         }
@@ -1600,14 +1634,17 @@
             btn.disabled = true; btn.textContent = '⏳ Guardando...'; btn.style.opacity = '0.6';
             const params = new URLSearchParams({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, tipo:currentDeudaTipoForm, observaciones:obs });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 4000);
+            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
+            // Optimistic update
+            deudas.push({fecha:fechaStr,operador:currentUser,cliente,monto,moneda:currentDeudaMoneda,estado:'PENDIENTE',observaciones:obs,tipo:currentDeudaTipoForm,modificadoPor:'',fechaModificacion:''});
+            updateDeudas();
             document.getElementById('deuda-cliente').value = '';
             document.getElementById('deuda-monto').value = '';
             document.getElementById('deuda-obs').value = '';
             showToast('✅ Deuda registrada','#667eea');
             closeNuevaDeudaModal();
             setTimeout(() => { btn.disabled=false; btn.textContent='💰 Registrar Deuda'; btn.style.opacity='1'; }, 2000);
-            setTimeout(() => loadData(), 2500);
+            setTimeout(() => loadData(true), 5000);
         }
 
         function getFilteredDeudas() {
@@ -1666,9 +1703,12 @@
             if (!confirm(`¿Marcar deuda de "${deuda.cliente}" como ${nuevoEstado}?`)) { updateDeudas(); return; }
             const params = new URLSearchParams({ action:'update_deuda_status', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto, nuevoEstado, usuario:currentUser });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 3000);
+            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
+            // Optimistic update
+            const deudaObj=getDeudaByKey(key); if(deudaObj) deudaObj.estado=nuevoEstado;
+            updateDeudas();
             showToast('✅ Marcada como ' + nuevoEstado,'#48bb78');
-            setTimeout(() => loadData(), 2000);
+            setTimeout(() => loadData(true), 5000);
         }
 
         function editarDeudaByKey(key) { const deuda = getDeudaByKey(key); if(deuda) editarDeuda(deuda); }
@@ -1700,10 +1740,14 @@
             const obs = document.getElementById('deuda-edit-obs').value.trim();
             const params = new URLSearchParams({ action:'edit_deuda', fecha:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoMonto:monto, nuevaMoneda:moneda, nuevoTipo:tipo, nuevasObs:obs, usuario:currentUser });
             const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 3000);
+            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
+            // Optimistic update
+            const dObj=deudas.find(d=>d.fecha===origFecha&&d.cliente===origCliente&&String(d.monto)===origMonto);
+            if(dObj){dObj.fecha=fechaStr;dObj.monto=monto;dObj.moneda=moneda;dObj.tipo=tipo;dObj.observaciones=obs;}
+            updateDeudas();
             document.getElementById('deuda-edit-modal').classList.add('hidden');
             showToast('✅ Deuda actualizada','#667eea');
-            setTimeout(() => loadData(), 2000);
+            setTimeout(() => loadData(true), 5000);
         }
 
         function showDeudaDetail(deuda) {
