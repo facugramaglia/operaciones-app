@@ -560,7 +560,10 @@
                 </div>
             </div>
             <div class="header-balance-strip">
-                <span style="font-size: 12px; color: #718096; font-weight: 600; letter-spacing: 0.3px;">BALANCE</span>
+                <div>
+                    <span style="font-size: 12px; color: #718096; font-weight: 600; letter-spacing: 0.3px;">BALANCE</span>
+                    <div id="last-sync-label" style="font-size: 10px; color: #b0bec5; margin-top: 1px;"></div>
+                </div>
                 <span id="header-balance-top" style="font-size: 18px; font-weight: 800; color: #2d3748;">$0</span>
             </div>
         </div>
@@ -1142,7 +1145,7 @@
             currentUser = username; localStorage.setItem('currentUser', username); showMainApp();
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
-        function handleLogout() { if (_dateTimeTimer) clearTimeout(_dateTimeTimer); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
+        function handleLogout() { if (_dateTimeTimer) clearTimeout(_dateTimeTimer); if (_syncLabelTimer) clearTimeout(_syncLabelTimer); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
         let _dolarBlueInterval = null;
         let _dataRefreshInterval = null;
         async function fetchDolarBlue() {
@@ -1176,12 +1179,45 @@
         
         function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
+        // ── Cache local ─────────────────────────────────────────────
+        const CACHE_KEY = 'app_data_v1';
+        function saveToCache() {
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ventasRaw, comprasRaw, deudasRaw, balanceTotal, ts: Date.now() })); } catch(e) {}
+        }
+        function loadFromCache() {
+            try { const r = localStorage.getItem(CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+        }
+        let _lastSyncTs = null;
+        let _syncLabelTimer = null;
+        function updateSyncLabel() {
+            const el = document.getElementById('last-sync-label');
+            if (!el || !_lastSyncTs) return;
+            const s = Math.floor((Date.now() - _lastSyncTs) / 1000);
+            el.textContent = s < 60 ? `● hace ${s}s` : `● hace ${Math.floor(s/60)}min`;
+            if (_syncLabelTimer) clearTimeout(_syncLabelTimer);
+            _syncLabelTimer = setTimeout(updateSyncLabel, 15000);
+        }
+        // ────────────────────────────────────────────────────────────
+
         let _loadInProgress = false;
         async function loadData(silent = false) {
             if (_loadInProgress) return;
             _loadInProgress = true;
             const skeleton = document.getElementById('skeleton-overlay');
-            if (!silent) skeleton.style.display = 'block';
+
+            // Render desde cache inmediatamente (carga instantánea)
+            const cache = loadFromCache();
+            if (cache) {
+                ventasRaw = cache.ventasRaw || []; comprasRaw = cache.comprasRaw || [];
+                deudasRaw = cache.deudasRaw || []; balanceTotal = cache.balanceTotal || 0;
+                ventas = processData(ventasRaw); compras = processData(comprasRaw); deudas = processDeudas(deudasRaw);
+                updateUI(); updateDeudas();
+                if (cache.ts) { _lastSyncTs = cache.ts; updateSyncLabel(); }
+            }
+
+            // Skeleton solo en primera carga (sin cache)
+            if (!silent && !cache) skeleton.style.display = 'block';
+
             try {
                 const balanceRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${config.balanceCell}?key=${config.apiKey}`);
                 const balanceData = await balanceRes.json();
@@ -1199,8 +1235,9 @@
                     deudasRaw = (await deudasRes.json()).values || [];
                 } catch(e) { deudasRaw = []; }
                 deudas = processDeudas(deudasRaw);
-                updateUI();
-                updateDeudas();
+                updateUI(); updateDeudas();
+                saveToCache();
+                _lastSyncTs = Date.now(); updateSyncLabel();
             } catch(e) { console.error(e); showToast('❌ Error al cargar datos', '#e53e3e'); }
             finally { _loadInProgress = false; skeleton.style.display = 'none'; }
         }
