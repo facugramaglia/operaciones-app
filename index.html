@@ -94,6 +94,7 @@
         /* Mobile: precio dólar más chico que los balances */
         #dolar-blue-compra-hero, #dolar-blue-venta-hero { font-size: 16px !important; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
+        #sidebar-user-section { display: none; }
         .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #a0aec0; font-size: 12px; padding: 0; transition: all 0.3s; }
         .nav-icon { width: 48px; height: 48px; border-radius: 50%; background: #f7fafc; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
         .nav-item.active .nav-icon { background: #667eea; transform: scale(1.05); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
@@ -280,8 +281,8 @@
                 flex-shrink: 0;
             }
 
-            /* Header y contenido se desplazan a la derecha del sidebar */
-            .app-header { margin-left: 230px; }
+            /* Header oculto en desktop — movido al sidebar */
+            .app-header { display: none; }
             .content    { margin-left: 230px; padding: 28px 36px 32px; }
 
             /* Balance card: 4 en fila en desktop, orden natural */
@@ -385,7 +386,16 @@
             }
             .nav-icon { background: transparent !important; box-shadow: none !important; }
 
-            /* ── Header: blanco limpio ─────────────────────── */
+            /* ── Sidebar user section ──────────────────────── */
+            #sidebar-user-section {
+                display: block;
+                margin-top: auto;
+                padding-top: 14px;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+            .sidebar-user-row:hover { background: rgba(255,255,255,0.07) !important; }
+
+            /* ── Header: oculto en desktop ─────────────────── */
             .app-header {
                 background: white !important;
                 box-shadow: 0 1px 0 #dce8dc !important;
@@ -798,6 +808,24 @@
             <button class="nav-item" id="nav-cargar"><div class="nav-icon">➕</div><div>Cargar</div></button>
             <button class="nav-item" id="nav-historial"><div class="nav-icon">📋</div><div>Historial</div></button>
             <button class="nav-item" id="nav-deudas"><div class="nav-icon">💰</div><div>Deudas</div></button>
+            <div id="sidebar-user-section">
+                <div style="padding:6px 14px 2px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.6px;">Balance</div>
+                <div style="padding:2px 14px 12px;display:flex;align-items:baseline;gap:6px;">
+                    <span id="sidebar-balance" style="font-size:20px;font-weight:800;color:white;">$0</span>
+                    <span id="sidebar-sync-label" style="font-size:10px;color:rgba(255,255,255,0.35);"></span>
+                </div>
+                <div onclick="switchOperator()" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;" class="sidebar-user-row">
+                    <div class="user-avatar" id="sidebar-user-avatar" style="width:34px;height:34px;font-size:14px;flex-shrink:0;"></div>
+                    <div style="min-width:0;">
+                        <div id="sidebar-user-name" style="font-weight:600;color:white;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                        <div style="font-size:11px;color:rgba(255,255,255,0.45);">Cambiar operador</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;padding:6px 14px 4px;">
+                    <button id="btn-config-sidebar" style="flex:1;padding:8px 0;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);border:none;border-radius:9px;font-size:15px;cursor:pointer;">⚙️</button>
+                    <button id="btn-logout-sidebar" style="flex:2;padding:8px 0;background:#c0392b;color:white;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;">Salir</button>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -994,7 +1022,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.17';
+        const APP_VERSION = 'v3.26';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1064,6 +1092,8 @@
             document.getElementById('nav-historial').addEventListener('click', () => showScreen('historial'));
             document.getElementById('nav-deudas').addEventListener('click', () => showScreen('deudas'));
             document.getElementById('btn-config-header').addEventListener('click', () => showScreen('config'));
+            document.getElementById('btn-config-sidebar').addEventListener('click', () => showScreen('config'));
+            document.getElementById('btn-logout-sidebar').addEventListener('click', handleLogout);
             const fechaInput = document.getElementById('form-fecha');
             const fechaText = document.getElementById('fecha-text');
             function updateFechaDisplay() {
@@ -1175,7 +1205,7 @@
             const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
             _midnightTimer = setTimeout(() => { if (currentUser) handleLogout(); }, midnight - now);
         }
-        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); fetchDolarBlue(); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); _dolarBlueInterval = setInterval(fetchDolarBlue, 5 * 60 * 1000); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('sidebar-user-avatar').textContent = currentUser[0]; document.getElementById('sidebar-user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); fetchDolarBlue(); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); _dolarBlueInterval = setInterval(fetchDolarBlue, 5 * 60 * 1000); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
         
         function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
@@ -1190,10 +1220,13 @@
         let _lastSyncTs = null;
         let _syncLabelTimer = null;
         function updateSyncLabel() {
-            const el = document.getElementById('last-sync-label');
-            if (!el || !_lastSyncTs) return;
+            if (!_lastSyncTs) return;
             const s = Math.floor((Date.now() - _lastSyncTs) / 1000);
-            el.textContent = s < 60 ? `● hace ${s}s` : `● hace ${Math.floor(s/60)}min`;
+            const txt = s < 60 ? `● hace ${s}s` : `● hace ${Math.floor(s/60)}min`;
+            const el = document.getElementById('last-sync-label');
+            if (el) el.textContent = txt;
+            const sb = document.getElementById('sidebar-sync-label');
+            if (sb) sb.textContent = txt;
             if (_syncLabelTimer) clearTimeout(_syncLabelTimer);
             _syncLabelTimer = setTimeout(updateSyncLabel, 15000);
         }
@@ -1274,6 +1307,9 @@
             const top = document.getElementById('header-balance-top');
             top.textContent = '$' + balanceTotal.toLocaleString('es-AR');
             top.style.color = balanceTotal >= 0 ? '#48bb78' : '#e53e3e';
+            const sb = document.getElementById('sidebar-balance');
+            sb.textContent = '$' + balanceTotal.toLocaleString('es-AR');
+            sb.style.color = balanceTotal >= 0 ? '#48bb78' : '#f56565';
             updateDateTime(); updateResumenHoy(); updatePendingTables(); updateHistorial(); updatePesosEnCaja();
         }
         
