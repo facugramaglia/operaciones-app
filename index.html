@@ -357,32 +357,33 @@
             /* Fondo general */
             body { background: #edf2ed; }
 
-            /* ── Sidebar: verde oscuro ─────────────────────── */
+            /* ── Sidebar: verde sage pastel ────────────────── */
             .bottom-nav {
-                background: #1a3328 !important;
-                border-right: none !important;
-                box-shadow: 4px 0 24px rgba(0,0,0,0.18) !important;
+                background: #d6e8df !important;
+                border-right: 1px solid #b8d5c8 !important;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.07) !important;
             }
             .sidebar-logo {
-                border-bottom-color: rgba(255,255,255,0.1) !important;
+                border-bottom-color: rgba(0,0,0,0.08) !important;
             }
             .sidebar-balance-box {
                 width: 100%;
-                background: rgba(255,255,255,0.1);
+                background: rgba(0,0,0,0.07);
                 border-radius: 10px;
                 padding: 10px 13px;
             }
             .nav-item {
-                color: rgba(255,255,255,0.58) !important;
+                color: #3a5a48 !important;
                 background: transparent !important;
             }
             .nav-item:hover {
-                background: rgba(255,255,255,0.07) !important;
-                color: rgba(255,255,255,0.88) !important;
+                background: rgba(0,0,0,0.06) !important;
+                color: #1e3a2a !important;
             }
             .nav-item.active {
-                background: rgba(255,255,255,0.13) !important;
-                color: white !important;
+                background: rgba(0,0,0,0.10) !important;
+                color: #1a3328 !important;
+                font-weight: 700 !important;
             }
             .nav-icon { background: transparent !important; box-shadow: none !important; }
 
@@ -391,9 +392,23 @@
                 display: block;
                 margin-top: auto;
                 padding-top: 14px;
-                border-top: 1px solid rgba(255,255,255,0.1);
+                border-top: 1px solid rgba(0,0,0,0.08);
             }
-            .sidebar-user-row:hover { background: rgba(255,255,255,0.07) !important; }
+            .sidebar-user-row:hover { background: rgba(0,0,0,0.06) !important; }
+
+            /* ── Sidebar: textos adaptados a fondo claro ────── */
+            .sidebar-balance-box > div:first-child { color: #4a7a60 !important; }
+            #sidebar-balance { color: #1a3328 !important; }
+            #sidebar-sync-label { color: #6a9a80 !important; }
+            #sidebar-user-name { color: #1e3a2a !important; }
+            .sidebar-user-row > div > div:last-child { color: #5a8a6a !important; }
+            #sidebar-sel-panel { background: rgba(0,0,0,0.07) !important; border-color: rgba(0,0,0,0.10) !important; }
+            #sidebar-sel-panel div[style*="rgba(255,255,255,0.45)"],
+            #sidebar-sel-panel div[style*="rgba(255,255,255,0.4)"] { color: #4a7a60 !important; }
+            #sel-count, #sel-total-pesos, #sel-total-usd { color: #1a3328 !important; }
+            #sel-promedio { color: #2d6a4f !important; }
+            #sidebar-sel-panel button { background: rgba(0,0,0,0.10) !important; color: #3a5a48 !important; border-color: rgba(0,0,0,0.15) !important; }
+            #btn-config-sidebar { background: rgba(0,0,0,0.08) !important; color: #3a5a48 !important; }
 
             /* ── Checkbox selección historial ──────────────── */
             .op-check {
@@ -825,7 +840,8 @@
                 <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;"><span id="sel-count">0</span> seleccionadas</div>
                 <div style="margin-bottom:8px;"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Total pesos</div><div id="sel-total-pesos" style="font-size:15px;font-weight:800;color:white;">$ 0</div></div>
                 <div style="margin-bottom:8px;"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Total USD</div><div id="sel-total-usd" style="font-size:15px;font-weight:800;color:white;">USD 0</div></div>
-                <div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Cotización prom.</div><div id="sel-promedio" style="font-size:15px;font-weight:800;color:#a3f0c1;">$ 0</div></div>
+                <div style="margin-bottom:10px;"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Cotización prom.</div><div id="sel-promedio" style="font-size:15px;font-weight:800;color:#a3f0c1;">$ 0</div></div>
+                <button onclick="clearSelection()" style="width:100%;padding:7px 0;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.18);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.3px;">✕ Limpiar selección</button>
             </div>
             <div id="sidebar-user-section">
                 <div onclick="switchOperator()" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;" class="sidebar-user-row">
@@ -1036,7 +1052,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.40';
+        const APP_VERSION = 'v3.44';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1684,7 +1700,7 @@
             document.getElementById('sel-promedio').textContent = '$ ' + prom.toFixed(2);
             panel.style.display = 'block';
         }
-        function clearSelection() { selectedOps.clear(); for (const k in selectedOpsData) delete selectedOpsData[k]; updateSelectionPanel(); }
+        function clearSelection() { selectedOps.clear(); for (const k in selectedOpsData) delete selectedOpsData[k]; document.querySelectorAll('.op-check').forEach(cb => { cb.checked = false; }); document.querySelectorAll('tr.selected, .op-row-selected').forEach(el => el.classList.remove('selected','op-row-selected')); updateSelectionPanel(); }
         function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#e5d4d4':'#d4e5d4';else if(s==='deudas') document.body.style.background='#f0eaf8';else document.body.style.background='#d4e5d4';if(s!=='historial') clearSelection();}
         function switchTab(t){clearSelection();currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#d4e5d4';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#e5d4d4';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
