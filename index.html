@@ -994,7 +994,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.24';
+        const APP_VERSION = 'v3.25';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1179,9 +1179,9 @@
         function scheduleDolarBlue() {
             if (_dolarBlueInterval) clearInterval(_dolarBlueInterval);
             if (_dolarBlueScheduleTimer) clearTimeout(_dolarBlueScheduleTimer);
+            fetchDolarBlue();
             const interval = getDolarPollInterval();
             if (interval) {
-                fetchDolarBlue();
                 _dolarBlueInterval = setInterval(fetchDolarBlue, interval);
             }
             // Reprogramar al inicio de la próxima hora para recalcular el intervalo
