@@ -248,12 +248,8 @@
 
             .sidebar-logo {
                 display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 22px 14px 18px;
-                font-size: 19px;
-                font-weight: 800;
-                color: #667eea;
+                align-items: stretch;
+                padding: 14px 12px 14px;
                 border-bottom: 1px solid #e2e8f0;
                 margin-bottom: 12px;
                 flex-shrink: 0;
@@ -368,9 +364,13 @@
                 box-shadow: 4px 0 24px rgba(0,0,0,0.18) !important;
             }
             .sidebar-logo {
-                color: white !important;
                 border-bottom-color: rgba(255,255,255,0.1) !important;
-                font-size: 17px !important;
+            }
+            .sidebar-balance-box {
+                width: 100%;
+                background: rgba(255,255,255,0.1);
+                border-radius: 10px;
+                padding: 10px 13px;
             }
             .nav-item {
                 color: rgba(255,255,255,0.58) !important;
@@ -808,7 +808,15 @@
         </div>
         
         <div class="bottom-nav">
-            <div class="sidebar-logo">💱 Operaciones</div>
+            <div class="sidebar-logo">
+                <div class="sidebar-balance-box">
+                    <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;">Balance</div>
+                    <div style="display:flex;align-items:baseline;gap:6px;">
+                        <span id="sidebar-balance" style="font-size:22px;font-weight:800;color:white;">$0</span>
+                        <span id="sidebar-sync-label" style="font-size:10px;color:rgba(255,255,255,0.35);"></span>
+                    </div>
+                </div>
+            </div>
             <button class="nav-item active" id="nav-dashboard"><div class="nav-icon">📊</div><div>Dashboard</div></button>
             <button class="nav-item" id="nav-cargar"><div class="nav-icon">➕</div><div>Cargar</div></button>
             <button class="nav-item" id="nav-historial"><div class="nav-icon">📋</div><div>Historial</div></button>
@@ -820,11 +828,6 @@
                 <div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Cotización prom.</div><div id="sel-promedio" style="font-size:15px;font-weight:800;color:#a3f0c1;">$ 0</div></div>
             </div>
             <div id="sidebar-user-section">
-                <div style="padding:6px 14px 2px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.6px;">Balance</div>
-                <div style="padding:2px 14px 12px;display:flex;align-items:baseline;gap:6px;">
-                    <span id="sidebar-balance" style="font-size:20px;font-weight:800;color:white;">$0</span>
-                    <span id="sidebar-sync-label" style="font-size:10px;color:rgba(255,255,255,0.35);"></span>
-                </div>
                 <div onclick="switchOperator()" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;" class="sidebar-user-row">
                     <div class="user-avatar" id="sidebar-user-avatar" style="width:34px;height:34px;font-size:14px;flex-shrink:0;"></div>
                     <div style="min-width:0;">
@@ -1033,7 +1036,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.36';
+        const APP_VERSION = 'v3.40';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
