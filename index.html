@@ -402,7 +402,7 @@
             #sidebar-sync-label { color: #6a9a80 !important; }
             #sidebar-user-name { color: #1e3a2a !important; }
             .sidebar-user-row > div > div:last-child { color: #5a8a6a !important; }
-            #sidebar-sel-panel { background: rgba(0,0,0,0.07) !important; border-color: rgba(0,0,0,0.10) !important; }
+            #sidebar-sel-panel { background: white !important; border-color: rgba(0,0,0,0.10) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; }
             #sidebar-sel-panel div[style*="rgba(255,255,255,0.45)"],
             #sidebar-sel-panel div[style*="rgba(255,255,255,0.4)"] { color: #4a7a60 !important; }
             #sel-count, #sel-total-pesos, #sel-total-usd { color: #1a3328 !important; }
@@ -1052,7 +1052,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.44';
+        const APP_VERSION = 'v3.45';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
