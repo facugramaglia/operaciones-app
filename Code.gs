@@ -110,6 +110,10 @@ function doGet(e) {
       });
     }
 
+    if (params.action === 'get_dolar_blue') {
+      return getDolarBlue();
+    }
+
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: 'Acción no válida'
@@ -510,6 +514,42 @@ function deleteDeuda(ss, data) {
     }
   }
   return ContentService.createTextOutput(JSON.stringify({success:false,error:'Deuda no encontrada'})).setMimeType(ContentService.MimeType.JSON);
+}
+
+function getDolarBlue() {
+  try {
+    var url = 'https://www.cronista.com/pf/api/v3/content/fetch/markets-list' +
+      '?query=%7B%22tokenList%22%3A%22%5B%7B%5C%22alternativeName%5C%22%3A%5C%22%5C%22%2C%5C%22currencySymbol%5C%22%3A%5C%22%24%5C%22%2C%5C%22tokenValue%5C%22%3A%5C%22ARSB%5C%22%2C%5C%22tokenType%5C%22%3A%5C%22monedas%5C%22%7D%5D%22%7D' +
+      '&d=463&mxId=00000000&_website=el-cronista';
+    var options = {
+      'method': 'get',
+      'headers': {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15',
+        'Referer': 'https://www.cronista.com/MercadosOnline/moneda/ARSB/'
+      },
+      'muteHttpExceptions': true
+    };
+    var response = UrlFetchApp.fetch(url, options);
+    var data = JSON.parse(response.getContentText());
+    var blue = null;
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].UrlId === 'ARSB') { blue = data[i]; break; }
+    }
+    if (!blue) throw new Error('ARSB no encontrado en la respuesta');
+    var tsMatch = blue.UltimaActualizacion.match(/\d+/);
+    var timestamp = tsMatch ? parseInt(tsMatch[0]) : Date.now();
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      compra: blue.Compra,
+      venta: blue.Venta,
+      ultimaActualizacion: timestamp
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function onEdit(e) {
