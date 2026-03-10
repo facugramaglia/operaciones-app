@@ -95,6 +95,7 @@
         #dolar-blue-compra-hero, #dolar-blue-venta-hero { font-size: 16px !important; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         #sidebar-user-section { display: none; }
+        @media (max-width: 859px) { #sidebar-sel-panel { display: none !important; } }
         .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #a0aec0; font-size: 12px; padding: 0; transition: all 0.3s; }
         .nav-icon { width: 48px; height: 48px; border-radius: 50%; background: #f7fafc; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
         .nav-item.active .nav-icon { background: #667eea; transform: scale(1.05); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
@@ -602,17 +603,17 @@
                 </div>
                 <span id="header-balance-top" style="font-size: 18px; font-weight: 800; color: #2d3748;">$0</span>
             </div>
-            <div id="mobile-sel-bar" style="display:none;background:#1a3328;padding:10px 16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-                    <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);white-space:nowrap;flex-shrink:0;"><span id="mob-sel-count" style="color:white;font-size:14px;">0</span> sel.</span>
+            <div id="mobile-sel-bar" style="display:none;padding:6px 14px 10px;">
+                <div style="background:#eaf7ef;border:1px solid #b6dfc8;border-radius:16px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:700;color:#4a7a60;white-space:nowrap;flex-shrink:0;"><span id="mob-sel-count" style="color:#1a3328;font-size:15px;font-weight:800;">0</span> sel.</span>
                     <div style="flex:1;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
-                        <span style="font-size:13px;font-weight:800;color:white;" id="mob-sel-pesos">$ 0</span>
-                        <span style="font-size:11px;color:rgba(255,255,255,0.4);">·</span>
-                        <span style="font-size:13px;font-weight:800;color:white;" id="mob-sel-usd">USD 0</span>
-                        <span style="font-size:11px;color:rgba(255,255,255,0.4);">·</span>
-                        <span style="font-size:12px;color:rgba(255,255,255,0.75);">@ <span id="mob-sel-prom" style="font-weight:700;color:white;">$0</span></span>
+                        <span style="font-size:13px;font-weight:800;color:#1a3328;" id="mob-sel-pesos">$ 0</span>
+                        <span style="font-size:11px;color:#b6dfc8;">·</span>
+                        <span style="font-size:13px;font-weight:800;color:#1a3328;" id="mob-sel-usd">USD 0</span>
+                        <span style="font-size:11px;color:#b6dfc8;">·</span>
+                        <span style="font-size:12px;color:#4a7a60;">@ <span id="mob-sel-prom" style="font-weight:700;color:#1a3328;">$0</span></span>
                     </div>
-                    <button onclick="clearSelection()" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:8px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
+                    <button onclick="clearSelection()" style="background:#1a3328;color:white;border:none;border-radius:10px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
                 </div>
             </div>
         </div>
@@ -1067,7 +1068,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.56';
+        const APP_VERSION = 'v3.59';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
