@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="Sistema de Operaciones de Cambio">
     <meta name="format-detection" content="telephone=no">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://sheets.googleapis.com https://dolarapi.com https://script.google.com; frame-src https:; img-src 'self' data: blob:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://sheets.googleapis.com https://script.google.com; frame-src https:; img-src 'self' data: blob:;">
     <title>Sistema de Operaciones</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
@@ -994,7 +994,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.23';
+        const APP_VERSION = 'v3.25';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1179,9 +1179,9 @@
         function scheduleDolarBlue() {
             if (_dolarBlueInterval) clearInterval(_dolarBlueInterval);
             if (_dolarBlueScheduleTimer) clearTimeout(_dolarBlueScheduleTimer);
+            fetchDolarBlue();
             const interval = getDolarPollInterval();
             if (interval) {
-                fetchDolarBlue();
                 _dolarBlueInterval = setInterval(fetchDolarBlue, interval);
             }
             // Reprogramar al inicio de la próxima hora para recalcular el intervalo
