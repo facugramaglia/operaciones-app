@@ -193,19 +193,19 @@
         .btn-nueva-deuda { width: 100%; padding: 15px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(72,187,120,0.35); transition: transform 0.15s; }
         .btn-nueva-deuda:active { transform: scale(0.98); }
         @keyframes pulse-venta {
-            0%, 100% { box-shadow: 0 6px 24px rgba(100,185,100,0.35); }
-            50%       { box-shadow: 0 10px 36px rgba(100,185,100,0.55); }
+            0%, 100% { box-shadow: 0 4px 18px rgba(120,185,120,0.4); }
+            50%       { box-shadow: 0 8px 28px rgba(120,185,120,0.6); }
         }
         @keyframes pulse-compra {
-            0%, 100% { box-shadow: 0 6px 24px rgba(210,110,110,0.35); }
-            50%       { box-shadow: 0 10px 36px rgba(210,110,110,0.55); }
+            0%, 100% { box-shadow: 0 4px 18px rgba(210,100,100,0.4); }
+            50%       { box-shadow: 0 8px 28px rgba(210,100,100,0.6); }
         }
-        #cargar-picker { display: flex; flex-direction: column; justify-content: center; align-items: center; height: calc(100vh - 140px); gap: 20px; padding: 20px; }
-        .btn-pick { width: 100%; max-width: 320px; height: 78px; border: none; border-radius: 141px; font-size: 19px; font-weight: 700; transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 12px; letter-spacing: 0.3px; cursor: pointer; }
-        .btn-pick .pick-icon { font-size: 30px; line-height: 1; }
-        .btn-pick:active { transform: scale(0.96); }
-        .btn-pick.venta  { background: #7EC87E; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.15); animation: pulse-venta  3s ease-in-out infinite; }
-        .btn-pick.compra { background: #D97878; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.15); animation: pulse-compra 3s ease-in-out infinite; }
+        #cargar-picker { display: flex; flex-direction: column; justify-content: center; align-items: center; height: calc(100vh - 140px); gap: 22px; padding: 24px; }
+        .btn-pick { width: 100%; max-width: 380px; height: 72px; border: none; border-radius: 36px; font-size: 20px; font-weight: 700; transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; letter-spacing: 0.5px; cursor: pointer; }
+        .btn-pick .pick-icon { font-size: 16px; line-height: 1; }
+        .btn-pick:active { transform: scale(0.97); }
+        .btn-pick.venta  { background: #88C488; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.2); animation: pulse-venta  3s ease-in-out infinite; }
+        .btn-pick.compra { background: #D96B6B; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.2); animation: pulse-compra 3s ease-in-out infinite; }
 
         /* ── SIDEBAR LOGO (solo desktop) ───────────────────────── */
         .sidebar-logo { display: none; }
@@ -313,11 +313,11 @@
                 gap: 28px !important;
             }
             #cargar-picker .btn-pick {
-                max-width: 300px !important;
-                height: 90px !important;
-                font-size: 18px !important;
+                max-width: 320px !important;
+                height: 72px !important;
+                font-size: 20px !important;
             }
-            #cargar-picker .btn-pick .pick-icon { font-size: 28px !important; }
+            #cargar-picker .btn-pick .pick-icon { font-size: 15px !important; }
 
             /* Formulario: centrado y compacto */
             #cargar-form { max-width: 580px; margin: 0 auto; }
@@ -692,12 +692,12 @@
                 <!-- Picker de tipo -->
                 <div id="cargar-picker">
                     <button class="btn-pick venta" onclick="selectTipoForm('VENTA')">
-                        <span class="pick-icon">⬆️</span>
-                        <span>Cargar Venta</span>
+                        <span class="pick-icon">▲</span>
+                        <span>Venta</span>
                     </button>
                     <button class="btn-pick compra" onclick="selectTipoForm('COMPRA')">
-                        <span class="pick-icon">⬇️</span>
-                        <span>Cargar Compra</span>
+                        <span class="pick-icon">▼</span>
+                        <span>Compra</span>
                     </button>
                 </div>
 
@@ -1070,7 +1070,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.65';
+        const APP_VERSION = 'v3.68';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
