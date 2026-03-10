@@ -134,13 +134,14 @@
         .modal-content { position: relative; background: white; border-radius: 20px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 2px solid #e2e8f0; }
         .modal-body { padding: 20px; }
-        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
-        .detail-row-total { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; background: #f7fafc; margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
+        .detail-row { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 13px 0; border-bottom: 1px solid #e2e8f0; }
+        .detail-row:last-of-type { border-bottom: none; }
+        .detail-row-total { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 14px 0; background: #f7fafc; margin: 0 -20px; padding-left: 20px; padding-right: 20px; border-bottom: 1px solid #e2e8f0; border-top: 1px solid #e2e8f0; }
         .detail-label { font-size: 13px; color: #718096; font-weight: 500; }
-        .detail-value { font-size: 15px; color: #2d3748; font-weight: 600; }
-        .detail-value-big { font-size: 18px; color: #2d3748; font-weight: 700; }
-        .detail-value-total { font-size: 24px; font-weight: 800; }
-        .detail-divider { height: 1px; background: #e2e8f0; margin: 12px 0; }
+        .detail-value { font-size: 15px; color: #2d3748; font-weight: 600; text-align: left; }
+        .detail-value-big { font-size: 18px; color: #2d3748; font-weight: 700; text-align: left; }
+        .detail-value-total { font-size: 22px; font-weight: 800; text-align: left; }
+        .detail-divider { display: none; }
         .detail-obs { background: #fef5e7; border: 1px solid #f59e0b; border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 13px; color: #92400e; }
         .detail-modified { font-size: 11px; color: #a0aec0; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
         .cambio-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; align-items: flex-start; }
@@ -1068,7 +1069,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.59';
+        const APP_VERSION = 'v3.60';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
