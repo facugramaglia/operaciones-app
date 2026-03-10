@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="Sistema de Operaciones de Cambio">
     <meta name="format-detection" content="telephone=no">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://sheets.googleapis.com https://dolarapi.com; frame-src https:; img-src 'self' data: blob:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://sheets.googleapis.com https://dolarapi.com https://script.google.com; frame-src https:; img-src 'self' data: blob:;">
     <title>Sistema de Operaciones</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
@@ -994,7 +994,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.17';
+        const APP_VERSION = 'v3.23';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1145,17 +1145,19 @@
             currentUser = username; localStorage.setItem('currentUser', username); showMainApp();
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
-        function handleLogout() { if (_dateTimeTimer) clearTimeout(_dateTimeTimer); if (_syncLabelTimer) clearTimeout(_syncLabelTimer); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
+        function handleLogout() { if (_dateTimeTimer) clearTimeout(_dateTimeTimer); if (_syncLabelTimer) clearTimeout(_syncLabelTimer); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); if (_dolarBlueScheduleTimer) clearTimeout(_dolarBlueScheduleTimer); localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
         let _dolarBlueInterval = null;
+        let _dolarBlueScheduleTimer = null;
         let _dataRefreshInterval = null;
         async function fetchDolarBlue() {
             try {
-                const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+                const res = await fetch(config.scriptUrl + '?action=get_dolar_blue');
                 const data = await res.json();
+                if (!data.success) throw new Error(data.error);
                 const fmt = v => '$ ' + Number(v).toLocaleString('es-AR');
                 const compra = fmt(data.compra), venta = fmt(data.venta);
-                const now = new Date();
-                const updated = 'Act. ' + now.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+                const ts = new Date(data.ultimaActualizacion);
+                const updated = 'Act. ' + ts.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
                 document.getElementById('dolar-blue-compra').textContent = compra;
                 document.getElementById('dolar-blue-venta').textContent = venta;
                 document.getElementById('dolar-blue-updated').textContent = updated;
@@ -1168,6 +1170,26 @@
                 document.getElementById('dolar-blue-updated-hero').textContent = 'Sin conexión';
             }
         }
+        function getDolarPollInterval() {
+            const h = new Date().getHours();
+            if (h >= 9 && h < 18) return 60 * 1000;        // 9-18hs: cada 1 min
+            if (h >= 18 && h < 21) return 15 * 60 * 1000;  // 18-21hs: cada 15 min
+            return null;                                     // fuera de horario: sin polling
+        }
+        function scheduleDolarBlue() {
+            if (_dolarBlueInterval) clearInterval(_dolarBlueInterval);
+            if (_dolarBlueScheduleTimer) clearTimeout(_dolarBlueScheduleTimer);
+            const interval = getDolarPollInterval();
+            if (interval) {
+                fetchDolarBlue();
+                _dolarBlueInterval = setInterval(fetchDolarBlue, interval);
+            }
+            // Reprogramar al inicio de la próxima hora para recalcular el intervalo
+            const now = new Date();
+            const nextHour = new Date(now);
+            nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+            _dolarBlueScheduleTimer = setTimeout(scheduleDolarBlue, nextHour - now);
+        }
         let _midnightTimer = null;
         function scheduleMidnightLogout() {
             if (_midnightTimer) clearTimeout(_midnightTimer);
@@ -1175,7 +1197,7 @@
             const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
             _midnightTimer = setTimeout(() => { if (currentUser) handleLogout(); }, midnight - now);
         }
-        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); fetchDolarBlue(); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); _dolarBlueInterval = setInterval(fetchDolarBlue, 5 * 60 * 1000); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); scheduleDolarBlue(); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
         
         function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
