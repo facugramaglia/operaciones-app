@@ -279,6 +279,7 @@
 
             /* Header oculto en desktop — movido al sidebar */
             .app-header { display: none; }
+            #mobile-sel-bar { display: none !important; }
             .content    { margin-left: 230px; padding: 28px 36px 32px; }
 
             /* Balance card: 4 en fila en desktop, orden natural */
@@ -600,6 +601,19 @@
                     <div id="last-sync-label" style="font-size: 10px; color: #b0bec5; margin-top: 1px;"></div>
                 </div>
                 <span id="header-balance-top" style="font-size: 18px; font-weight: 800; color: #2d3748;">$0</span>
+            </div>
+            <div id="mobile-sel-bar" style="display:none;background:#1a3328;padding:10px 16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);white-space:nowrap;flex-shrink:0;"><span id="mob-sel-count" style="color:white;font-size:14px;">0</span> sel.</span>
+                    <div style="flex:1;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
+                        <span style="font-size:13px;font-weight:800;color:white;" id="mob-sel-pesos">$ 0</span>
+                        <span style="font-size:11px;color:rgba(255,255,255,0.4);">·</span>
+                        <span style="font-size:13px;font-weight:800;color:white;" id="mob-sel-usd">USD 0</span>
+                        <span style="font-size:11px;color:rgba(255,255,255,0.4);">·</span>
+                        <span style="font-size:12px;color:rgba(255,255,255,0.75);">@ <span id="mob-sel-prom" style="font-weight:700;color:white;">$0</span></span>
+                    </div>
+                    <button onclick="clearSelection()" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:8px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
+                </div>
             </div>
         </div>
         
@@ -1053,7 +1067,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.49';
+        const APP_VERSION = 'v3.53';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1491,10 +1505,17 @@
                     const montoVal = op.total || (op.cantidad * op.precio);
                     const montoStr = montoVal > 0 ? '$ ' + Math.round(montoVal).toLocaleString('es-AR', {maximumFractionDigits: 0}) : '';
                     const isMobile = window.innerWidth < 860;
+                    const opKey = `${tipo}-${op.fecha}-${op.cliente}-${op.cantidad}`;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:12px 10px 12px 14px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">$${op.cantidad} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div onclick="event.stopPropagation()" style="padding:0 6px 0 14px;display:flex;align-items:center;align-self:stretch;flex-shrink:0;"><input type="checkbox" class="op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${selectedOps.has(opKey) ? 'checked' : ''}></div><div style="flex:1;padding:12px 10px 12px 4px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">$${op.cantidad} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        const cb = row.querySelector('.op-check');
+                        cb.addEventListener('click', e => e.stopPropagation());
+                        cb.addEventListener('change', e => {
+                            if (e.target.checked) { selectedOps.add(opKey); selectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal }; }
+                            else { selectedOps.delete(opKey); delete selectedOpsData[opKey]; }
+                            updateSelectionPanel();
+                        });
                     } else {
-                        const opKey = `${tipo}-${op.fecha}-${op.cliente}-${op.cantidad}`;
                         row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr><td style="padding:10px 8px;width:36px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" class="op-check" ${selectedOps.has(opKey) ? 'checked' : ''}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;width:200px;overflow:hidden;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">$${op.cantidad}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
                         const cb = row.querySelector('.op-check');
                         cb.addEventListener('click', e => e.stopPropagation());
@@ -1690,16 +1711,32 @@
         
         function updateSelectionPanel() {
             const panel = document.getElementById('sidebar-sel-panel');
-            if (!panel) return;
-            if (selectedOps.size === 0) { panel.style.display = 'none'; return; }
+            const mbar = document.getElementById('mobile-sel-bar');
+            if (selectedOps.size === 0) {
+                if (panel) panel.style.display = 'none';
+                if (mbar) mbar.style.display = 'none';
+                return;
+            }
             let totalPesos = 0, totalUSD = 0;
             selectedOps.forEach(k => { const d = selectedOpsData[k]; if (d) { totalPesos += d.pesos; totalUSD += d.usd; } });
             const prom = totalUSD > 0 ? totalPesos / totalUSD : 0;
-            document.getElementById('sel-count').textContent = selectedOps.size;
-            document.getElementById('sel-total-pesos').textContent = '$ ' + Math.round(totalPesos).toLocaleString('es-AR');
-            document.getElementById('sel-total-usd').textContent = 'USD ' + totalUSD.toLocaleString('es-AR', {maximumFractionDigits: 2});
-            document.getElementById('sel-promedio').textContent = '$ ' + prom.toFixed(2);
-            panel.style.display = 'block';
+            const pesosStr = '$ ' + Math.round(totalPesos).toLocaleString('es-AR');
+            const usdStr = 'USD ' + totalUSD.toLocaleString('es-AR', {maximumFractionDigits: 2});
+            const promStr = '$ ' + prom.toFixed(2);
+            if (panel) {
+                document.getElementById('sel-count').textContent = selectedOps.size;
+                document.getElementById('sel-total-pesos').textContent = pesosStr;
+                document.getElementById('sel-total-usd').textContent = usdStr;
+                document.getElementById('sel-promedio').textContent = promStr;
+                panel.style.display = 'block';
+            }
+            if (mbar) {
+                document.getElementById('mob-sel-count').textContent = selectedOps.size;
+                document.getElementById('mob-sel-pesos').textContent = pesosStr;
+                document.getElementById('mob-sel-usd').textContent = usdStr;
+                document.getElementById('mob-sel-prom').textContent = promStr;
+                mbar.style.display = 'block';
+            }
         }
         function clearSelection() { selectedOps.clear(); for (const k in selectedOpsData) delete selectedOpsData[k]; document.querySelectorAll('.op-check').forEach(cb => { cb.checked = false; }); document.querySelectorAll('tr.selected, .op-row-selected').forEach(el => el.classList.remove('selected','op-row-selected')); updateSelectionPanel(); }
         function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#e5d4d4':'#d4e5d4';else if(s==='deudas') document.body.style.background='#f0eaf8';else document.body.style.background='#d4e5d4';if(s!=='historial') clearSelection();}
