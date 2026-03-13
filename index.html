@@ -1070,7 +1070,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.69';
+        const APP_VERSION = 'v3.70';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1648,12 +1648,15 @@
             if(np!==op.precio) guardarCambio(k,'precio','$'+op.precio,'$'+np,currentUser);
             if(no!==(op.observaciones||'')) guardarCambio(k,'observaciones',op.observaciones||'(vacío)',no||'(vacío)',currentUser);
             if(nuevoOperador!==op.operador) guardarCambio(k,'operador',op.operador,nuevoOperador,currentUser);
-            // Optimistic update: actualizar en memoria inmediatamente
+            // Guardar valores originales ANTES del optimistic update
+            const fechaOrig=op.fecha, clienteOrig=op.cliente, cantidadOrig=op.cantidad;
+            // Construir params con valores originales antes de modificar en memoria
+            const params=new URLSearchParams({action:'edit_operation',tipo,fecha:fechaOrig,clienteOriginal:clienteOrig,cantidadOriginal:cantidadOrig,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,nuevoOperador,usuario:currentUser});
+            // Optimistic update: actualizar en memoria
             const arr=tipo==='VENTA'?ventas:compras;
-            const oi=arr.findIndex(o=>o.fecha===op.fecha&&o.cliente===op.cliente&&o.cantidad===op.cantidad);
+            const oi=arr.findIndex(o=>o.fecha===fechaOrig&&o.cliente===clienteOrig&&o.cantidad===cantidadOrig);
             if(oi>=0){arr[oi].cantidad=nc;arr[oi].precio=np;arr[oi].total=nt;arr[oi].observaciones=no;arr[oi].operador=nuevoOperador;}
             updateUI();
-            const params=new URLSearchParams({action:'edit_operation',tipo,fecha:op.fecha,clienteOriginal:op.cliente,cantidadOriginal:op.cantidad,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,nuevoOperador,usuario:currentUser});
             const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
             showToast('✅ Operación actualizada','#667eea'); closeModal(); setTimeout(()=>loadData(true),5000);
