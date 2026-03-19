@@ -6,20 +6,23 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Operaciones">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#438453">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <meta name="description" content="Sistema de Operaciones de Cambio">
     <meta name="format-detection" content="telephone=no">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://sheets.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https:; img-src 'self' data: blob:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://sheets.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https:; img-src 'self' data: blob:;">
     <title>Sistema de Operaciones</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #d4e5d4; min-height: 100vh; overflow-x: hidden; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #e8ede9; min-height: 100vh; overflow-x: hidden; }
         button { -webkit-appearance: none; appearance: none; border: none; outline: none; }
 
         /* ── SPLASH SCREEN ─────────────────────────────────── */
         #splash-screen {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #438453 0%, #637e66 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 9999; transition: opacity 0.5s ease, transform 0.5s ease;
         }
@@ -53,28 +56,28 @@
         #add-to-home-banner.show { display: block; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .banner-inner { display: flex; align-items: center; gap: 12px; }
-        .banner-icon { width: 44px; height: 44px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+        .banner-icon { width: 44px; height: 44px; background: linear-gradient(135deg, #438453 0%, #637e66 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
         .banner-text { flex: 1; }
         .banner-text strong { display: block; font-size: 14px; color: #2d3748; }
-        .banner-text span { font-size: 12px; color: #718096; }
+        .banner-text span { font-size: 12px; color: #747873; }
         .banner-close { background: #f7fafc; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; color: #a0aec0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .banner-install-steps { margin-top: 10px; font-size: 12px; color: #718096; background: #f7fafc; border-radius: 8px; padding: 8px 10px; line-height: 1.8; }
+        .banner-install-steps { margin-top: 10px; font-size: 12px; color: #747873; background: #f7fafc; border-radius: 8px; padding: 8px 10px; line-height: 1.8; }
 
         /* ── RESTO DE ESTILOS ORIGINALES ─────────────────────── */
-        .login-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 500; overflow-y: auto; }
+        .login-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #438453 0%, #637e66 100%); z-index: 500; overflow-y: auto; }
         .login-card { background: white; border-radius: 20px; padding: 40px 30px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .login-logo h1 { font-size: 28px; color: #667eea; margin-bottom: 5px; text-align: center; }
-        .login-logo p { color: #718096; font-size: 14px; text-align: center; margin-bottom: 30px; }
+        .login-logo h1 { font-size: 28px; color: #438453; margin-bottom: 5px; text-align: center; }
+        .login-logo p { color: #747873; font-size: 14px; text-align: center; margin-bottom: 30px; }
         .input-group { margin-bottom: 20px; }
         .input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #4a5568; font-size: 14px; }
         .input-group select, .input-group input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; }
-        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .btn-link { background: none; border: none; color: #667eea; font-size: 13px; text-decoration: underline; padding: 10px; margin-top: 15px; display: block; text-align: center; width: 100%; }
+        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, #438453 0%, #637e66 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn-link { background: none; border: none; color: #438453; font-size: 13px; text-decoration: underline; padding: 10px; margin-top: 15px; display: block; text-align: center; width: 100%; }
         .app-container { display: none; }
         .app-header { background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #438453 0%, #637e66 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
         .btn-logout { padding: 8px 16px; background: #f56565; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; }
         .balance-card { background: transparent; padding: 0; border-radius: 0; margin-top: 10px; }
         .bm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -82,7 +85,7 @@
         .bm-item.bm-blue { background: #eef2ff; }
         .bm-item.bm-gray { background: #f4f6f9; }
         .bm-sep { display: none; }
-        .balance-label { font-size: 11px; font-weight: 600; color: #718096; margin-bottom: 6px; }
+        .balance-label { font-size: 11px; font-weight: 600; color: #747873; margin-bottom: 6px; }
         .balance-amount { font-size: 22px; font-weight: 800; color: #1a4d35; line-height: 1; }
         .bm-item.bm-blue .balance-amount { color: #2c3eb5; }
         .bm-item.bm-gray .balance-amount { color: #2d3748; }
@@ -98,8 +101,8 @@
         @media (max-width: 859px) { #sidebar-sel-panel { display: none !important; } }
         .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #a0aec0; font-size: 12px; padding: 0; transition: all 0.3s; }
         .nav-icon { width: 48px; height: 48px; border-radius: 50%; background: #f7fafc; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
-        .nav-item.active .nav-icon { background: #667eea; transform: scale(1.05); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
-        .nav-item.active { color: #667eea; font-weight: 600; }
+        .nav-item.active .nav-icon { background: #438453; transform: scale(1.05); box-shadow: 0 4px 12px rgba(67,132,83,0.3); }
+        .nav-item.active { color: #438453; font-weight: 600; }
         .content { padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px; }
         .content .balance-card { margin-bottom: 20px; }
         .screen { display: none; }
@@ -110,23 +113,23 @@
         .form-label { display: block; font-size: 15px; font-weight: 600; color: #2d3748; margin-bottom: 10px; }
         .form-input, .form-select, .form-textarea { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 17px; background: white; transition: all 0.3s; }
         .form-input[type="date"] { padding: 12px 14px; font-size: 15px; color: #2d3748; font-weight: 600; }
-        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #438453; box-shadow: 0 0 0 3px rgba(67,132,83,0.1); }
         .tipo-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .tipo-btn { padding: 18px; border: 3px solid #e2e8f0; background: white; border-radius: 16px; font-size: 17px; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .tipo-btn.active { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border-color: #48bb78; transform: scale(1.02); box-shadow: 0 4px 12px rgba(72,187,120,0.3); }
+        .tipo-btn.active { background: linear-gradient(135deg, #438453 0%, #3a7248 100%); color: white; border-color: #438453; transform: scale(1.02); box-shadow: 0 4px 12px rgba(67,132,83,0.3); }
         .tipo-btn.compra.active { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); border-color: #f56565; box-shadow: 0 4px 12px rgba(245,101,101,0.3); }
-        .btn-submit { width: 100%; padding: 18px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 700; margin-top: 10px; box-shadow: 0 4px 12px rgba(72,187,120,0.3); transition: all 0.3s; }
+        .btn-submit { width: 100%; padding: 18px; background: linear-gradient(135deg, #438453 0%, #3a7248 100%); color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 700; margin-top: 10px; box-shadow: 0 4px 12px rgba(67,132,83,0.3); transition: all 0.3s; }
         .btn-submit:active { transform: scale(0.98); }
         .btn-submit.compra { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); box-shadow: 0 4px 12px rgba(245,101,101,0.3); }
-        .filter-btn { flex: 1; padding: 12px 20px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 16px; font-weight: 600; color: #718096; transition: all 0.3s; }
-        .filter-btn.active { background: white; color: #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .filter-btn { flex: 1; padding: 12px 20px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 16px; font-weight: 600; color: #747873; transition: all 0.3s; }
+        .filter-btn.active { background: white; color: #438453; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         table { width: 100%; font-size: 12px; border-collapse: collapse; }
-        th { text-align: left; padding: 10px 5px; color: #718096; border-bottom: 2px solid #e2e8f0; background: #f7fafc; }
+        th { text-align: left; padding: 10px 5px; color: #747873; border-bottom: 2px solid #e2e8f0; background: #f7fafc; }
         td { padding: 10px 5px; border-bottom: 1px solid #e2e8f0; }
         .estado-select { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; width: 100%; }
-        .total-preview { background: linear-gradient(135deg, #e6f4ff 0%, #dbeafe 100%); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid #93c5fd; }
-        .total-preview-label { font-size: 14px; color: #1e40af; font-weight: 600; margin-bottom: 6px; }
-        .total-preview-value { font-size: 32px; font-weight: 800; color: #1e40af; }
+        .total-preview { background: linear-gradient(135deg, #e6f2ea 0%, #d4e8da 100%); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 2px solid #8ebf9e; }
+        .total-preview-label { font-size: 14px; color: #2d5a3d; font-weight: 600; margin-bottom: 6px; }
+        .total-preview-value { font-size: 32px; font-weight: 800; color: #2d5a3d; }
         .alert-success { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; }
         .hidden { display: none !important; }
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -137,7 +140,7 @@
         .detail-row { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 13px 0; border-bottom: 1px solid #e2e8f0; }
         .detail-row:last-of-type { border-bottom: none; }
         .detail-row-total { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 14px 0; background: #f7fafc; margin: 0 -20px; padding-left: 20px; padding-right: 20px; border-bottom: 1px solid #e2e8f0; border-top: 1px solid #e2e8f0; }
-        .detail-label { font-size: 13px; color: #718096; font-weight: 500; }
+        .detail-label { font-size: 13px; color: #747873; font-weight: 500; }
         .detail-value { font-size: 15px; color: #2d3748; font-weight: 600; text-align: left; }
         .detail-value-big { font-size: 18px; color: #2d3748; font-weight: 700; text-align: left; }
         .detail-value-total { font-size: 22px; font-weight: 800; text-align: left; }
@@ -149,52 +152,52 @@
         .cambio-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
         .cambio-content { flex: 1; }
         .cambio-tipo { font-size: 12px; font-weight: 700; color: #2d3748; }
-        .cambio-detalle { font-size: 11px; color: #718096; margin-top: 2px; }
+        .cambio-detalle { font-size: 11px; color: #747873; margin-top: 2px; }
         .cambio-meta { font-size: 10px; color: #a0aec0; margin-top: 2px; }
         .swipe-row { position: relative; }
         .swipe-inner { display: flex; align-items: center; transition: transform 0.25s ease; width: 100%; background: white; }
         .swipe-actions { position: absolute; right: 0; top: 0; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 4px; padding: 0 6px; background: transparent; }
         .swipe-action-btn { padding: 5px 7px; border: none; border-radius: 8px; font-size: 10px; font-weight: 700; white-space: nowrap; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
         .swipe-row.swiped .swipe-action-btn { opacity: 1; pointer-events: auto; }
-        .pull-indicator { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 8px; background: white; color: #667eea; font-size: 14px; font-weight: 600; padding: 12px; transform: translateY(-100%); transition: transform 0.3s; z-index: 200; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .pull-indicator { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 8px; background: white; color: #438453; font-size: 14px; font-weight: 600; padding: 12px; transform: translateY(-100%); transition: transform 0.3s; z-index: 200; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .pull-indicator.visible { transform: translateY(0); }
-        .pull-spinner { width: 18px; height: 18px; border: 2px solid #e2e8f0; border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .pull-spinner { width: 18px; height: 18px; border: 2px solid #e2e8f0; border-top-color: #438453; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .skeleton-box { background: linear-gradient(90deg, #e2e8f0 25%, #f0f4f8 50%, #e2e8f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* ── DEUDAS ──────────────────────────────────────────────── */
         .deudas-tipo-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .deudas-tipo-btn { padding: 12px 8px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 700; color: #718096; transition: all 0.3s; }
+        .deudas-tipo-btn { padding: 12px 8px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 700; color: #747873; transition: all 0.3s; }
         .deudas-tipo-btn.active.cobrar { background: white; color: #276349; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .deudas-tipo-btn.active.pagar  { background: white; color: #c53030; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .deudas-filter-bar { display: flex; gap: 8px; margin-bottom: 12px; }
-        .deudas-filter-btn { flex: 1; padding: 10px 8px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 600; color: #718096; transition: all 0.3s; }
-        .deudas-filter-btn.active { background: white; color: #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .deudas-filter-btn { flex: 1; padding: 10px 8px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 600; color: #747873; transition: all 0.3s; }
+        .deudas-filter-btn.active { background: white; color: #438453; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .deudas-totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
         .deudas-total-box { border-radius: 14px; padding: 14px 16px; }
-        .deudas-total-box.usd { background: linear-gradient(135deg, #e8eeff 0%, #d4dcff 100%); border: 2px solid #b0bdff; }
-        .deudas-total-box.ars { background: linear-gradient(135deg, #e6f9ee 0%, #c8f0d8 100%); border: 2px solid #86d9a8; }
+        .deudas-total-box.usd { background: linear-gradient(135deg, #e6f0e8 0%, #d4e4d8 100%); border: 2px solid #8eba9e; }
+        .deudas-total-box.ars { background: linear-gradient(135deg, #eef3ef 0%, #dce8de 100%); border: 2px solid #a0c4a8; }
         .deudas-total-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .deudas-total-box.usd .deudas-total-label { color: #4c63d2; }
-        .deudas-total-box.ars .deudas-total-label { color: #2d8a57; }
+        .deudas-total-box.usd .deudas-total-label { color: #438453; }
+        .deudas-total-box.ars .deudas-total-label { color: #637e66; }
         .deudas-total-amount { font-size: 20px; font-weight: 800; }
-        .deudas-total-box.usd .deudas-total-amount { color: #3b4fbf; }
-        .deudas-total-box.ars .deudas-total-amount { color: #276349; }
+        .deudas-total-box.usd .deudas-total-amount { color: #2d5a3d; }
+        .deudas-total-box.ars .deudas-total-amount { color: #3a6248; }
         .moneda-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .moneda-btn { padding: 14px; border: 3px solid #e2e8f0; background: white; border-radius: 14px; font-size: 16px; font-weight: 700; transition: all 0.3s; }
-        .moneda-btn.usd.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
-        .moneda-btn.ars.active { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border-color: #48bb78; box-shadow: 0 4px 12px rgba(72,187,120,0.3); }
+        .moneda-btn.usd.active { background: linear-gradient(135deg, #438453 0%, #637e66 100%); color: white; border-color: #438453; box-shadow: 0 4px 12px rgba(67,132,83,0.3); }
+        .moneda-btn.ars.active { background: linear-gradient(135deg, #438453 0%, #3a7248 100%); color: white; border-color: #438453; box-shadow: 0 4px 12px rgba(67,132,83,0.3); }
         .deuda-row { border-bottom: 1px solid #f0f0f0; }
         .header-balance-strip { background: #f7fafc; border-top: 1px solid #e2e8f0; padding: 6px 20px; display: flex; justify-content: space-between; align-items: center; }
         .pending-only-btn { padding: 8px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-weight: 700; background: white; color: #a0aec0; transition: all 0.2s; }
         .pending-only-btn.active { background: #FEF3C7; color: #92400E; border-color: #F59E0B; }
         .deuda-row:last-child { border-bottom: none; }
-        .btn-nueva-deuda { width: 100%; padding: 15px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(72,187,120,0.35); transition: transform 0.15s; }
+        .btn-nueva-deuda { width: 100%; padding: 15px; background: linear-gradient(135deg, #438453 0%, #3a7248 100%); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(67,132,83,0.35); transition: transform 0.15s; }
         .btn-nueva-deuda:active { transform: scale(0.98); }
         @keyframes pulse-venta {
-            0%, 100% { box-shadow: 0 4px 18px rgba(120,185,120,0.4); }
-            50%       { box-shadow: 0 8px 28px rgba(120,185,120,0.6); }
+            0%, 100% { box-shadow: 0 4px 18px rgba(67,132,83,0.4); }
+            50%       { box-shadow: 0 8px 28px rgba(67,132,83,0.6); }
         }
         @keyframes pulse-compra {
             0%, 100% { box-shadow: 0 4px 18px rgba(210,100,100,0.4); }
@@ -204,7 +207,7 @@
         .btn-pick { width: 100%; max-width: 380px; height: 72px; border: none; border-radius: 36px; font-size: 20px; font-weight: 700; transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; letter-spacing: 0.5px; cursor: pointer; }
         .btn-pick .pick-icon { font-size: 16px; line-height: 1; }
         .btn-pick:active { transform: scale(0.97); }
-        .btn-pick.venta  { background: #88C488; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.2); animation: pulse-venta  3s ease-in-out infinite; }
+        .btn-pick.venta  { background: #438453; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.2); animation: pulse-venta  3s ease-in-out infinite; }
         .btn-pick.compra { background: #D96B6B; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.2); animation: pulse-compra 3s ease-in-out infinite; }
 
         /* ── SIDEBAR LOGO (solo desktop) ───────────────────────── */
@@ -270,7 +273,7 @@
                 text-align: left;
             }
 
-            .nav-item.active { background: #f0f4ff; border-radius: 12px; }
+            .nav-item.active { background: #e6f0e8; border-radius: 12px; }
             .nav-item.active .nav-icon { transform: scale(1.0); }
 
             .nav-icon {
@@ -359,11 +362,11 @@
         @media (min-width: 860px) {
 
             /* Fondo general */
-            body { background: #edf2ed; }
+            body { background: #e8ede9; }
 
             /* ── Sidebar: verde sage pastel ────────────────── */
             .bottom-nav {
-                background: #d6e8df !important;
+                background: #d9e6db !important;
                 border-right: 1px solid #b8d5c8 !important;
                 box-shadow: 4px 0 20px rgba(0,0,0,0.07) !important;
             }
@@ -594,13 +597,13 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;" id="btn-config-header">⚙️</button>
+                    <button style="padding: 8px 16px; background: #438453; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;" id="btn-config-header">⚙️</button>
                     <button class="btn-logout" id="btn-logout">Salir</button>
                 </div>
             </div>
             <div class="header-balance-strip">
                 <div>
-                    <span style="font-size: 12px; color: #718096; font-weight: 600; letter-spacing: 0.3px;">BALANCE</span>
+                    <span style="font-size: 12px; color: #747873; font-weight: 600; letter-spacing: 0.3px;">BALANCE</span>
                     <div id="last-sync-label" style="font-size: 10px; color: #b0bec5; margin-top: 1px;"></div>
                 </div>
                 <span id="header-balance-top" style="font-size: 18px; font-weight: 800; color: #2d3748;">$0</span>
@@ -647,18 +650,18 @@
                     </div>
                 </div>
                 <div class="card" id="card-ventas-pendientes">
-                    <div class="card-title" style="color: #48bb78; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">📈 Ventas Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
-                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
+                    <div class="card-title" style="color: #438453; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">📈 Ventas Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
+                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
                 </div>
                 <div class="card" id="card-compras-pendientes">
                     <div class="card-title" style="color: #f56565; cursor: pointer;" onclick="showScreen('historial'); switchTab('compras');">📉 Compras Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
-                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#718096;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#718096;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
+                    <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
                 </div>
                 <div class="card" id="card-hoy" style="padding: 14px 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
+                    <div style="font-size: 12px; font-weight: 700; color: #747873; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div id="hoy-ventas-box" style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #48bb78; font-weight: 700; margin-bottom: 4px;">↑ VENTAS</div>
+                            <div style="font-size: 11px; color: #438453; font-weight: 700; margin-bottom: 4px;">↑ VENTAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-ventas-total">$0</div>
                             <div style="font-size: 11px; color: #a0aec0;" id="hoy-ventas-count">0 operaciones</div>
                         </div>
@@ -670,7 +673,7 @@
                     </div>
                 </div>
                 <div class="card" id="card-dolar-blue" style="padding: 14px 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #747873; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
                         💵 Dólar Blue
                         <span id="dolar-blue-updated" style="float:right; font-weight:400; text-transform:none; letter-spacing:0; color:#a0aec0;"></span>
                     </div>
@@ -680,7 +683,7 @@
                             <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-compra">–</div>
                         </div>
                         <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #38a169; font-weight: 700; margin-bottom: 4px;">↑ VENTA</div>
+                            <div style="font-size: 11px; color: #3a7248; font-weight: 700; margin-bottom: 4px;">↑ VENTA</div>
                             <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-venta">–</div>
                         </div>
                     </div>
@@ -705,7 +708,7 @@
                 <div id="cargar-form" style="display:none;">
                     <div class="card">
                         <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-                            <button onclick="volverAlPicker()" style="background:none;border:none;font-size:22px;padding:4px 8px;color:#718096;cursor:pointer;">←</button>
+                            <button onclick="volverAlPicker()" style="background:none;border:none;font-size:22px;padding:4px 8px;color:#747873;cursor:pointer;">←</button>
                             <div class="card-title" id="form-tipo-title" style="margin:0;">Nueva Operación</div>
                         </div>
                         <div class="form-group">
@@ -753,7 +756,7 @@
                     <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
                 </div>
                 <div id="historial-filters-row" style="display:flex; gap:10px; margin-bottom:10px;">
-                    <select id="filter-select" style="flex:1; padding: 10px 14px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #667eea; background: white; min-width:0;">
+                    <select id="filter-select" style="flex:1; padding: 10px 14px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #438453; background: white; min-width:0;">
                         <option value="ultimo">Último día</option>
                         <option value="10">Últimas 10</option>
                         <option value="20">Últimas 20</option>
@@ -768,11 +771,11 @@
                 <div id="estado-counters" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
                 <div id="ventas-tab" class="card">
                     <div class="card-title">Últimas Ventas</div>
-                    <div style="overflow-x: auto;"><table id="ventas-table" style="width: 100%;"><thead><tr style="border-bottom: 2px solid #e2e8f0;"><th style="width:36px;padding:12px 8px;"></th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #718096; font-weight: 600; width: 80px;">Fecha</th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #718096; font-weight: 600; width: 200px;">Cliente</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 70px;">Cantidad</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 70px;">Precio</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 120px;">Monto</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 130px;">Estado</th></tr></thead><tbody id="ventas-tbody"></tbody></table></div>
+                    <div style="overflow-x: auto;"><table id="ventas-table" style="width: 100%;"><thead><tr style="border-bottom: 2px solid #e2e8f0;"><th style="width:36px;padding:12px 8px;"></th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #747873; font-weight: 600; width: 80px;">Fecha</th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #747873; font-weight: 600; width: 200px;">Cliente</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 70px;">Cantidad</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 70px;">Precio</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 120px;">Monto</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 130px;">Estado</th></tr></thead><tbody id="ventas-tbody"></tbody></table></div>
                 </div>
                 <div id="compras-tab" class="card hidden">
                     <div class="card-title">Últimas Compras</div>
-                    <div style="overflow-x: auto;"><table id="compras-table" style="width: 100%;"><thead><tr style="border-bottom: 2px solid #e2e8f0;"><th style="width:36px;padding:12px 8px;"></th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #718096; font-weight: 600; width: 80px;">Fecha</th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #718096; font-weight: 600; width: 200px;">Cliente</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 70px;">Cantidad</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 70px;">Precio</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 120px;">Monto</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #718096; font-weight: 600; width: 130px;">Estado</th></tr></thead><tbody id="compras-tbody"></tbody></table></div>
+                    <div style="overflow-x: auto;"><table id="compras-table" style="width: 100%;"><thead><tr style="border-bottom: 2px solid #e2e8f0;"><th style="width:36px;padding:12px 8px;"></th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #747873; font-weight: 600; width: 80px;">Fecha</th><th style="font-size: 12px; padding: 12px 8px; text-align: left; color: #747873; font-weight: 600; width: 200px;">Cliente</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 70px;">Cantidad</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 70px;">Precio</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 120px;">Monto</th><th style="font-size: 12px; padding: 12px 8px; text-align: right; color: #747873; font-weight: 600; width: 130px;">Estado</th></tr></thead><tbody id="compras-tbody"></tbody></table></div>
                 </div>
             </div>
             
@@ -783,11 +786,11 @@
                     <div class="form-group">
                         <label class="form-label">URL del Google Apps Script</label>
                         <input type="text" class="form-input" id="config-script-url" placeholder="https://script.google.com/macros/s/.../exec">
-                        <small style="font-size: 11px; color: #718096; margin-top: 5px; display: block;">Debe terminar en /exec</small>
+                        <small style="font-size: 11px; color: #747873; margin-top: 5px; display: block;">Debe terminar en /exec</small>
                     </div>
                     <div class="alert-success hidden" id="config-success">✅ Configuración guardada correctamente</div>
                     <button class="btn-primary" id="btn-save-config">Guardar Cambios</button>
-                    <div style="margin-top:20px;text-align:center;font-size:12px;color:#a0aec0;">Operaciones App <span id="app-version-display" style="font-weight:700;color:#718096;"></span></div>
+                    <div style="margin-top:20px;text-align:center;font-size:12px;color:#a0aec0;">Operaciones App <span id="app-version-display" style="font-weight:700;color:#747873;"></span></div>
                 </div>
             </div>
 
@@ -882,8 +885,8 @@
         <div class="modal-overlay" onclick="closeDeudaDetailModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="margin: 0; font-size: 20px; color: #667eea;">💰 Deuda</h2>
-                <button onclick="closeDeudaDetailModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+                <h2 style="margin: 0; font-size: 20px; color: #438453;">💰 Deuda</h2>
+                <button onclick="closeDeudaDetailModal()" style="background: none; border: none; font-size: 28px; color: #747873; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
                 <div class="detail-row"><span class="detail-label">Cliente</span><span class="detail-value" id="deuda-detail-cliente">-</span></div>
@@ -891,15 +894,15 @@
                 <div class="detail-row"><span class="detail-label">Estado</span><span id="deuda-detail-estado" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;">-</span></div>
                 <div class="detail-divider"></div>
                 <div style="text-align: center; padding: 16px 0;">
-                    <div style="font-size: 13px; color: #718096; margin-bottom: 6px;">Monto</div>
+                    <div style="font-size: 13px; color: #747873; margin-bottom: 6px;">Monto</div>
                     <div style="font-size: 36px; font-weight: 800;" id="deuda-detail-monto">-</div>
                 </div>
                 <div class="detail-divider"></div>
                 <div id="deuda-detail-obs" class="detail-obs" style="display: none; margin-top: 0; margin-bottom: 12px;"></div>
                 <div style="font-size: 11px; color: #a0aec0; margin-bottom: 6px;" id="deuda-detail-creado"></div>
-                <div id="deuda-detail-cobro" style="font-size: 11px; color: #48bb78; font-weight: 600; margin-bottom: 12px; display: none;"></div>
+                <div id="deuda-detail-cobro" style="font-size: 11px; color: #438453; font-weight: 600; margin-bottom: 12px; display: none;"></div>
                 <button id="deuda-detail-action-btn" style="width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; color: white; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s;"></button>
-                <button id="deuda-detail-edit-btn" style="width: 100%; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #667eea;">✏️ Editar deuda</button>
+                <button id="deuda-detail-edit-btn" style="width: 100%; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #438453;">✏️ Editar deuda</button>
                 <button id="deuda-detail-delete-btn" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e53e3e;">🗑️ Borrar deuda</button>
             </div>
         </div>
@@ -911,43 +914,43 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 style="margin: 0; font-size: 20px;">✏️ Editar Deuda</h2>
-                <button onclick="closeDeudaEditModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+                <button onclick="closeDeudaEditModal()" style="background: none; border: none; font-size: 28px; color: #747873; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="deuda-edit-id">
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Fecha</label>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Fecha</label>
                     <input type="date" id="deuda-edit-fecha" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px;">
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Cliente</label>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Cliente</label>
                     <input type="text" id="deuda-edit-cliente" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px;">
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Monto</label>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Monto</label>
                     <input type="number" id="deuda-edit-monto" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;">
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Moneda</label>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Moneda</label>
                     <select id="deuda-edit-moneda" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-weight: 600; background: white;">
                         <option value="USD">🇺🇸 USD</option>
                         <option value="ARS">🇦🇷 ARS</option>
                     </select>
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Tipo</label>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Tipo</label>
                     <select id="deuda-edit-tipo" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-weight: 600; background: white;">
                         <option value="COBRAR">💰 A cobrar</option>
                         <option value="PAGAR">💸 A pagar</option>
                     </select>
                 </div>
                 <div style="margin-bottom: 18px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Observaciones</label>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Observaciones</label>
                     <textarea id="deuda-edit-obs" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button onclick="closeDeudaEditModal()" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #718096;">Cancelar</button>
-                    <button onclick="guardarEdicionDeuda()" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(102,126,234,0.3);">💾 Guardar</button>
+                    <button onclick="closeDeudaEditModal()" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #747873;">Cancelar</button>
+                    <button onclick="guardarEdicionDeuda()" style="padding: 14px; background: linear-gradient(135deg, #438453 0%, #637e66 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(67,132,83,0.3);">💾 Guardar</button>
                 </div>
             </div>
         </div>
@@ -958,8 +961,8 @@
         <div class="modal-overlay" onclick="closeNuevaDeudaModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="margin: 0; font-size: 20px; color: #667eea;">💰 Nueva Deuda</h2>
-                <button onclick="closeNuevaDeudaModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+                <h2 style="margin: 0; font-size: 20px; color: #438453;">💰 Nueva Deuda</h2>
+                <button onclick="closeNuevaDeudaModal()" style="background: none; border: none; font-size: 28px; color: #747873; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1003,7 +1006,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-tipo" style="margin: 0; font-size: 20px;">VENTA</h2>
-                <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; color: #718096; padding: 0; width: 40px; height: 40px;">×</button>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; color: #747873; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
                 <div class="detail-row"><span class="detail-label">Cliente</span><span class="detail-value" id="modal-cliente">-</span></div>
@@ -1018,23 +1021,23 @@
                 <div id="modal-observaciones" class="detail-obs" style="display: none;"></div>
                 <div id="modal-modificado" class="detail-modified" style="display: none;"></div>
                 <div id="modal-historial-cambios" style="display: none; margin-top: 12px;">
-                    <button onclick="toggleCambios()" id="btn-toggle-cambios" style="width: 100%; display: flex; justify-content: space-between; align-items: center; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; color: #718096;">
+                    <button onclick="toggleCambios()" id="btn-toggle-cambios" style="width: 100%; display: flex; justify-content: space-between; align-items: center; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; color: #747873;">
                         <span>📋 Historial de cambios</span><span id="cambios-arrow">▼</span>
                     </button>
                     <div id="modal-cambios-lista" style="display: none; margin-top: 6px; background: #f7fafc; border-radius: 10px; padding: 8px 12px;"></div>
                 </div>
                 <div id="modal-edit-form" style="display: none; margin-top: 16px; border-top: 2px solid #e2e8f0; padding-top: 16px;">
                     <div style="font-size: 14px; font-weight: 700; color: #2d3748; margin-bottom: 16px;">✏️ Editar Operación</div>
-                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Cantidad (USD)</label><input type="number" id="edit-cantidad" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
-                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Precio (ARS)</label><input type="number" id="edit-precio" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
-                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Observaciones</label><textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea></div>
-                    <div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 6px;">Operador</label><select id="edit-operador" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-weight: 600; background: white;"><option value="TOMI">TOMI</option><option value="CHOKI">CHOKI</option><option value="TURCO">TURCO</option><option value="AGU">AGU</option><option value="X3">X3</option></select></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Cantidad (USD)</label><input type="number" id="edit-cantidad" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Precio (ARS)</label><input type="number" id="edit-precio" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Observaciones</label><textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea></div>
+                    <div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #747873; margin-bottom: 6px;">Operador</label><select id="edit-operador" style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-weight: 600; background: white;"><option value="TOMI">TOMI</option><option value="CHOKI">CHOKI</option><option value="TURCO">TURCO</option><option value="AGU">AGU</option><option value="X3">X3</option></select></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <button id="btn-edit-cancel" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #718096;">Cancelar</button>
-                        <button id="btn-edit-save" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(102,126,234,0.3);">💾 Guardar</button>
+                        <button id="btn-edit-cancel" style="padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #747873;">Cancelar</button>
+                        <button id="btn-edit-save" style="padding: 14px; background: linear-gradient(135deg, #438453 0%, #637e66 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(67,132,83,0.3);">💾 Guardar</button>
                     </div>
                 </div>
-                <button id="btn-edit-toggle" style="width: 100%; margin-top: 16px; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #667eea;">✏️ Editar operación</button>
+                <button id="btn-edit-toggle" style="width: 100%; margin-top: 16px; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #438453;">✏️ Editar operación</button>
                 <button id="btn-delete-op" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e53e3e;">🗑️ Borrar operación</button>
             </div>
         </div>
@@ -1050,7 +1053,7 @@
                 canvas.width = 180; canvas.height = 180;
                 const ctx = canvas.getContext('2d');
                 const grad = ctx.createLinearGradient(0, 0, 180, 180);
-                grad.addColorStop(0, '#667eea'); grad.addColorStop(1, '#764ba2');
+                grad.addColorStop(0, '#438453'); grad.addColorStop(1, '#637e66');
                 ctx.beginPath();
                 const r = 40;
                 ctx.moveTo(r, 0); ctx.lineTo(180 - r, 0); ctx.quadraticCurveTo(180, 0, 180, r);
@@ -1070,7 +1073,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.70';
+        const APP_VERSION = 'v3.76';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1374,13 +1377,13 @@
         function updateUI() {
             const el = document.getElementById('header-balance-main');
             el.textContent = '$' + balanceTotal.toLocaleString('es-AR');
-            el.style.color = balanceTotal >= 0 ? '#48bb78' : '#f56565';
+            el.style.color = balanceTotal >= 0 ? '#438453' : '#f56565';
             const top = document.getElementById('header-balance-top');
             top.textContent = '$' + balanceTotal.toLocaleString('es-AR');
-            top.style.color = balanceTotal >= 0 ? '#48bb78' : '#e53e3e';
+            top.style.color = balanceTotal >= 0 ? '#438453' : '#e53e3e';
             const sb = document.getElementById('sidebar-balance');
             sb.textContent = '$' + balanceTotal.toLocaleString('es-AR');
-            sb.style.color = balanceTotal >= 0 ? '#48bb78' : '#f56565';
+            sb.style.color = balanceTotal >= 0 ? '#438453' : '#f56565';
             updateDateTime(); updateResumenHoy(); updatePendingTables(); updateHistorial(); updatePesosEnCaja();
         }
         
@@ -1465,9 +1468,9 @@
                     const cantStr = '$ ' + Number(op.cantidad).toLocaleString('es-AR', {maximumFractionDigits: 2});
                     const isMobile = window.innerWidth < 860;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:12px 10px 12px 14px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:12px 10px 12px 14px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
                     } else {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#747873;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#747873;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
                     }
                     row.addEventListener('click', () => showOperationDetail(op, tipo, estados));
                 });
@@ -1512,7 +1515,7 @@
                     const isMobile = window.innerWidth < 860;
                     const opKey = `${tipo}-${op.fecha}-${op.cliente}-${op.cantidad}`;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div onclick="event.stopPropagation()" style="padding:0 6px 0 14px;display:flex;align-items:center;align-self:stretch;flex-shrink:0;"><input type="checkbox" class="op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${selectedOps.has(opKey) ? 'checked' : ''}></div><div style="flex:1;padding:12px 10px 12px 4px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#718096;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div onclick="event.stopPropagation()" style="padding:0 6px 0 14px;display:flex;align-items:center;align-self:stretch;flex-shrink:0;"><input type="checkbox" class="op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${selectedOps.has(opKey) ? 'checked' : ''}></div><div style="flex:1;padding:12px 10px 12px 4px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
                         const cb = row.querySelector('.op-check');
                         cb.addEventListener('click', e => e.stopPropagation());
                         cb.addEventListener('change', e => {
@@ -1521,7 +1524,7 @@
                             updateSelectionPanel();
                         });
                     } else {
-                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr><td style="padding:10px 8px;width:36px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" class="op-check" ${selectedOps.has(opKey) ? 'checked' : ''}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#718096;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;width:200px;overflow:hidden;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#718096;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
+                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr><td style="padding:10px 8px;width:36px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" class="op-check" ${selectedOps.has(opKey) ? 'checked' : ''}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#747873;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;width:200px;overflow:hidden;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#747873;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
                         const cb = row.querySelector('.op-check');
                         cb.addEventListener('click', e => e.stopPropagation());
                         cb.addEventListener('change', e => {
@@ -1594,7 +1597,7 @@
             const params = new URLSearchParams({action:'update_status', tipo, fecha:ff, cliente, cantidad:String(cantidad).replace('$',''), nuevoEstado, usuario:currentUser});
             const iframe = document.createElement('iframe'); iframe.style.cssText='display:none;position:absolute;width:0;height:0;border:none;';
             iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            showToast('✅ Estado → '+nuevoEstado, '#667eea');
+            showToast('✅ Estado → '+nuevoEstado, '#438453');
             setTimeout(()=>{ if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
             setTimeout(()=>loadData(true), 5000);
         }
@@ -1603,14 +1606,14 @@
         function showOperationDetail(op, tipo, estadosDisponibles) {
             const es = getEstadoStyles(op.estado);
             document.getElementById('modal-tipo').textContent = tipo;
-            document.getElementById('modal-tipo').style.color = tipo==='VENTA'?'#48bb78':'#f56565';
+            document.getElementById('modal-tipo').style.color = tipo==='VENTA'?'#438453':'#f56565';
             document.getElementById('modal-cliente').textContent = op.cliente;
             document.getElementById('modal-operador').textContent = op.operador;
             document.getElementById('modal-fecha').textContent = op.fecha;
             document.getElementById('modal-cantidad').textContent = '$'+op.cantidad.toLocaleString('es-AR');
             document.getElementById('modal-precio').textContent = '$'+op.precio.toLocaleString('es-AR',{minimumFractionDigits:2});
             document.getElementById('modal-total').textContent = '$'+op.total.toLocaleString('es-AR');
-            document.getElementById('modal-total').style.color = tipo==='VENTA'?'#48bb78':'#f56565';
+            document.getElementById('modal-total').style.color = tipo==='VENTA'?'#438453':'#f56565';
             const mss = document.getElementById('modal-estado-select'), ns = mss.cloneNode(true);
             mss.parentNode.replaceChild(ns, mss);
             ns.innerHTML = estadosDisponibles.map(e=>`<option value="${escHTML(e)}" ${op.estado===e?'selected':''}>${escHTML(e)}</option>`).join('');
@@ -1635,7 +1638,7 @@
         function getOpKey(op,tipo){return `cambios_${tipo}_${op.fecha}_${op.cliente}_${op.cantidad}`.replace(/\s/g,'_');}
         function guardarCambio(k,campo,ant,nvo,usr){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}h.unshift({campo,anterior:ant,nuevo:nvo,usuario:usr,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});if(h.length>10)h=h.slice(0,10);try{localStorage.setItem(k,JSON.stringify(h));}catch(e){}}
         function toggleCambios(){const l=document.getElementById('modal-cambios-lista'),a=document.getElementById('cambios-arrow'),o=l.style.display!=='none';l.style.display=o?'none':'block';a.textContent=o?'▼':'▲';}
-        function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#667eea',cantidad:'#48bb78',precio:'#f59e0b',observaciones:'#a0aec0'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[escHTML(x.campo)]||'#a0aec0'};"></div><div class="cambio-content"><div class="cambio-tipo">${escHTML(x.campo.charAt(0).toUpperCase()+x.campo.slice(1))}</div><div class="cambio-detalle"><span style="color:#a0aec0;text-decoration:line-through;">${escHTML(x.anterior)}</span><span style="margin:0 4px;">→</span><strong>${escHTML(x.nuevo)}</strong></div><div class="cambio-meta">👤 ${escHTML(x.usuario)} · ${escHTML(x.fecha)}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
+        function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#438453',cantidad:'#438453',precio:'#f59e0b',observaciones:'#a0aec0'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[escHTML(x.campo)]||'#a0aec0'};"></div><div class="cambio-content"><div class="cambio-tipo">${escHTML(x.campo.charAt(0).toUpperCase()+x.campo.slice(1))}</div><div class="cambio-detalle"><span style="color:#a0aec0;text-decoration:line-through;">${escHTML(x.anterior)}</span><span style="margin:0 4px;">→</span><strong>${escHTML(x.nuevo)}</strong></div><div class="cambio-meta">👤 ${escHTML(x.usuario)} · ${escHTML(x.fecha)}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
         
         async function guardarEdicion(op,tipo){
             const nc=parseFloat(document.getElementById('edit-cantidad').value), np=parseFloat(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
@@ -1659,7 +1662,7 @@
             updateUI();
             const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
-            showToast('✅ Operación actualizada','#667eea'); closeModal(); setTimeout(()=>loadData(true),5000);
+            showToast('✅ Operación actualizada','#438453'); closeModal(); setTimeout(()=>loadData(true),5000);
         }
         
         function showToast(msg,color='#2d3748'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500);}
@@ -1712,7 +1715,7 @@
             updatePendingTables(); updateHistorial();
             const params=new URLSearchParams({action:'update_status',tipo,fecha:ff,cliente,cantidad:cantidad.replace('$',''),nuevoEstado:ne,usuario:currentUser});
             const iframe=document.createElement('iframe'); iframe.style.cssText='display:none;position:absolute;width:0;height:0;border:none;'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            showToast('✅ Estado → '+ne,'#667eea');
+            showToast('✅ Estado → '+ne,'#438453');
             setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
             setTimeout(()=>loadData(true),5000);
         }
@@ -1747,13 +1750,13 @@
             }
         }
         function clearSelection() { selectedOps.clear(); for (const k in selectedOpsData) delete selectedOpsData[k]; document.querySelectorAll('.op-check').forEach(cb => { cb.checked = false; }); document.querySelectorAll('tr.selected, .op-row-selected').forEach(el => el.classList.remove('selected','op-row-selected')); updateSelectionPanel(); }
-        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#e5d4d4':'#d4e5d4';else if(s==='deudas') document.body.style.background='#f0eaf8';else document.body.style.background='#d4e5d4';if(s!=='historial') clearSelection();}
-        function switchTab(t){clearSelection();currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#d4e5d4';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#e5d4d4';}updateHistorial();}
+        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#f0e5e5':'#e8ede9';else if(s==='deudas') document.body.style.background='#edf2ee';else document.body.style.background='#e8ede9';if(s!=='historial') clearSelection();}
+        function switchTab(t){clearSelection();currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#e8ede9';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#f0e5e5';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
         function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';if(showOnlyPending){currentFilter='todas';document.getElementById('filter-select').value='todas';}updateHistorial();}
         function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='⬆️ Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='⬇️ Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
-        function selectTipoForm(tipo){setTipo(tipo);document.body.style.background=tipo==='VENTA'?'#d4e5d4':'#e5d4d4';document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
-        function volverAlPicker(){document.body.style.background='#d4e5d4';document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
+        function selectTipoForm(tipo){setTipo(tipo);document.body.style.background=tipo==='VENTA'?'#e8ede9':'#f0e5e5';document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
+        function volverAlPicker(){document.body.style.background='#e8ede9';document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
         function calcularTotal(){const c=parseFloat(document.getElementById('form-cantidad').value)||0,p=parseFloat(document.getElementById('form-precio').value)||0,t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
         
         async function agregarOperacion(){
@@ -1773,7 +1776,7 @@
                 const tempOp={fecha:`${parseInt(fd)}/${parseInt(fm)}/${fy}`,operador,cliente,cantidad,precio,total,estado:'PENDIENTE',observaciones:obs,modificadoPor:'',fechaModificacion:''};
                 if(currentTipo==='VENTA') ventas.push(tempOp); else compras.push(tempOp);
                 updateUI();
-                showToast('✅ '+currentTipo+' agregada','#48bb78');
+                showToast('✅ '+currentTipo+' agregada','#438453');
                 ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
                 volverAlPicker();
                 document.getElementById('total-preview').classList.add('hidden');
@@ -1783,7 +1786,7 @@
         }
         
         function isValidHttpsUrl(url) { try { return new URL(url).protocol === 'https:'; } catch { return false; } }
-        function saveConfig(){const ak=document.getElementById('config-api-key').value.trim(),su=document.getElementById('config-script-url').value.trim();if(!ak){alert('Ingresa la API Key');return;}if(su&&!isValidHttpsUrl(su)){alert('❌ La URL del Script debe comenzar con https://');return;}config.apiKey=ak;config.scriptUrl=su;localStorage.setItem('apiKey',ak);localStorage.setItem('scriptUrl',su);showToast('✅ Configuración guardada','#48bb78');}
+        function saveConfig(){const ak=document.getElementById('config-api-key').value.trim(),su=document.getElementById('config-script-url').value.trim();if(!ak){alert('Ingresa la API Key');return;}if(su&&!isValidHttpsUrl(su)){alert('❌ La URL del Script debe comenzar con https://');return;}config.apiKey=ak;config.scriptUrl=su;localStorage.setItem('apiKey',ak);localStorage.setItem('scriptUrl',su);showToast('✅ Configuración guardada','#438453');}
 
         // ═══════════════════════════════════════════════════════════
         //  DEUDAS  (Google Sheets via Apps Script)
@@ -1867,7 +1870,7 @@
             document.getElementById('deuda-cliente').value = '';
             document.getElementById('deuda-monto').value = '';
             document.getElementById('deuda-obs').value = '';
-            showToast('✅ Deuda registrada','#667eea');
+            showToast('✅ Deuda registrada','#438453');
             closeNuevaDeudaModal();
             setTimeout(() => { btn.disabled=false; btn.textContent='💰 Registrar Deuda'; btn.style.opacity='1'; }, 2000);
             setTimeout(() => loadData(true), 5000);
@@ -1900,7 +1903,7 @@
                 const esColor = esPend
                     ? (esPagar ? {bg:'#FEE2E2',color:'#991B1B'} : {bg:'#FEF3C7',color:'#92400E'})
                     : {bg:'#86EFAC',color:'#166534'};
-                const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : (esPagar ? '#c53030' : '#276349');
+                const mColor = deuda.moneda === 'USD' ? '#438453' : (esPagar ? '#c53030' : '#276349');
                 const resolverLabel = esPagar ? 'PAGADA' : 'COBRADA';
                 const actionLabel = esPend ? resolverLabel : 'PENDIENTE';
                 const actionColor = esPend ? {bg:'#86EFAC',color:'#166534'} : {bg:'#FEF3C7',color:'#92400E'};
@@ -1910,7 +1913,7 @@
                 row.style.cssText = 'position:relative;overflow:hidden;';
                 row.dataset.swipeWidth = 160;
                 const estadoLabel = deuda.estado === 'COBRADA' ? (esPagar ? 'PAGADA' : 'COBRADA') : deuda.estado;
-                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${estadoLabel}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#718096;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','COBRADA','${esPagar?'PAGAR':'COBRAR'}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
+                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${estadoLabel}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#747873;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','COBRADA','${esPagar?'PAGAR':'COBRAR'}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
                 row.addEventListener('click', () => showDeudaDetail(deuda));
                 setupSwipe(row);
                 list.appendChild(row);
@@ -1933,7 +1936,7 @@
             // Optimistic update
             const deudaObj=getDeudaByKey(key); if(deudaObj) deudaObj.estado=nuevoEstado;
             updateDeudas();
-            showToast('✅ Marcada como ' + nuevoEstado,'#48bb78');
+            showToast('✅ Marcada como ' + nuevoEstado,'#438453');
             setTimeout(() => loadData(true), 5000);
         }
 
@@ -1972,7 +1975,7 @@
             if(dObj){dObj.fecha=fechaStr;dObj.monto=monto;dObj.moneda=moneda;dObj.tipo=tipo;dObj.observaciones=obs;}
             updateDeudas();
             document.getElementById('deuda-edit-modal').classList.add('hidden');
-            showToast('✅ Deuda actualizada','#667eea');
+            showToast('✅ Deuda actualizada','#438453');
             setTimeout(() => loadData(true), 5000);
         }
 
@@ -1982,7 +1985,7 @@
             const esColor = esPend
                 ? (esPagar ? {bg:'#FEE2E2',color:'#991B1B'} : {bg:'#FEF3C7',color:'#92400E'})
                 : {bg:'#86EFAC',color:'#166534'};
-            const mColor = deuda.moneda === 'USD' ? '#3b4fbf' : (esPagar ? '#c53030' : '#276349');
+            const mColor = deuda.moneda === 'USD' ? '#438453' : (esPagar ? '#c53030' : '#276349');
             const resolverLabel = esPagar ? 'PAGADA' : 'COBRADA';
             const estadoLabel = deuda.estado === 'COBRADA' ? resolverLabel : deuda.estado;
             document.getElementById('deuda-detail-cliente').textContent = deuda.cliente + (esPagar ? ' 💸' : ' 💰');
@@ -1995,7 +1998,7 @@
             const cobroEl = document.getElementById('deuda-detail-cobro'); cobroEl.style.display='none';
             const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
             const actionBtn = document.getElementById('deuda-detail-action-btn');
-            if (esPend) { actionBtn.textContent=`✅ Marcar como ${resolverLabel}`; actionBtn.style.background='linear-gradient(135deg,#48bb78 0%,#38a169 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA',deuda.tipo);}; }
+            if (esPend) { actionBtn.textContent=`✅ Marcar como ${resolverLabel}`; actionBtn.style.background='linear-gradient(135deg,#438453 0%,#3a7248 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA',deuda.tipo);}; }
             else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='linear-gradient(135deg,#f59e0b 0%,#d97706 100%)'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'PENDIENTE',deuda.tipo);}; }
             document.getElementById('deuda-detail-edit-btn').onclick = () => { closeDeudaDetailModal(); editarDeuda(deuda); };
             document.getElementById('deuda-detail-delete-btn').onclick = () => borrarDeuda(key);
