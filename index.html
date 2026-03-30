@@ -112,6 +112,9 @@
         .dash-sel-bar { display: none; background: linear-gradient(135deg, #eaf7ef 0%, #d4edda 100%); border: 1px solid #b6dfc8; border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; align-items: center; justify-content: space-between; gap: 8px; animation: dashScaleIn 0.25s ease both; }
         .dash-sel-bar.visible { display: flex; }
         .bm-subtitle { font-size: 11px; color: #a0aec0; margin-top: 4px; }
+        /* Mobile: hide quick actions and balance strip (redundant with dashboard) */
+        .dash-quick-actions { display: none; }
+        .header-balance-strip { display: none; }
         /* Mobile: balance grid order */
         #pesos-en-caja-box     { order: 2; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
@@ -207,7 +210,7 @@
         .moneda-btn.usd.active { background: linear-gradient(135deg, #438453 0%, #637e66 100%); color: white; border-color: #438453; box-shadow: 0 4px 12px rgba(67,132,83,0.3); }
         .moneda-btn.ars.active { background: linear-gradient(135deg, #438453 0%, #3a7248 100%); color: white; border-color: #438453; box-shadow: 0 4px 12px rgba(67,132,83,0.3); }
         .deuda-row { border-bottom: 1px solid #f0f0f0; }
-        .header-balance-strip { background: #f7fafc; border-top: 1px solid #e2e8f0; padding: 6px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header-balance-strip { background: #f7fafc; border-top: 1px solid #e2e8f0; padding: 6px 20px; display: none; justify-content: space-between; align-items: center; }
         .pending-only-btn { padding: 8px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-weight: 700; background: white; color: #a0aec0; transition: all 0.2s; }
         .pending-only-btn.active { background: #FEF3C7; color: #92400E; border-color: #F59E0B; }
         .deuda-row:last-child { border-bottom: none; }
@@ -319,7 +322,7 @@
             .balance-card { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
             .bm-row { flex: 1; min-width: 280px; }
             #pesos-en-caja-box { order: unset; }
-            .dash-quick-actions { flex: 0 0 auto; margin-top: 0; gap: 8px; }
+            .dash-quick-actions { display: flex; flex: 0 0 auto; margin-top: 0; gap: 8px; }
             .dash-quick-btn { padding: 10px 18px; font-size: 13px; border-radius: 12px; white-space: nowrap; }
 
             /* Dashboard: pendientes en 2 columnas */
@@ -1134,7 +1137,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.97';
+        const APP_VERSION = 'v3.100';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
