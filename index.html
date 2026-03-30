@@ -82,23 +82,23 @@
         .balance-card { background: transparent; padding: 0; border-radius: 0; margin-top: 10px; }
         .bm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .bm-item { flex: 1; display: flex; flex-direction: column; padding: 16px 16px; border-radius: 18px; position: relative; overflow: hidden; }
-        .bm-item.bm-balance { background: linear-gradient(135deg, #1a4d35 0%, #2d7a4a 50%, #38a169 100%); }
-        .bm-item.bm-balance .balance-label { color: rgba(255,255,255,0.75); }
-        .bm-item.bm-balance .balance-amount { color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-        .bm-item.bm-balance .bm-subtitle { color: rgba(255,255,255,0.55); }
+        .bm-item.bm-balance { background: white; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .bm-item.bm-balance .balance-label { color: #747873; }
+        .bm-item.bm-balance .balance-amount { color: #1a4d35; }
+        .bm-item.bm-balance .bm-subtitle { color: #a0aec0; }
         .bm-item.bm-gray { background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%); border: 1px solid #e2e8f0; }
         .bm-sep { display: none; }
         .balance-label { font-size: 11px; font-weight: 600; color: #747873; margin-bottom: 6px; }
         .balance-amount { font-size: 22px; font-weight: 800; color: #1a4d35; line-height: 1; }
         .bm-item.bm-gray .balance-amount { color: #2d3748; }
         /* Quick action buttons */
-        .dash-quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .dash-quick-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; border-radius: 16px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.25s; }
+        .dash-quick-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .dash-quick-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 14px; border-radius: 12px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.25s; }
         .dash-quick-btn:active { transform: scale(0.97); }
-        .dash-quick-btn.venta { background: linear-gradient(135deg, #438453 0%, #2d6a4f 100%); color: white; box-shadow: 0 4px 14px rgba(67,132,83,0.35); }
-        .dash-quick-btn.compra { background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); color: white; box-shadow: 0 4px 14px rgba(229,62,62,0.35); }
+        .dash-quick-btn.venta { background: #438453; color: white; box-shadow: 0 3px 10px rgba(67,132,83,0.3); }
+        .dash-quick-btn.compra { background: #e53e3e; color: white; box-shadow: 0 3px 10px rgba(229,62,62,0.3); }
         .dash-quick-btn:hover { transform: translateY(-1px); }
-        .dash-quick-btn .quick-icon { font-size: 18px; }
+        .dash-quick-btn .quick-icon { font-size: 14px; }
         /* Dashboard animations */
         @keyframes dashFadeUp { 0% { opacity: 0; transform: translateY(18px); } 100% { opacity: 1; transform: translateY(0); } }
         @keyframes dashScaleIn { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
@@ -306,24 +306,24 @@
             #mobile-sel-bar { display: none !important; }
             .content    { margin-left: 230px; padding: 28px 36px 32px; }
 
-            /* Balance card: 2 metrics + actions en desktop */
-            .bm-row { grid-template-columns: 1fr 1fr; }
+            /* Balance card desktop: metrics + buttons in one row */
+            .balance-card { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+            .bm-row { flex: 1; min-width: 280px; }
             #pesos-en-caja-box { order: unset; }
-            .dash-quick-actions { grid-template-columns: 1fr 1fr; margin-top: 12px; }
-            .dash-quick-btn { padding: 16px 20px; font-size: 16px; border-radius: 18px; }
+            .dash-quick-actions { flex: 0 0 auto; margin-top: 0; gap: 8px; }
+            .dash-quick-btn { padding: 10px 18px; font-size: 13px; border-radius: 12px; white-space: nowrap; }
 
             /* Dashboard: pendientes en 2 columnas */
             #dashboard-screen.active {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 16px;
-                align-items: stretch;
+                align-items: start;
             }
             #dashboard-screen .balance-card        { grid-column: 1 / -1; }
             #dashboard-screen #dash-sel-bar        { grid-column: 1 / -1; }
             #dashboard-screen #card-hoy            { grid-column: 1 / -1; }
             #card-dolar-blue  { display: none !important; }
-            #dashboard-screen > span[style*="display:none"] { grid-column: 1 / -1; height: 0; margin: 0; }
             #balance-datetime { display: flex !important; }
             #balance-datetime-sep { display: block !important; }
 
@@ -667,8 +667,8 @@
                             <span class="quick-icon">▼</span> Agregar Compra
                         </button>
                     </div>
+                    <span id="dolar-blue-compra-hero" style="display:none;"></span><span id="dolar-blue-venta-hero" style="display:none;"></span><span id="dolar-blue-updated-hero" style="display:none;"></span>
                 </div>
-                <span id="dolar-blue-compra-hero" style="display:none;"></span><span id="dolar-blue-venta-hero" style="display:none;"></span><span id="dolar-blue-updated-hero" style="display:none;"></span>
                 <div id="dash-sel-bar" class="dash-sel-bar dash-animate dash-animate-delay-1">
                     <span style="font-size:12px;font-weight:700;color:#4a7a60;white-space:nowrap;"><span id="dash-sel-count" style="color:#1a3328;font-size:15px;font-weight:800;">0</span> sel.</span>
                     <div style="flex:1;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
@@ -1104,7 +1104,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.85';
+        const APP_VERSION = 'v3.90';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
