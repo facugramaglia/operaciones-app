@@ -81,21 +81,39 @@
         .btn-logout { padding: 8px 16px; background: #f56565; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; }
         .balance-card { background: transparent; padding: 0; border-radius: 0; margin-top: 10px; }
         .bm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .bm-item { flex: 1; display: flex; flex-direction: column; padding: 13px 15px; background: #f0faf5; border-radius: 16px; }
-        .bm-item.bm-blue { background: #eef2ff; }
-        .bm-item.bm-gray { background: #f4f6f9; }
+        .bm-item { flex: 1; display: flex; flex-direction: column; padding: 16px 16px; border-radius: 18px; position: relative; overflow: hidden; }
+        .bm-item.bm-balance { background: white; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .bm-item.bm-balance .balance-label { color: #747873; }
+        .bm-item.bm-balance .balance-amount { color: #1a4d35; }
+        .bm-item.bm-balance .bm-subtitle { color: #a0aec0; }
+        .bm-item.bm-gray { background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%); border: 1px solid #e2e8f0; }
         .bm-sep { display: none; }
         .balance-label { font-size: 11px; font-weight: 600; color: #747873; margin-bottom: 6px; }
         .balance-amount { font-size: 22px; font-weight: 800; color: #1a4d35; line-height: 1; }
-        .bm-item.bm-blue .balance-amount { color: #2c3eb5; }
         .bm-item.bm-gray .balance-amount { color: #2d3748; }
+        /* Quick action buttons */
+        .dash-quick-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .dash-quick-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 14px; border-radius: 12px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.25s; }
+        .dash-quick-btn:active { transform: scale(0.97); }
+        .dash-quick-btn.venta { background: #438453; color: white; box-shadow: 0 3px 10px rgba(67,132,83,0.3); }
+        .dash-quick-btn.compra { background: #e53e3e; color: white; box-shadow: 0 3px 10px rgba(229,62,62,0.3); }
+        .dash-quick-btn:hover { transform: translateY(-1px); }
+        .dash-quick-btn .quick-icon { font-size: 14px; }
+        /* Dashboard animations */
+        @keyframes dashFadeUp { 0% { opacity: 0; transform: translateY(18px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes dashScaleIn { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
+        .dash-animate { animation: dashFadeUp 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+        .dash-animate-delay-1 { animation-delay: 0.06s; }
+        .dash-animate-delay-2 { animation-delay: 0.12s; }
+        .dash-animate-delay-3 { animation-delay: 0.18s; }
+        .dash-animate-delay-4 { animation-delay: 0.24s; }
+        .dash-animate-delay-5 { animation-delay: 0.30s; }
+        /* Dashboard selection bar */
+        .dash-sel-bar { display: none; background: linear-gradient(135deg, #eaf7ef 0%, #d4edda 100%); border: 1px solid #b6dfc8; border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; align-items: center; justify-content: space-between; gap: 8px; animation: dashScaleIn 0.25s ease both; }
+        .dash-sel-bar.visible { display: flex; }
         .bm-subtitle { font-size: 11px; color: #a0aec0; margin-top: 4px; }
-        /* Mobile: Pesos en Caja arriba (col 2), Compra/Venta abajo */
-        #dolar-blue-compra-box { order: 3; }
-        #dolar-blue-venta-box  { order: 4; }
+        /* Mobile: balance grid order */
         #pesos-en-caja-box     { order: 2; }
-        /* Mobile: precio dólar más chico que los balances */
-        #dolar-blue-compra-hero, #dolar-blue-venta-hero { font-size: 16px !important; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         #sidebar-user-section { display: none; }
         @media (max-width: 859px) { #sidebar-sel-panel { display: none !important; } }
@@ -288,19 +306,22 @@
             #mobile-sel-bar { display: none !important; }
             .content    { margin-left: 230px; padding: 28px 36px 32px; }
 
-            /* Balance card: 4 en fila en desktop, orden natural */
-            .bm-row { grid-template-columns: repeat(4, 1fr); }
-            #dolar-blue-compra-box, #dolar-blue-venta-box, #pesos-en-caja-box { order: unset; }
-            #dolar-blue-compra-hero, #dolar-blue-venta-hero { font-size: 24px !important; }
+            /* Balance card desktop: metrics + buttons in one row */
+            .balance-card { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+            .bm-row { flex: 1; min-width: 280px; }
+            #pesos-en-caja-box { order: unset; }
+            .dash-quick-actions { flex: 0 0 auto; margin-top: 0; gap: 8px; }
+            .dash-quick-btn { padding: 10px 18px; font-size: 13px; border-radius: 12px; white-space: nowrap; }
 
             /* Dashboard: pendientes en 2 columnas */
             #dashboard-screen.active {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 16px;
-                align-items: stretch;
+                align-items: start;
             }
             #dashboard-screen .balance-card        { grid-column: 1 / -1; }
+            #dashboard-screen #dash-sel-bar        { grid-column: 1 / -1; }
             #dashboard-screen #card-hoy            { grid-column: 1 / -1; }
             #card-dolar-blue  { display: none !important; }
             #balance-datetime { display: flex !important; }
@@ -625,65 +646,75 @@
         
         <div class="content">
             <div id="dashboard-screen" class="screen active">
-                <div class="balance-card">
+                <div class="balance-card dash-animate">
                     <div class="bm-row">
-                        <div class="bm-item">
-                            <div class="balance-label">△ Balance Total</div>
+                        <div class="bm-item bm-balance">
+                            <div class="balance-label">Balance Total</div>
                             <div class="balance-amount" id="header-balance-main">$0</div>
                             <div class="bm-subtitle">ARS</div>
                         </div>
-                        <div class="bm-item bm-blue" id="dolar-blue-compra-box">
-                            <div class="balance-label">↘ Compra</div>
-                            <div class="balance-amount" id="dolar-blue-compra-hero">–</div>
-                            <div class="bm-subtitle" id="dolar-blue-updated-hero"></div>
-                        </div>
-                        <div class="bm-item" id="dolar-blue-venta-box">
-                            <div class="balance-label">↗ Venta</div>
-                            <div class="balance-amount" id="dolar-blue-venta-hero">–</div>
-                            <div class="bm-subtitle">USD blue</div>
-                        </div>
                         <div class="bm-item bm-gray" id="pesos-en-caja-box">
-                            <div class="balance-label">◎ Pesos en Caja</div>
+                            <div class="balance-label">Pesos en Caja</div>
                             <div class="balance-amount" id="pesos-en-caja-amount">$0</div>
                             <div class="bm-subtitle">ARS efectivo</div>
                         </div>
                     </div>
+                    <div class="dash-quick-actions">
+                        <button class="dash-quick-btn venta" onclick="showScreen('cargar'); selectTipoForm('VENTA');">
+                            <span class="quick-icon">▲</span> Agregar Venta
+                        </button>
+                        <button class="dash-quick-btn compra" onclick="showScreen('cargar'); selectTipoForm('COMPRA');">
+                            <span class="quick-icon">▼</span> Agregar Compra
+                        </button>
+                    </div>
+                    <span id="dolar-blue-compra-hero" style="display:none;"></span><span id="dolar-blue-venta-hero" style="display:none;"></span><span id="dolar-blue-updated-hero" style="display:none;"></span>
                 </div>
-                <div class="card" id="card-ventas-pendientes">
-                    <div class="card-title" style="color: #438453; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">📈 Ventas Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
+                <div id="dash-sel-bar" class="dash-sel-bar dash-animate dash-animate-delay-1">
+                    <span style="font-size:12px;font-weight:700;color:#4a7a60;white-space:nowrap;"><span id="dash-sel-count" style="color:#1a3328;font-size:15px;font-weight:800;">0</span> sel.</span>
+                    <div style="flex:1;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
+                        <span style="font-size:13px;font-weight:800;color:#1a3328;" id="dash-sel-pesos">$ 0</span>
+                        <span style="font-size:11px;color:#b6dfc8;">·</span>
+                        <span style="font-size:13px;font-weight:800;color:#1a3328;" id="dash-sel-usd">USD 0</span>
+                        <span style="font-size:11px;color:#b6dfc8;">·</span>
+                        <span style="font-size:12px;color:#4a7a60;">@ <span id="dash-sel-prom" style="font-weight:700;color:#1a3328;">$0</span></span>
+                    </div>
+                    <button onclick="clearDashSelection()" style="background:#1a3328;color:white;border:none;border-radius:10px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
+                </div>
+                <div class="card dash-animate dash-animate-delay-2" id="card-ventas-pendientes">
+                    <div class="card-title" style="color: #438453; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">Ventas Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
                     <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
                 </div>
-                <div class="card" id="card-compras-pendientes">
-                    <div class="card-title" style="color: #f56565; cursor: pointer;" onclick="showScreen('historial'); switchTab('compras');">📉 Compras Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
+                <div class="card dash-animate dash-animate-delay-3" id="card-compras-pendientes">
+                    <div class="card-title" style="color: #e53e3e; cursor: pointer;" onclick="showScreen('historial'); switchTab('compras');">Compras Pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;">→ ver historial</span></div>
                     <div style="overflow-x: auto;"><table style="width:100%;"><thead><tr><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;width:80px;">Fecha</th><th style="font-size:12px;padding:10px 8px;text-align:left;color:#747873;font-weight:600;">Cliente</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Cantidad</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:70px;">Precio</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:120px;">Monto</th><th style="font-size:12px;padding:10px 8px;text-align:right;color:#747873;font-weight:600;width:130px;">Estado</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
                 </div>
-                <div class="card" id="card-hoy" style="padding: 14px 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #747873; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">📅 Hoy</div>
+                <div class="card dash-animate dash-animate-delay-4" id="card-hoy" style="padding: 14px 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #747873; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Hoy</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div id="hoy-ventas-box" style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #438453; font-weight: 700; margin-bottom: 4px;">↑ VENTAS</div>
+                        <div id="hoy-ventas-box" style="background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%); border-radius: 12px; padding: 12px 14px; border: 1px solid #c6f6d5;">
+                            <div style="font-size: 11px; color: #438453; font-weight: 700; margin-bottom: 4px;">VENTAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-ventas-total">$0</div>
                             <div style="font-size: 11px; color: #a0aec0;" id="hoy-ventas-count">0 operaciones</div>
                         </div>
-                        <div id="hoy-compras-box" style="background: #fff5f5; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #f56565; font-weight: 700; margin-bottom: 4px;">↓ COMPRAS</div>
+                        <div id="hoy-compras-box" style="background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%); border-radius: 12px; padding: 12px 14px; border: 1px solid #fed7d7;">
+                            <div style="font-size: 11px; color: #e53e3e; font-weight: 700; margin-bottom: 4px;">COMPRAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-compras-total">$0</div>
                             <div style="font-size: 11px; color: #a0aec0;" id="hoy-compras-count">0 operaciones</div>
                         </div>
                     </div>
                 </div>
-                <div class="card" id="card-dolar-blue" style="padding: 14px 16px;">
+                <div class="card dash-animate dash-animate-delay-5" id="card-dolar-blue" style="padding: 14px 16px;">
                     <div style="font-size: 12px; font-weight: 700; color: #747873; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-                        💵 Dólar Blue
+                        Dolar Blue
                         <span id="dolar-blue-updated" style="float:right; font-weight:400; text-transform:none; letter-spacing:0; color:#a0aec0;"></span>
                     </div>
                     <div id="dolar-blue-boxes" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div style="background: #ebf8ff; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #3182ce; font-weight: 700; margin-bottom: 4px;">↓ COMPRA</div>
+                        <div style="background: linear-gradient(135deg, #ebf8ff 0%, #dbeafe 100%); border-radius: 12px; padding: 12px 14px; border: 1px solid #bee3f8;">
+                            <div style="font-size: 11px; color: #3182ce; font-weight: 700; margin-bottom: 4px;">COMPRA</div>
                             <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-compra">–</div>
                         </div>
-                        <div style="background: #f0fff4; border-radius: 10px; padding: 10px 14px;">
-                            <div style="font-size: 11px; color: #3a7248; font-weight: 700; margin-bottom: 4px;">↑ VENTA</div>
+                        <div style="background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%); border-radius: 12px; padding: 12px 14px; border: 1px solid #c6f6d5;">
+                            <div style="font-size: 11px; color: #3a7248; font-weight: 700; margin-bottom: 4px;">VENTA</div>
                             <div style="font-size: 20px; font-weight: 800; color: #2d3748;" id="dolar-blue-venta">–</div>
                         </div>
                     </div>
@@ -1073,7 +1104,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.76';
+        const APP_VERSION = 'v3.90';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1093,6 +1124,7 @@
         let balanceTotal = 0, currentTipo = 'VENTA', currentFilter = 'ultimo', currentTab = 'ventas';
         let showOnlyPending = false;
         let selectedOps = new Set(), selectedOpsData = {};
+        let dashSelectedOps = new Set(), dashSelectedOpsData = {};
 
         function escHTML(s) { if (s == null) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
@@ -1466,12 +1498,21 @@
                     const montoVal = op.total || (op.cantidad * op.precio);
                     const montoStr = montoVal > 0 ? '$ ' + Math.round(montoVal).toLocaleString('es-AR', {maximumFractionDigits: 0}) : '';
                     const cantStr = '$ ' + Number(op.cantidad).toLocaleString('es-AR', {maximumFractionDigits: 2});
+                    const opKey = tipo + '|' + op.fecha + '|' + op.cliente + '|' + op.cantidad;
+                    const checked = dashSelectedOps.has(opKey) ? 'checked' : '';
                     const isMobile = window.innerWidth < 860;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:12px 10px 12px 14px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div style="padding:8px 2px 8px 10px;flex-shrink:0;"><input type="checkbox" class="dash-op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${checked}></div><div style="flex:1;padding:12px 10px 12px 8px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
                     } else {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#747873;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#747873;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;"><tr><td style="padding:10px 6px;width:30px;"><input type="checkbox" class="dash-op-check op-check" ${checked}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#747873;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#747873;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
                     }
+                    const cb = row.querySelector('.dash-op-check');
+                    cb.addEventListener('click', e => e.stopPropagation());
+                    cb.addEventListener('change', e => {
+                        if (e.target.checked) { dashSelectedOps.add(opKey); dashSelectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal }; }
+                        else { dashSelectedOps.delete(opKey); delete dashSelectedOpsData[opKey]; }
+                        updateDashSelectionPanel();
+                    });
                     row.addEventListener('click', () => showOperationDetail(op, tipo, estados));
                 });
             }
@@ -1750,7 +1791,21 @@
             }
         }
         function clearSelection() { selectedOps.clear(); for (const k in selectedOpsData) delete selectedOpsData[k]; document.querySelectorAll('.op-check').forEach(cb => { cb.checked = false; }); document.querySelectorAll('tr.selected, .op-row-selected').forEach(el => el.classList.remove('selected','op-row-selected')); updateSelectionPanel(); }
-        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#f0e5e5':'#e8ede9';else if(s==='deudas') document.body.style.background='#edf2ee';else document.body.style.background='#e8ede9';if(s!=='historial') clearSelection();}
+        function updateDashSelectionPanel() {
+            const bar = document.getElementById('dash-sel-bar');
+            if (!bar) return;
+            if (dashSelectedOps.size === 0) { bar.classList.remove('visible'); return; }
+            let totalPesos = 0, totalUSD = 0;
+            dashSelectedOps.forEach(k => { const d = dashSelectedOpsData[k]; if (d) { totalPesos += d.pesos; totalUSD += d.usd; } });
+            const prom = totalUSD > 0 ? totalPesos / totalUSD : 0;
+            document.getElementById('dash-sel-count').textContent = dashSelectedOps.size;
+            document.getElementById('dash-sel-pesos').textContent = '$ ' + Math.round(totalPesos).toLocaleString('es-AR');
+            document.getElementById('dash-sel-usd').textContent = 'USD ' + totalUSD.toLocaleString('es-AR', {maximumFractionDigits: 2});
+            document.getElementById('dash-sel-prom').textContent = '$' + prom.toFixed(2);
+            bar.classList.add('visible');
+        }
+        function clearDashSelection() { dashSelectedOps.clear(); for (const k in dashSelectedOpsData) delete dashSelectedOpsData[k]; document.querySelectorAll('.dash-op-check').forEach(cb => { cb.checked = false; }); updateDashSelectionPanel(); }
+        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#f0e5e5':'#e8ede9';else if(s==='deudas') document.body.style.background='#edf2ee';else document.body.style.background='#e8ede9';if(s!=='historial') clearSelection();if(s!=='dashboard') clearDashSelection();}
         function switchTab(t){clearSelection();currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#e8ede9';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#f0e5e5';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
         function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';if(showOnlyPending){currentFilter='todas';document.getElementById('filter-select').value='todas';}updateHistorial();}
