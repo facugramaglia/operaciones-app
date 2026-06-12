@@ -42,7 +42,7 @@
         .splash-dot:nth-child(1) { animation-delay: 0s; }
         .splash-dot:nth-child(2) { animation-delay: 0.2s; }
         .splash-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes dotPulse { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; background: #86868b; } }
+        @keyframes dotPulse { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; background: #6e6e73; } }
         @keyframes splashFadeUp { 0% { transform: translateY(16px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 
         /* ── BANNER AGREGAR A INICIO ───────────────────────── */
@@ -60,7 +60,7 @@
         .banner-text { flex: 1; }
         .banner-text strong { display: block; font-size: 14px; color: #1d1d1f; }
         .banner-text span { font-size: 12px; color: #6e6e73; }
-        .banner-close { background: #f5f5f7; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; color: #86868b; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .banner-close { background: #f5f5f7; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; color: #6e6e73; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .banner-install-steps { margin-top: 10px; font-size: 12px; color: #6e6e73; background: #f5f5f7; border-radius: 8px; padding: 8px 10px; line-height: 1.8; }
 
         /* ── RESTO DE ESTILOS ORIGINALES ─────────────────────── */
@@ -86,11 +86,11 @@
         .bm-item.bm-balance { background: white; border: 1px solid #e8e8ed; box-shadow: 0 1px 3px rgba(15,40,25,0.06); }
         .bm-item.bm-balance .balance-label { color: #6e6e73; }
         .bm-item.bm-balance .balance-amount { color: #157038; }
-        .bm-item.bm-balance .bm-subtitle { color: #86868b; }
+        .bm-item.bm-balance .bm-subtitle { color: #6e6e73; }
         .bm-item.bm-gray { background: #f5f5f7; border: 1px solid #e8e8ed; }
         .bm-sep { display: none; }
-        .balance-label { font-size: 11px; font-weight: 600; color: #6e6e73; margin-bottom: 6px; }
-        .balance-amount { font-size: 22px; font-weight: 800; color: #157038; line-height: 1; }
+        .balance-label { font-size: 11px; font-weight: 600; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .balance-amount { font-size: 23px; font-weight: 700; letter-spacing: -0.4px; color: #157038; line-height: 1; }
         .bm-item.bm-gray .balance-amount { color: #1d1d1f; }
         /* Quick action buttons */
         .dash-quick-actions { display: flex; gap: 10px; margin-top: 10px; }
@@ -112,7 +112,7 @@
         /* Dashboard selection bar */
         .dash-sel-bar { display: none; background: #e8f5ec; border: none; border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; align-items: center; justify-content: space-between; gap: 8px; animation: dashScaleIn 0.25s ease both; }
         .dash-sel-bar.visible { display: flex; }
-        .bm-subtitle { font-size: 11px; color: #86868b; margin-top: 4px; }
+        .bm-subtitle { font-size: 11px; color: #6e6e73; margin-top: 4px; }
         /* Mobile: hide quick actions and balance strip (redundant with dashboard) */
         .dash-quick-actions { display: none; }
         .header-balance-strip { display: none; }
@@ -121,8 +121,9 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-top: 0.5px solid rgba(0,0,0,0.12); display: flex; justify-content: space-around; align-items: center; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)) 16px; z-index: 100; }
         #sidebar-user-section { display: none; }
         @media (max-width: 859px) { #sidebar-sel-panel { display: none !important; } }
-        .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #86868b; font-size: 11px; font-weight: 500; letter-spacing: 0.1px; padding: 0; transition: all 0.25s; }
+        .nav-item { background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #6e6e73; font-size: 11px; font-weight: 500; letter-spacing: 0.1px; padding: 0; transition: all 0.25s; }
         .nav-icon { width: 46px; height: 46px; border-radius: 15px; background: transparent; display: flex; align-items: center; justify-content: center; font-size: 21px; transition: all 0.25s; }
+        .nav-icon > svg { width: 23px; height: 23px; display: block; }
         .nav-item.active .nav-icon { background: #e8e8ed; transform: scale(1.03); box-shadow: none; }
         .nav-item.active { color: #0071e3; font-weight: 600; }
         .content { padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px; }
@@ -130,9 +131,9 @@
         .screen { display: none; }
         .screen.active { display: block; }
         .card { background: white; border: none; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
-        .card-title { font-size: 17px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.3px; margin-bottom: 16px; }
+        .card-title { font-size: 19px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.4px; margin-bottom: 16px; }
         .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 14px; font-weight: 600; color: #424245; margin-bottom: 8px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; color: #1d1d1f; margin-bottom: 8px; }
         .form-input, .form-select, .form-textarea { width: 100%; padding: 14px 16px; border: 1.5px solid #d2d2d7; border-radius: 12px; font-size: 17px; background: white; color: #1d1d1f; transition: border-color 0.2s, box-shadow 0.2s; }
         .form-input[type="date"] { padding: 12px 14px; font-size: 15px; color: #1d1d1f; font-weight: 600; }
         .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #0071e3; box-shadow: 0 0 0 4px rgba(0,113,227,0.15); }
@@ -168,14 +169,14 @@
         .detail-value-total { font-size: 22px; font-weight: 800; text-align: left; }
         .detail-divider { display: none; }
         .detail-obs { background: #fef5e7; border: 1px solid #f59e0b; border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 13px; color: #92400e; }
-        .detail-modified { font-size: 11px; color: #86868b; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e8e8ed; }
+        .detail-modified { font-size: 11px; color: #6e6e73; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e8e8ed; }
         .cambio-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; align-items: flex-start; }
         .cambio-item:last-child { border-bottom: none; }
         .cambio-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
         .cambio-content { flex: 1; }
         .cambio-tipo { font-size: 12px; font-weight: 700; color: #1d1d1f; }
         .cambio-detalle { font-size: 11px; color: #6e6e73; margin-top: 2px; }
-        .cambio-meta { font-size: 10px; color: #86868b; margin-top: 2px; }
+        .cambio-meta { font-size: 10px; color: #6e6e73; margin-top: 2px; }
         .swipe-row { position: relative; }
         .swipe-inner { display: flex; align-items: center; transition: transform 0.25s ease; width: 100%; background: white; }
         .swipe-actions { position: absolute; right: 0; top: 0; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 4px; padding: 0 6px; background: transparent; }
@@ -263,8 +264,8 @@
         /* ══ DESKTOP LAYOUT (≥ 860px) ══════════════════════════════ */
         /* Page title desktop — oculto en mobile */
         .desktop-page-header { display: none; }
-        .dph-title  { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; color: #1d1d1f; margin: 0 0 3px; }
-        .dph-subtitle { font-size: 14px; color: #86868b; margin: 0; }
+        .dph-title  { font-size: 30px; font-weight: 600; letter-spacing: -0.6px; color: #1d1d1f; margin: 0 0 4px; }
+        .dph-subtitle { font-size: 14px; color: #6e6e73; margin: 0; }
 
         @media (min-width: 860px) {
 
@@ -344,7 +345,7 @@
             #card-ventas-pendientes > div[style*="overflow"],
             #card-compras-pendientes > div[style*="overflow"] { flex: 1; }
             .pending-table { width: 100%; border-collapse: collapse; }
-            .pending-thead th { font-size: 11px; padding: 8px 8px; color: #86868b; font-weight: 600; border-bottom: 2px solid #e8e8ed; text-align: left; white-space: nowrap; }
+            .pending-thead th { font-size: 11px; padding: 8px 8px; color: #6e6e73; font-weight: 600; border-bottom: 2px solid #e8e8ed; text-align: left; white-space: nowrap; }
             .pending-thead .pt-cant,
             .pending-thead .pt-precio,
             .pending-thead .pt-monto,
@@ -468,9 +469,9 @@
             /* ── Sidebar: textos adaptados a fondo claro ────── */
             .sidebar-balance-box > div:first-child { color: #6e6e73 !important; }
             #sidebar-balance { color: #1d1d1f !important; }
-            #sidebar-sync-label { color: #86868b !important; }
+            #sidebar-sync-label { color: #6e6e73 !important; }
             #sidebar-user-name { color: #1d1d1f !important; }
-            .sidebar-user-row > div > div:last-child { color: #86868b !important; }
+            .sidebar-user-row > div > div:last-child { color: #6e6e73 !important; }
             #sidebar-sel-panel { background: white !important; border-color: rgba(0,0,0,0.10) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; }
             #sidebar-sel-panel div[style*="rgba(255,255,255,0.45)"],
             #sidebar-sel-panel div[style*="rgba(255,255,255,0.4)"] { color: #6e6e73 !important; }
@@ -507,9 +508,9 @@
             .balance-amount { font-size: 24px !important; }
             .bm-item { padding: 16px 18px !important; border-radius: 16px !important; }
             .card-title {
-                font-size: 15px !important;
+                font-size: 17px !important;
                 color: #1d1d1f !important;
-                letter-spacing: -0.2px !important;
+                letter-spacing: -0.3px !important;
                 margin-bottom: 16px !important;
             }
 
@@ -535,7 +536,7 @@
                 font-weight: 700 !important;
                 text-transform: uppercase !important;
                 letter-spacing: 0.5px !important;
-                color: #86868b !important;
+                color: #6e6e73 !important;
                 padding: 12px 10px !important;
                 border-bottom: 2px solid #e8e8ed !important;
             }
@@ -563,7 +564,7 @@
         .cierre-box { border-radius: 12px; padding: 12px 14px; border: 1px solid #e8e8ed; background: #f5f5f7; }
         .cierre-box-label { font-size: 11px; font-weight: 700; color: #6e6e73; margin-bottom: 4px; }
         .cierre-box-value { font-size: 17px; font-weight: 800; color: #1d1d1f; }
-        .cierre-box-sub { font-size: 11px; color: #86868b; margin-top: 2px; }
+        .cierre-box-sub { font-size: 11px; color: #6e6e73; margin-top: 2px; }
         .cierre-box.ganancia { grid-column: 1 / -1; background: #e8f5ec; border: none; }
         .cierre-box.ganancia .cierre-box-label { color: #157038; }
         .cierre-box.ganancia .cierre-box-value { font-size: 24px; color: #157038; }
@@ -596,12 +597,12 @@
         @keyframes checkDraw { to { stroke-dashoffset: 0; } }
         .check-label { position: absolute; margin-top: 160px; font-size: 15px; font-weight: 700; color: #157038; animation: splashFadeUp 0.4s 0.3s ease both; }
 
-        .empty-state { text-align: center; padding: 28px 16px; color: #86868b; }
+        .empty-state { text-align: center; padding: 28px 16px; color: #6e6e73; }
         .empty-state-icon { font-size: 38px; margin-bottom: 8px; opacity: 0.7; }
         .empty-state-text { font-size: 13px; font-weight: 600; }
 
         .sel-batch-btn { background: #0071e3; color: white; border: none; border-radius: 980px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
-        .sel-batch-btn.copy { background: #86868b; }
+        .sel-batch-btn.copy { background: #6e6e73; }
 
         .stats-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
         .stats-toggle button { flex: 1; padding: 10px; border: none; background: #e8e8ed; border-radius: 980px; font-size: 14px; font-weight: 500; color: #6e6e73; transition: all 0.3s; }
@@ -620,7 +621,7 @@
 
     <!-- SPLASH -->
     <div id="splash-screen">
-        <div class="splash-icon">💱</div>
+        <div class="splash-icon" style="color:#1d8a45;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:58%;height:58%;"><circle cx="12" cy="12" r="9.2"/><path d="M12 6.6v10.8M14.9 8.9c-.6-.9-1.6-1.5-2.9-1.5-1.7 0-3.1 1-3.1 2.4 0 3.3 6.1 1.7 6.1 5 0 1.4-1.4 2.4-3 2.4-1.4 0-2.5-.6-3.1-1.6"/></svg></div>
         <div class="splash-title">Operaciones</div>
         <div class="splash-subtitle">Sistema de Cambio</div>
         <div class="splash-loader">
@@ -633,7 +634,7 @@
     <!-- BANNER AGREGAR A PANTALLA DE INICIO -->
     <div id="add-to-home-banner">
         <div class="banner-inner">
-            <div class="banner-icon">💱</div>
+            <div class="banner-icon" style="color:white;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:58%;height:58%;"><circle cx="12" cy="12" r="9.2"/><path d="M12 6.6v10.8M14.9 8.9c-.6-.9-1.6-1.5-2.9-1.5-1.7 0-3.1 1-3.1 2.4 0 3.3 6.1 1.7 6.1 5 0 1.4-1.4 2.4-3 2.4-1.4 0-2.5-.6-3.1-1.6"/></svg></div>
             <div class="banner-text">
                 <strong>Instalar como app</strong>
                 <span>Para usar sin barra de Safari:</span>
@@ -651,7 +652,7 @@
     <div id="pin-screen" class="login-container">
         <div class="login-card">
             <div class="login-logo">
-                <h1>🔐 Acceso Seguro</h1>
+                <h1>Acceso Seguro</h1>
                 <p>Ingresa el PIN de acceso</p>
             </div>
             <div class="input-group">
@@ -666,7 +667,7 @@
     <div id="login-screen" class="login-container hidden">
         <div class="login-card">
             <div class="login-logo">
-                <h1>💱 Operaciones</h1>
+                <h1>Operaciones</h1>
                 <p>Seleccioná tu usuario</p>
             </div>
             <div class="input-group">
@@ -681,7 +682,7 @@
                 </select>
             </div>
             <button class="btn-primary" id="btn-login">Entrar</button>
-            <button class="btn-link" id="btn-reconfig">⚙️ Configurar API Key</button>
+            <button class="btn-link" id="btn-reconfig">Configurar API Key</button>
         </div>
     </div>
     
@@ -714,11 +715,11 @@
                     <div class="user-avatar" id="user-avatar"></div>
                     <div>
                         <div style="font-weight: 600; color: #1d1d1f;" id="user-name"></div>
-                        <div style="font-size: 12px; color: #86868b;">Cambiar operador</div>
+                        <div style="font-size: 12px; color: #6e6e73;">Cambiar operador</div>
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button style="padding: 8px 16px; background: #1d8a45; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;" id="btn-config-header">⚙️</button>
+                    <button style="padding: 8px 14px; background: #e8e8ed; color: #424245; border: none; border-radius: 980px; font-size: 14px; font-weight: 600;" id="btn-config-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;display:block;margin:0 auto;"><path d="M4 8h8.5M17 8h3M4 16h3M9.5 16H20"/><circle cx="15" cy="8" r="2.2"/><circle cx="7.5" cy="16" r="2.2"/></svg></button>
                     <button class="btn-logout" id="btn-logout">Salir</button>
                 </div>
             </div>
@@ -786,11 +787,11 @@
                     <button onclick="clearDashSelection()" style="background:#1d1d1f;color:white;border:none;border-radius:10px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
                 </div>
                 <div class="card dash-animate dash-animate-delay-2" id="card-ventas-pendientes">
-                    <div class="card-title" style="color: #1d8a45; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">Ventas Pendientes <span style="font-size:11px;color:#86868b;font-weight:400;">→ ver historial</span></div>
+                    <div class="card-title" style="color: #1d8a45; cursor: pointer;" onclick="showScreen('historial'); switchTab('ventas');">Ventas Pendientes <span style="font-size:11px;color:#6e6e73;font-weight:400;">→ ver historial</span></div>
                     <div style="overflow-x: auto;"><table class="pending-table"><thead class="pending-thead"><tr><th class="pt-cb"></th><th class="pt-fecha">Fecha</th><th class="pt-cliente">Cliente</th><th class="pt-cant">Cantidad</th><th class="pt-precio">Precio</th><th class="pt-monto">Monto</th><th class="pt-estado">Estado</th></tr></thead><tbody id="ventas-pendientes-tbody"></tbody></table></div>
                 </div>
                 <div class="card dash-animate dash-animate-delay-3" id="card-compras-pendientes">
-                    <div class="card-title" style="color: #e30000; cursor: pointer;" onclick="showScreen('historial'); switchTab('compras');">Compras Pendientes <span style="font-size:11px;color:#86868b;font-weight:400;">→ ver historial</span></div>
+                    <div class="card-title" style="color: #e30000; cursor: pointer;" onclick="showScreen('historial'); switchTab('compras');">Compras Pendientes <span style="font-size:11px;color:#6e6e73;font-weight:400;">→ ver historial</span></div>
                     <div style="overflow-x: auto;"><table class="pending-table"><thead class="pending-thead"><tr><th class="pt-cb"></th><th class="pt-fecha">Fecha</th><th class="pt-cliente">Cliente</th><th class="pt-cant">Cantidad</th><th class="pt-precio">Precio</th><th class="pt-monto">Monto</th><th class="pt-estado">Estado</th></tr></thead><tbody id="compras-pendientes-tbody"></tbody></table></div>
                 </div>
                 <div class="card dash-animate dash-animate-delay-4" id="card-hoy" style="padding: 14px 16px;">
@@ -799,12 +800,12 @@
                         <div id="hoy-ventas-box" style="background: #e9f6ee; border-radius: 14px; padding: 12px 14px;">
                             <div style="font-size: 11px; color: #1d8a45; font-weight: 700; margin-bottom: 4px;">VENTAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #1d1d1f;" id="hoy-ventas-total">$0</div>
-                            <div style="font-size: 11px; color: #86868b;" id="hoy-ventas-count">0 operaciones</div>
+                            <div style="font-size: 11px; color: #6e6e73;" id="hoy-ventas-count">0 operaciones</div>
                         </div>
                         <div id="hoy-compras-box" style="background: #fdecec; border-radius: 14px; padding: 12px 14px;">
                             <div style="font-size: 11px; color: #e30000; font-weight: 700; margin-bottom: 4px;">COMPRAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #1d1d1f;" id="hoy-compras-total">$0</div>
-                            <div style="font-size: 11px; color: #86868b;" id="hoy-compras-count">0 operaciones</div>
+                            <div style="font-size: 11px; color: #6e6e73;" id="hoy-compras-count">0 operaciones</div>
                         </div>
                     </div>
                 </div>
@@ -822,21 +823,21 @@
                             <div class="cierre-box-sub" id="cierre-usd-comprados">USD 0 comprados</div>
                         </div>
                         <div class="cierre-box ganancia">
-                            <div class="cierre-box-label">💰 GANANCIA BRUTA ESTIMADA (HOY)</div>
+                            <div class="cierre-box-label">GANANCIA BRUTA ESTIMADA (HOY)</div>
                             <div class="cierre-box-value" id="cierre-ganancia">$ 0</div>
                             <div class="cierre-box-sub" id="cierre-detalle">Spread $0 · 0 ops pendientes</div>
                         </div>
                     </div>
                 </div>
                 <div class="card dash-animate dash-animate-delay-5" id="card-dash-deudas" style="padding: 14px 16px; cursor: pointer;" onclick="showScreen('deudas')">
-                    <div style="font-size: 12px; font-weight: 700; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Deudas pendientes <span style="font-size:11px;color:#86868b;font-weight:400;text-transform:none;">→ ver deudas</span></div>
+                    <div style="font-size: 12px; font-weight: 700; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Deudas pendientes <span style="font-size:11px;color:#6e6e73;font-weight:400;text-transform:none;">→ ver deudas</span></div>
                     <div class="dash-deudas-grid">
                         <div class="dash-deuda-box cobrar">
-                            <div class="dash-deuda-label">💰 A COBRAR</div>
+                            <div class="dash-deuda-label">A COBRAR</div>
                             <div class="dash-deuda-amount" id="dash-deudas-cobrar">USD 0<br>ARS 0</div>
                         </div>
                         <div class="dash-deuda-box pagar">
-                            <div class="dash-deuda-label">💸 A PAGAR</div>
+                            <div class="dash-deuda-label">A PAGAR</div>
                             <div class="dash-deuda-amount" id="dash-deudas-pagar">USD 0<br>ARS 0</div>
                         </div>
                     </div>
@@ -844,7 +845,7 @@
                 <div class="card dash-animate dash-animate-delay-5" id="card-dolar-blue" style="padding: 14px 16px;">
                     <div style="font-size: 12px; font-weight: 700; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
                         Dolar Blue
-                        <span id="dolar-blue-updated" style="float:right; font-weight:400; text-transform:none; letter-spacing:0; color:#86868b;"></span>
+                        <span id="dolar-blue-updated" style="float:right; font-weight:400; text-transform:none; letter-spacing:0; color:#6e6e73;"></span>
                     </div>
                     <div id="dolar-blue-boxes" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div style="background: #eaf3fd; border-radius: 14px; padding: 12px 14px;">
@@ -895,7 +896,7 @@
                                 <input type="date" class="form-input" id="form-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
                                 <div id="fecha-display" style="padding: 14px 16px; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 17px; background: white; color: #1d1d1f; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
                                     <span id="fecha-text">Hoy</span>
-                                    <span style="color: #86868b; font-size: 18px;">📅</span>
+                                    <span style="color: #6e6e73; font-size: 18px;">📅</span>
                                 </div>
                             </div>
                         </div>
@@ -930,8 +931,8 @@
                     <div class="dph-subtitle">Últimas operaciones de compra y venta</div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                    <button class="filter-btn active" id="tab-ventas" style="flex: 1;">📈 Ventas</button>
-                    <button class="filter-btn" id="tab-compras" style="flex: 1;">📉 Compras</button>
+                    <button class="filter-btn active" id="tab-ventas" style="flex: 1;">Ventas</button>
+                    <button class="filter-btn" id="tab-compras" style="flex: 1;">Compras</button>
                 </div>
                 <div id="historial-filters-row" style="display:flex; gap:10px; margin-bottom:10px;">
                     <select id="filter-select" style="flex:1; padding: 10px 14px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 14px; font-weight: 600; color: #1d8a45; background: white; min-width:0;">
@@ -945,7 +946,7 @@
                     </select>
                     <button id="btn-pending-only" class="pending-only-btn" onclick="togglePendingOnly()" style="flex:1;">Todos los estados</button>
                 </div>
-                <div style="margin-bottom: 10px;"><input type="text" id="search-cliente" placeholder="🔍  Buscar cliente..." style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;"></div>
+                <div style="margin-bottom: 10px;"><input type="text" id="search-cliente" placeholder="Buscar cliente" style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;"></div>
                 <div id="estado-counters" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
                 <div id="ventas-tab" class="card">
                     <div class="card-title">Últimas Ventas</div>
@@ -990,7 +991,7 @@
                             <div class="cierre-box-sub" id="stats-ops-compra">0 operaciones</div>
                         </div>
                         <div class="cierre-box ganancia">
-                            <div class="cierre-box-label">💰 GANANCIA BRUTA ESTIMADA DEL PERÍODO</div>
+                            <div class="cierre-box-label">GANANCIA BRUTA ESTIMADA DEL PERÍODO</div>
                             <div class="cierre-box-value" id="stats-ganancia">$ 0</div>
                             <div class="cierre-box-sub" id="stats-spread">Spread promedio $0</div>
                         </div>
@@ -1000,7 +1001,7 @@
 
             <div id="config-screen" class="screen">
                 <div class="card">
-                    <div class="card-title">⚙️ Configuración</div>
+                    <div class="card-title">Configuración</div>
                     <div class="form-group"><label class="form-label">Google Sheets API Key</label><input type="text" class="form-input" id="config-api-key" placeholder="AIzaSy..."></div>
                     <div class="form-group">
                         <label class="form-label">URL del Google Apps Script</label>
@@ -1009,7 +1010,7 @@
                     </div>
                     <div class="alert-success hidden" id="config-success">✅ Configuración guardada correctamente</div>
                     <button class="btn-primary" id="btn-save-config">Guardar Cambios</button>
-                    <div style="margin-top:20px;text-align:center;font-size:12px;color:#86868b;">Operaciones App <span id="app-version-display" style="font-weight:700;color:#6e6e73;"></span></div>
+                    <div style="margin-top:20px;text-align:center;font-size:12px;color:#6e6e73;">Operaciones App <span id="app-version-display" style="font-weight:700;color:#6e6e73;"></span></div>
                 </div>
             </div>
 
@@ -1018,36 +1019,36 @@
 
                 <!-- Tabs tipo -->
                 <div class="deudas-tipo-bar">
-                    <button class="deudas-tipo-btn cobrar active" id="tipo-btn-cobrar" onclick="setDeudaTipo('cobrar')">💰 A cobrar</button>
-                    <button class="deudas-tipo-btn pagar" id="tipo-btn-pagar" onclick="setDeudaTipo('pagar')">💸 A pagar</button>
+                    <button class="deudas-tipo-btn cobrar active" id="tipo-btn-cobrar" onclick="setDeudaTipo('cobrar')">A cobrar</button>
+                    <button class="deudas-tipo-btn pagar" id="tipo-btn-pagar" onclick="setDeudaTipo('pagar')">A pagar</button>
                 </div>
 
                 <!-- Totales (cambian según tipo) -->
                 <div class="deudas-totals">
                     <div class="deudas-total-box usd">
-                        <div class="deudas-total-label" id="deudas-total-usd-label">💵 Pendiente USD</div>
+                        <div class="deudas-total-label" id="deudas-total-usd-label">Pendiente USD</div>
                         <div class="deudas-total-amount" id="deudas-total-usd">USD 0</div>
                     </div>
                     <div class="deudas-total-box ars">
-                        <div class="deudas-total-label" id="deudas-total-ars-label">💵 Pendiente ARS</div>
+                        <div class="deudas-total-label" id="deudas-total-ars-label">Pendiente ARS</div>
                         <div class="deudas-total-amount" id="deudas-total-ars">ARS 0</div>
                     </div>
                 </div>
-                <div style="text-align: center; font-size: 12px; color: #86868b; margin-bottom: 12px;" id="deudas-count-pendientes">0 pendientes</div>
+                <div style="text-align: center; font-size: 12px; color: #6e6e73; margin-bottom: 12px;" id="deudas-count-pendientes">0 pendientes</div>
 
                 <!-- Botón cargar deuda -->
                 <button class="btn-nueva-deuda" onclick="openNuevaDeudaModal()">+ Cargar Deuda</button>
 
                 <!-- Búsqueda -->
                 <div style="margin-bottom: 10px;">
-                    <input type="text" id="search-deuda" placeholder="🔍  Buscar cliente..." style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;">
+                    <input type="text" id="search-deuda" placeholder="Buscar cliente" style="width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.8); border-radius: 12px; font-size: 15px; background: white; box-sizing: border-box;">
                 </div>
 
                 <!-- Filtros -->
                 <div class="deudas-filter-bar">
                     <button class="deudas-filter-btn active" id="filter-deuda-todas" onclick="setDeudaFilter('todas')">Todas</button>
-                    <button class="deudas-filter-btn" id="filter-deuda-pendientes" onclick="setDeudaFilter('pendientes')">⏳ Pendientes</button>
-                    <button class="deudas-filter-btn" id="filter-deuda-cobradas" onclick="setDeudaFilter('cobradas')" id="filter-deuda-cobradas">✅ Resueltas</button>
+                    <button class="deudas-filter-btn" id="filter-deuda-pendientes" onclick="setDeudaFilter('pendientes')">Pendientes</button>
+                    <button class="deudas-filter-btn" id="filter-deuda-cobradas" onclick="setDeudaFilter('cobradas')" id="filter-deuda-cobradas">Resueltas</button>
                 </div>
 
                 <!-- Lista -->
@@ -1072,11 +1073,11 @@
                     </div>
                 </div>
             </div>
-            <button class="nav-item active" id="nav-dashboard"><div class="nav-icon">📊</div><div>Dashboard</div></button>
-            <button class="nav-item" id="nav-cargar"><div class="nav-icon">➕</div><div>Cargar</div></button>
-            <button class="nav-item" id="nav-historial"><div class="nav-icon">📋</div><div>Historial</div></button>
-            <button class="nav-item" id="nav-stats"><div class="nav-icon">📈</div><div>Stats</div></button>
-            <button class="nav-item" id="nav-deudas"><div class="nav-icon">💰<span class="nav-badge" id="deudas-nav-badge">0</span></div><div>Deudas</div></button>
+            <button class="nav-item active" id="nav-dashboard"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7.2" height="7.2" rx="2"/><rect x="13.3" y="3.5" width="7.2" height="7.2" rx="2"/><rect x="3.5" y="13.3" width="7.2" height="7.2" rx="2"/><rect x="13.3" y="13.3" width="7.2" height="7.2" rx="2"/></svg></div><div>Dashboard</div></button>
+            <button class="nav-item" id="nav-cargar"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8.4v7.2M8.4 12h7.2"/></svg></div><div>Cargar</div></button>
+            <button class="nav-item" id="nav-historial"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 6h12M8.5 12h12M8.5 18h12"/><circle cx="4" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1" fill="currentColor" stroke="none"/></svg></div><div>Historial</div></button>
+            <button class="nav-item" id="nav-stats"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5h17"/><path d="M4.5 15.5l4.5-5 3.5 3 6.5-8"/><path d="M15.5 5.5H19v3.5"/></svg></div><div>Stats</div></button>
+            <button class="nav-item" id="nav-deudas"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.7"/><path d="M6 9.5h.01M18 14.5h.01"/></svg><span class="nav-badge" id="deudas-nav-badge">0</span></div><div>Deudas</div></button>
             <div id="sidebar-sel-panel" style="display:none;margin:8px 10px;padding:12px 14px;background:rgba(255,255,255,0.08);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
                 <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;"><span id="sel-count">0</span> seleccionadas</div>
                 <div style="margin-bottom:8px;"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Total pesos</div><div id="sel-total-pesos" style="font-size:15px;font-weight:800;color:white;">$ 0</div></div>
@@ -1095,7 +1096,7 @@
                     </div>
                 </div>
                 <div style="display:flex;gap:8px;padding:6px 14px 4px;">
-                    <button id="btn-config-sidebar" style="flex:1;padding:8px 0;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);border:none;border-radius:9px;font-size:15px;cursor:pointer;">⚙️</button>
+                    <button id="btn-config-sidebar" style="flex:1;padding:8px 0;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);border:none;border-radius:9px;font-size:15px;cursor:pointer;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;display:block;margin:0 auto;"><path d="M4 8h8.5M17 8h3M4 16h3M9.5 16H20"/><circle cx="15" cy="8" r="2.2"/><circle cx="7.5" cy="16" r="2.2"/></svg></button>
                     <button id="btn-logout-sidebar" style="flex:2;padding:8px 0;background:#e30000;color:white;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;">Salir</button>
                 </div>
             </div>
@@ -1107,7 +1108,7 @@
         <div class="modal-overlay" onclick="closeDeudaDetailModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="margin: 0; font-size: 20px; color: #1d8a45;">💰 Deuda</h2>
+                <h2 style="margin: 0; font-size: 20px; color: #1d8a45;">Deuda</h2>
                 <button onclick="closeDeudaDetailModal()" style="background: none; border: none; font-size: 28px; color: #6e6e73; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
@@ -1121,11 +1122,11 @@
                 </div>
                 <div class="detail-divider"></div>
                 <div id="deuda-detail-obs" class="detail-obs" style="display: none; margin-top: 0; margin-bottom: 12px;"></div>
-                <div style="font-size: 11px; color: #86868b; margin-bottom: 6px;" id="deuda-detail-creado"></div>
+                <div style="font-size: 11px; color: #6e6e73; margin-bottom: 6px;" id="deuda-detail-creado"></div>
                 <div id="deuda-detail-cobro" style="font-size: 11px; color: #1d8a45; font-weight: 600; margin-bottom: 12px; display: none;"></div>
                 <button id="deuda-detail-action-btn" style="width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; color: white; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s;"></button>
-                <button id="deuda-detail-edit-btn" style="width: 100%; padding: 14px; background: #f5f5f7; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 15px; font-weight: 600; color: #1d8a45;">✏️ Editar deuda</button>
-                <button id="deuda-detail-delete-btn" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e30000;">🗑️ Borrar deuda</button>
+                <button id="deuda-detail-edit-btn" style="width: 100%; padding: 14px; background: #f5f5f7; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 15px; font-weight: 600; color: #1d8a45;">Editar deuda</button>
+                <button id="deuda-detail-delete-btn" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e30000;">Borrar deuda</button>
             </div>
         </div>
     </div>
@@ -1135,7 +1136,7 @@
         <div class="modal-overlay" onclick="closeDeudaEditModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="margin: 0; font-size: 20px;">✏️ Editar Deuda</h2>
+                <h2 style="margin: 0; font-size: 20px;">Editar Deuda</h2>
                 <button onclick="closeDeudaEditModal()" style="background: none; border: none; font-size: 28px; color: #6e6e73; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
@@ -1155,15 +1156,15 @@
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Moneda</label>
                     <select id="deuda-edit-moneda" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 16px; font-weight: 600; background: white;">
-                        <option value="USD">🇺🇸 USD</option>
-                        <option value="ARS">🇦🇷 ARS</option>
+                        <option value="USD">USD</option>
+                        <option value="ARS">ARS</option>
                     </select>
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Tipo</label>
                     <select id="deuda-edit-tipo" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 16px; font-weight: 600; background: white;">
-                        <option value="COBRAR">💰 A cobrar</option>
-                        <option value="PAGAR">💸 A pagar</option>
+                        <option value="COBRAR">A cobrar</option>
+                        <option value="PAGAR">A pagar</option>
                     </select>
                 </div>
                 <div style="margin-bottom: 18px;">
@@ -1172,7 +1173,7 @@
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <button onclick="closeDeudaEditModal()" style="padding: 14px; background: #f5f5f7; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 15px; font-weight: 600; color: #6e6e73;">Cancelar</button>
-                    <button onclick="guardarEdicionDeuda()" style="padding: 14px; background: #1d8a45; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(29,138,69,0.3);">💾 Guardar</button>
+                    <button onclick="guardarEdicionDeuda()" style="padding: 14px; background: #1d8a45; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(29,138,69,0.3);">Guardar</button>
                 </div>
             </div>
         </div>
@@ -1183,7 +1184,7 @@
         <div class="modal-overlay" onclick="closeNuevaDeudaModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="margin: 0; font-size: 20px; color: #1d8a45;">💰 Nueva Deuda</h2>
+                <h2 style="margin: 0; font-size: 20px; color: #1d8a45;">Nueva Deuda</h2>
                 <button onclick="closeNuevaDeudaModal()" style="background: none; border: none; font-size: 28px; color: #6e6e73; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
@@ -1193,7 +1194,7 @@
                         <input type="date" class="form-input" id="deuda-fecha" style="position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
                         <div id="deuda-fecha-display" style="padding: 14px 16px; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 17px; background: white; color: #1d1d1f; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
                             <span id="deuda-fecha-text">Hoy</span>
-                            <span style="color: #86868b; font-size: 18px;">📅</span>
+                            <span style="color: #6e6e73; font-size: 18px;">📅</span>
                         </div>
                     </div>
                 </div>
@@ -1205,19 +1206,19 @@
                 <div class="form-group">
                     <label class="form-label">Moneda</label>
                     <div class="moneda-toggle">
-                        <button class="moneda-btn usd active" id="deuda-moneda-usd" onclick="setDeudaMoneda('USD')">🇺🇸 USD</button>
-                        <button class="moneda-btn ars" id="deuda-moneda-ars" onclick="setDeudaMoneda('ARS')">🇦🇷 ARS</button>
+                        <button class="moneda-btn usd active" id="deuda-moneda-usd" onclick="setDeudaMoneda('USD')">USD</button>
+                        <button class="moneda-btn ars" id="deuda-moneda-ars" onclick="setDeudaMoneda('ARS')">ARS</button>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Tipo de deuda</label>
                     <div class="moneda-toggle">
-                        <button class="moneda-btn usd active" id="deuda-tipo-cobrar" onclick="setDeudaTipoForm('COBRAR')">💰 A cobrar</button>
-                        <button class="moneda-btn ars" id="deuda-tipo-pagar" onclick="setDeudaTipoForm('PAGAR')">💸 A pagar</button>
+                        <button class="moneda-btn usd active" id="deuda-tipo-cobrar" onclick="setDeudaTipoForm('COBRAR')">A cobrar</button>
+                        <button class="moneda-btn ars" id="deuda-tipo-pagar" onclick="setDeudaTipoForm('PAGAR')">A pagar</button>
                     </div>
                 </div>
                 <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="deuda-obs" rows="2" placeholder="Notas adicionales (opcional)"></textarea></div>
-                <button class="btn-submit" id="btn-deuda-submit" onclick="agregarDeuda()">💰 Registrar Deuda</button>
+                <button class="btn-submit" id="btn-deuda-submit" onclick="agregarDeuda()">Registrar Deuda</button>
             </div>
         </div>
     </div>
@@ -1244,24 +1245,24 @@
                 <div id="modal-modificado" class="detail-modified" style="display: none;"></div>
                 <div id="modal-historial-cambios" style="display: none; margin-top: 12px;">
                     <button onclick="toggleCambios()" id="btn-toggle-cambios" style="width: 100%; display: flex; justify-content: space-between; align-items: center; background: #f5f5f7; border: 2px solid #e8e8ed; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; color: #6e6e73;">
-                        <span>📋 Historial de cambios</span><span id="cambios-arrow">▼</span>
+                        <span>Historial de cambios</span><span id="cambios-arrow">▼</span>
                     </button>
                     <div id="modal-cambios-lista" style="display: none; margin-top: 6px; background: #f5f5f7; border-radius: 10px; padding: 8px 12px;"></div>
                 </div>
                 <div id="modal-edit-form" style="display: none; margin-top: 16px; border-top: 2px solid #e8e8ed; padding-top: 16px;">
-                    <div style="font-size: 14px; font-weight: 700; color: #1d1d1f; margin-bottom: 16px;">✏️ Editar Operación</div>
+                    <div style="font-size: 14px; font-weight: 700; color: #1d1d1f; margin-bottom: 16px;">Editar Operación</div>
                     <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Cantidad (USD)</label><input type="number" id="edit-cantidad" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
                     <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Precio (ARS)</label><input type="number" id="edit-precio" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
                     <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Observaciones</label><textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea></div>
                     <div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Operador</label><select id="edit-operador" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 15px; font-weight: 600; background: white;"><option value="TOMI">TOMI</option><option value="CHOKI">CHOKI</option><option value="TURCO">TURCO</option><option value="AGU">AGU</option><option value="X3">X3</option></select></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <button id="btn-edit-cancel" style="padding: 14px; background: #f5f5f7; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 15px; font-weight: 600; color: #6e6e73;">Cancelar</button>
-                        <button id="btn-edit-save" style="padding: 14px; background: #1d8a45; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(29,138,69,0.3);">💾 Guardar</button>
+                        <button id="btn-edit-save" style="padding: 14px; background: #1d8a45; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(29,138,69,0.3);">Guardar</button>
                     </div>
                 </div>
-                <button id="btn-share-op" class="btn-share-op" style="margin-top: 16px;">📤 Compartir comprobante</button>
-                <button id="btn-edit-toggle" style="width: 100%; margin-top: 10px; padding: 14px; background: #f5f5f7; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 15px; font-weight: 600; color: #1d8a45;">✏️ Editar operación</button>
-                <button id="btn-delete-op" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e30000;">🗑️ Borrar operación</button>
+                <button id="btn-share-op" class="btn-share-op" style="margin-top: 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px;margin-right:6px;"><path d="M12 3.2v11.3M8.6 6.4L12 3l3.4 3.4"/><path d="M6.2 10.5v8a2 2 0 0 0 2 2h7.6a2 2 0 0 0 2-2v-8"/></svg>Compartir comprobante</button>
+                <button id="btn-edit-toggle" style="width: 100%; margin-top: 10px; padding: 14px; background: #f5f5f7; border: 2px solid #e8e8ed; border-radius: 12px; font-size: 15px; font-weight: 600; color: #1d8a45;">Editar operación</button>
+                <button id="btn-delete-op" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e30000;">Borrar operación</button>
             </div>
         </div>
     </div>
@@ -1284,8 +1285,9 @@
                 ctx.lineTo(r, 180); ctx.quadraticCurveTo(0, 180, 0, 180 - r);
                 ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
                 ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
-                ctx.font = '90px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText('\u{1F4B1}', 90, 95);
+                ctx.font = '600 100px -apple-system, BlinkMacSystemFont, Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'white';
+                ctx.fillText('$', 90, 96);
                 const iconUrl = canvas.toDataURL('image/png');
                 const link = document.createElement('link');
                 link.rel = 'apple-touch-icon'; link.href = iconUrl;
@@ -1296,7 +1298,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.180';
+        const APP_VERSION = 'v3.181';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1729,9 +1731,9 @@
                     const checked = dashSelectedOps.has(opKey) ? 'checked' : '';
                     const isMobile = window.innerWidth < 860;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><div style="background:white;display:flex;align-items:center;"><div style="padding:8px 2px 8px 10px;flex-shrink:0;"><input type="checkbox" class="dash-op-check" style="width:18px;height:18px;accent-color:#1d8a45;cursor:pointer;" ${checked}></div><div style="flex:1;padding:12px 10px 12px 8px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#86868b;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#aeaeb2;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#6e6e73;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#86868b;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#1d1d1f;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#86868b;">USD</span></div><div style="font-size:13px;font-weight:700;color:#424245;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><div style="background:white;display:flex;align-items:center;"><div style="padding:8px 2px 8px 10px;flex-shrink:0;"><input type="checkbox" class="dash-op-check" style="width:18px;height:18px;accent-color:#1d8a45;cursor:pointer;" ${checked}></div><div style="flex:1;padding:12px 10px 12px 8px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#6e6e73;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#aeaeb2;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#6e6e73;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#6e6e73;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#1d1d1f;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#6e6e73;">USD</span></div><div style="font-size:13px;font-weight:700;color:#424245;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
                     } else {
-                        row.innerHTML = `<td class="pt-cb"><input type="checkbox" class="dash-op-check op-check" ${checked}></td><td class="pt-fecha">${escHTML(op.fecha)}</td><td class="pt-cliente"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#86868b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.operador)}</div></td><td class="pt-cant">${cantStr}</td><td class="pt-precio">$${op.precio.toFixed(0)}</td><td class="pt-monto">${montoStr}</td><td class="pt-estado"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:4px 8px;border-radius:8px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;white-space:nowrap;">${escHTML(op.estado)} ▾</span></td>`;
+                        row.innerHTML = `<td class="pt-cb"><input type="checkbox" class="dash-op-check op-check" ${checked}></td><td class="pt-fecha">${escHTML(op.fecha)}</td><td class="pt-cliente"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.operador)}</div></td><td class="pt-cant">${cantStr}</td><td class="pt-precio">$${op.precio.toFixed(0)}</td><td class="pt-monto">${montoStr}</td><td class="pt-estado"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:4px 8px;border-radius:8px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;white-space:nowrap;">${escHTML(op.estado)} ▾</span></td>`;
                     }
                     const cb = row.querySelector('.dash-op-check');
                     cb.addEventListener('click', e => e.stopPropagation());
@@ -1783,7 +1785,7 @@
                     const isMobile = window.innerWidth < 860;
                     const opKey = `${tipo}-${op.fecha}-${op.cliente}-${op.cantidad}`;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div onclick="event.stopPropagation()" style="padding:0 6px 0 14px;display:flex;align-items:center;align-self:stretch;flex-shrink:0;"><input type="checkbox" class="op-check" style="width:18px;height:18px;accent-color:#1d8a45;cursor:pointer;" ${selectedOps.has(opKey) ? 'checked' : ''}></div><div style="flex:1;padding:12px 10px 12px 4px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#86868b;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#aeaeb2;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#6e6e73;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#86868b;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#1d1d1f;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#86868b;">USD</span></div><div style="font-size:13px;font-weight:700;color:#424245;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div onclick="event.stopPropagation()" style="padding:0 6px 0 14px;display:flex;align-items:center;align-self:stretch;flex-shrink:0;"><input type="checkbox" class="op-check" style="width:18px;height:18px;accent-color:#1d8a45;cursor:pointer;" ${selectedOps.has(opKey) ? 'checked' : ''}></div><div style="flex:1;padding:12px 10px 12px 4px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#6e6e73;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#aeaeb2;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#6e6e73;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#6e6e73;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#1d1d1f;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#6e6e73;">USD</span></div><div style="font-size:13px;font-weight:700;color:#424245;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
                         const cb = row.querySelector('.op-check');
                         cb.addEventListener('click', e => e.stopPropagation());
                         cb.addEventListener('change', e => {
@@ -1792,7 +1794,7 @@
                             updateSelectionPanel();
                         });
                     } else {
-                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr><td style="padding:10px 8px;width:36px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" class="op-check" ${selectedOps.has(opKey) ? 'checked' : ''}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#6e6e73;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;width:200px;overflow:hidden;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#86868b;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#1d1d1f;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#6e6e73;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#424245;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
+                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr><td style="padding:10px 8px;width:36px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" class="op-check" ${selectedOps.has(opKey) ? 'checked' : ''}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#6e6e73;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;width:200px;overflow:hidden;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#6e6e73;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#1d1d1f;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#6e6e73;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#424245;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
                         const cb = row.querySelector('.op-check');
                         cb.addEventListener('click', e => e.stopPropagation());
                         cb.addEventListener('change', e => {
@@ -1905,7 +1907,7 @@
         function getOpKey(op,tipo){return `cambios_${tipo}_${op.fecha}_${op.cliente}_${op.cantidad}`.replace(/\s/g,'_');}
         function guardarCambio(k,campo,ant,nvo,usr){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}h.unshift({campo,anterior:ant,nuevo:nvo,usuario:usr,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});if(h.length>10)h=h.slice(0,10);try{localStorage.setItem(k,JSON.stringify(h));}catch(e){}}
         function toggleCambios(){const l=document.getElementById('modal-cambios-lista'),a=document.getElementById('cambios-arrow'),o=l.style.display!=='none';l.style.display=o?'none':'block';a.textContent=o?'▼':'▲';}
-        function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#1d8a45',cantidad:'#1d8a45',precio:'#f59e0b',observaciones:'#86868b'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[escHTML(x.campo)]||'#86868b'};"></div><div class="cambio-content"><div class="cambio-tipo">${escHTML(x.campo.charAt(0).toUpperCase()+x.campo.slice(1))}</div><div class="cambio-detalle"><span style="color:#86868b;text-decoration:line-through;">${escHTML(x.anterior)}</span><span style="margin:0 4px;">→</span><strong>${escHTML(x.nuevo)}</strong></div><div class="cambio-meta">👤 ${escHTML(x.usuario)} · ${escHTML(x.fecha)}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
+        function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#1d8a45',cantidad:'#1d8a45',precio:'#f59e0b',observaciones:'#6e6e73'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[escHTML(x.campo)]||'#6e6e73'};"></div><div class="cambio-content"><div class="cambio-tipo">${escHTML(x.campo.charAt(0).toUpperCase()+x.campo.slice(1))}</div><div class="cambio-detalle"><span style="color:#6e6e73;text-decoration:line-through;">${escHTML(x.anterior)}</span><span style="margin:0 4px;">→</span><strong>${escHTML(x.nuevo)}</strong></div><div class="cambio-meta">👤 ${escHTML(x.usuario)} · ${escHTML(x.fecha)}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
         
         async function guardarEdicion(op,tipo){
             const nc=parseFloat(document.getElementById('edit-cantidad').value), np=parseFloat(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
@@ -2030,8 +2032,8 @@
         function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#f5f5f7':'#f5f5f7';else if(s==='deudas') document.body.style.background='#f5f5f7';else document.body.style.background='#f5f5f7';if(s!=='historial') clearSelection();if(s!=='dashboard') clearDashSelection();if(s==='stats') renderStats();}
         function switchTab(t){clearSelection();currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#f5f5f7';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#f5f5f7';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
-        function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';if(showOnlyPending){currentFilter='todas';document.getElementById('filter-select').value='todas';}updateHistorial();}
-        function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='⬆️ Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='⬇️ Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
+        function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'Solo pendientes':'Todos los estados';if(showOnlyPending){currentFilter='todas';document.getElementById('filter-select').value='todas';}updateHistorial();}
+        function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
         function selectTipoForm(tipo){setTipo(tipo);document.body.style.background=tipo==='VENTA'?'#f5f5f7':'#f5f5f7';document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
         function volverAlPicker(){document.body.style.background='#f5f5f7';document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
         function calcularTotal(){const c=parseFloat(document.getElementById('form-cantidad').value)||0,p=parseFloat(document.getElementById('form-precio').value)||0,t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
@@ -2095,7 +2097,7 @@
             document.getElementById('tipo-btn-cobrar').className = 'deudas-tipo-btn cobrar' + (t === 'cobrar' ? ' active' : '');
             document.getElementById('tipo-btn-pagar').className  = 'deudas-tipo-btn pagar'  + (t === 'pagar'  ? ' active' : '');
             // actualizar labels totales
-            const prefix = t === 'cobrar' ? '💰 Cobrar' : '💸 Pagar';
+            const prefix = t === 'cobrar' ? 'Cobrar' : 'Pagar';
             document.getElementById('deudas-total-usd-label').textContent = prefix + ' USD';
             document.getElementById('deudas-total-ars-label').textContent = prefix + ' ARS';
             updateDeudas();
@@ -2151,7 +2153,7 @@
                     setTimeout(() => loadData(true), 4000);
                 })
                 .catch(() => showToast('❌ Sin conexión: la deuda NO se guardó. Reintentá.','#e30000'))
-                .finally(() => { btn.disabled=false; btn.textContent='💰 Registrar Deuda'; btn.style.opacity='1'; });
+                .finally(() => { btn.disabled=false; btn.textContent='Registrar Deuda'; btn.style.opacity='1'; });
         }
 
         function getFilteredDeudas() {
@@ -2194,7 +2196,7 @@
                 row.style.cssText = 'position:relative;overflow:hidden;';
                 row.dataset.swipeWidth = 160;
                 const estadoLabel = deuda.estado === 'COBRADA' ? (esPagar ? 'PAGADA' : 'COBRADA') : deuda.estado;
-                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${estadoLabel}</span>${esVieja?`<span class="deuda-vencida-tag">⚠ hace ${diasD}d</span>`:''}</div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#86868b;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#6e6e73;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e8e8ed;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','COBRADA','${esPagar?'PAGAR':'COBRAR'}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#0071e3;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
+                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${estadoLabel}</span>${esVieja?`<span class="deuda-vencida-tag">⚠ hace ${diasD}d</span>`:''}</div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#6e6e73;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#6e6e73;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e8e8ed;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','COBRADA','${esPagar?'PAGAR':'COBRAR'}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#0071e3;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
                 row.addEventListener('click', () => showDeudaDetail(deuda));
                 setupSwipe(row);
                 list.appendChild(row);
@@ -2267,7 +2269,7 @@
             const mColor = deuda.moneda === 'USD' ? '#1d8a45' : (esPagar ? '#e30000' : '#157038');
             const resolverLabel = esPagar ? 'PAGADA' : 'COBRADA';
             const estadoLabel = deuda.estado === 'COBRADA' ? resolverLabel : deuda.estado;
-            document.getElementById('deuda-detail-cliente').textContent = deuda.cliente + (esPagar ? ' 💸' : ' 💰');
+            document.getElementById('deuda-detail-cliente').textContent = deuda.cliente;
             document.getElementById('deuda-detail-monto').textContent = deuda.moneda + ' ' + deuda.monto.toLocaleString('es-AR');
             document.getElementById('deuda-detail-monto').style.color = mColor;
             document.getElementById('deuda-detail-fecha').textContent = deuda.fecha;
@@ -2277,8 +2279,8 @@
             const cobroEl = document.getElementById('deuda-detail-cobro'); cobroEl.style.display='none';
             const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
             const actionBtn = document.getElementById('deuda-detail-action-btn');
-            if (esPend) { actionBtn.textContent=`✅ Marcar como ${resolverLabel}`; actionBtn.style.background='#1d8a45'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA',deuda.tipo);}; }
-            else { actionBtn.textContent='↩️ Marcar como PENDIENTE'; actionBtn.style.background='#ff9500'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'PENDIENTE',deuda.tipo);}; }
+            if (esPend) { actionBtn.textContent=`Marcar como ${resolverLabel}`; actionBtn.style.background='#1d8a45'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'COBRADA',deuda.tipo);}; }
+            else { actionBtn.textContent='Marcar como PENDIENTE'; actionBtn.style.background='#ff9500'; actionBtn.onclick=()=>{closeDeudaDetailModal();cambiarEstadoDeuda(key,'PENDIENTE',deuda.tipo);}; }
             document.getElementById('deuda-detail-edit-btn').onclick = () => { closeDeudaDetailModal(); editarDeuda(deuda); };
             document.getElementById('deuda-detail-delete-btn').onclick = () => borrarDeuda(key);
             document.getElementById('deuda-detail-modal').classList.remove('hidden');
@@ -2468,7 +2470,7 @@
                 if (d.usdV > 0) bars += `<rect x="${(cx - bw - 1).toFixed(1)}" y="${(H - hV).toFixed(1)}" width="${bw.toFixed(1)}" height="${hV.toFixed(1)}" rx="2" fill="#1d8a45"/>`;
                 if (d.usdC > 0) bars += `<rect x="${(cx + 1).toFixed(1)}" y="${(H - hC).toFixed(1)}" width="${bw.toFixed(1)}" height="${hC.toFixed(1)}" rx="2" fill="#e30000"/>`;
                 const cada = n > 10 ? 5 : 1;
-                if (i % cada === 0) labels += `<text x="${cx.toFixed(1)}" y="${H + 13}" font-size="10" fill="#86868b" text-anchor="middle">${d.label}</text>`;
+                if (i % cada === 0) labels += `<text x="${cx.toFixed(1)}" y="${H + 13}" font-size="10" fill="#6e6e73" text-anchor="middle">${d.label}</text>`;
             });
             el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:${H + labelH}px;display:block;"><line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="#e8e8ed" stroke-width="1"/>${bars}${labels}</svg>`;
         }
@@ -2485,10 +2487,10 @@
             const dots = key => data.map((d, i) => d[key] != null ? `<circle cx="${(slot * i + slot / 2).toFixed(1)}" cy="${y(d[key]).toFixed(1)}" r="3" fill="${key === 'tcV' ? '#1d8a45' : '#e30000'}"/>` : '').join('');
             let labels = '';
             const cada = n > 10 ? 5 : 1;
-            data.forEach((d, i) => { if (i % cada === 0) labels += `<text x="${(slot * i + slot / 2).toFixed(1)}" y="${H + 13}" font-size="10" fill="#86868b" text-anchor="middle">${d.label}</text>`; });
+            data.forEach((d, i) => { if (i % cada === 0) labels += `<text x="${(slot * i + slot / 2).toFixed(1)}" y="${H + 13}" font-size="10" fill="#6e6e73" text-anchor="middle">${d.label}</text>`; });
             el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:${H + labelH}px;display:block;">`
-                + `<text x="4" y="14" font-size="10" fill="#86868b">$${Math.round(max).toLocaleString('es-AR')}</text>`
-                + `<text x="4" y="${H - 4}" font-size="10" fill="#86868b">$${Math.round(min).toLocaleString('es-AR')}</text>`
+                + `<text x="4" y="14" font-size="10" fill="#6e6e73">$${Math.round(max).toLocaleString('es-AR')}</text>`
+                + `<text x="4" y="${H - 4}" font-size="10" fill="#6e6e73">$${Math.round(min).toLocaleString('es-AR')}</text>`
                 + `<polyline points="${line('tcV')}" fill="none" stroke="#1d8a45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
                 + `<polyline points="${line('tcC')}" fill="none" stroke="#e30000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
                 + dots('tcV') + dots('tcC') + labels + `</svg>`;
@@ -2563,17 +2565,17 @@
     </script>
 
     <!-- CALCULADORA -->
-    <button id="calc-fab" onclick="openCalcModal()" title="Calculadora de cotización" style="display:none;">🧮</button>
+    <button id="calc-fab" onclick="openCalcModal()" title="Calculadora de cotización" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><rect x="5" y="2.8" width="14" height="18.4" rx="2.6"/><path d="M8.6 7.2h6.8"/><path d="M8.6 11.6h.01M12 11.6h.01M15.4 11.6h.01M8.6 14.9h.01M12 14.9h.01M15.4 14.9h.01M8.6 18.2h.01M12 18.2h.01M15.4 18.2h.01"/></svg></button>
     <div id="calc-modal" class="modal hidden">
         <div class="modal-overlay" onclick="closeCalcModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="margin: 0; font-size: 20px; color: #1d8a45;">🧮 Calculadora</h2>
+                <h2 style="margin: 0; font-size: 20px; color: #1d8a45;">Calculadora</h2>
                 <button onclick="closeCalcModal()" style="background: none; border: none; font-size: 28px; color: #6e6e73; padding: 0; width: 40px; height: 40px;">×</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Tipo de cambio (ARS) <span id="calc-tc-fuente" style="font-weight:400;font-size:12px;color:#86868b;"></span></label>
+                    <label class="form-label">Tipo de cambio (ARS) <span id="calc-tc-fuente" style="font-weight:400;font-size:12px;color:#6e6e73;"></span></label>
                     <input type="number" class="form-input" id="calc-tc" placeholder="0.00" step="0.01" inputmode="decimal">
                     <button onclick="usarBlueEnCalc()" id="calc-usar-blue" style="margin-top:8px;background:#ebf8ff;border:1px solid #bee3f8;color:#0071e3;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;">Usar dólar blue</button>
                 </div>
