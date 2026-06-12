@@ -1290,7 +1290,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.161';
+        const APP_VERSION = 'v3.162';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -2443,42 +2443,59 @@
             if (gEl) gEl.style.color = ganancia >= 0 ? '#2d5a3d' : '#c53030';
             setText('stats-spread', spread ? `Spread promedio $${spread.toFixed(2)}` : 'Sin datos suficientes');
         }
+        // Los gráficos se dibujan en píxeles reales del contenedor con altura fija,
+        // así no se estiran al agrandarse la pantalla
+        function chartDims(el) {
+            const W = Math.max(el.clientWidth || (el.parentElement ? el.parentElement.clientWidth : 0) || 360, 280);
+            return { W, H: 170, labelH: 18 };
+        }
         function renderVolChart(data) {
             const el = document.getElementById('stats-volumen-chart');
             if (!el) return;
+            const { W, H, labelH } = chartDims(el);
             const max = Math.max(...data.map(d => Math.max(d.usdV, d.usdC)), 1);
-            const H = 140, labelH = 16, n = data.length, slot = 100 / n, bw = Math.min(slot * 0.32, 6);
+            const n = data.length, slot = W / n, bw = Math.min(slot * 0.32, 18);
             let bars = '', labels = '';
             data.forEach((d, i) => {
                 const cx = slot * i + slot / 2;
-                const hV = (d.usdV / max) * (H - 10), hC = (d.usdC / max) * (H - 10);
-                if (d.usdV > 0) bars += `<rect x="${(cx - bw - 0.3).toFixed(2)}" y="${(H - hV).toFixed(2)}" width="${bw.toFixed(2)}" height="${hV.toFixed(2)}" rx="1" fill="#438453"/>`;
-                if (d.usdC > 0) bars += `<rect x="${(cx + 0.3).toFixed(2)}" y="${(H - hC).toFixed(2)}" width="${bw.toFixed(2)}" height="${hC.toFixed(2)}" rx="1" fill="#e53e3e"/>`;
+                const hV = (d.usdV / max) * (H - 12), hC = (d.usdC / max) * (H - 12);
+                if (d.usdV > 0) bars += `<rect x="${(cx - bw - 1).toFixed(1)}" y="${(H - hV).toFixed(1)}" width="${bw.toFixed(1)}" height="${hV.toFixed(1)}" rx="2" fill="#438453"/>`;
+                if (d.usdC > 0) bars += `<rect x="${(cx + 1).toFixed(1)}" y="${(H - hC).toFixed(1)}" width="${bw.toFixed(1)}" height="${hC.toFixed(1)}" rx="2" fill="#e53e3e"/>`;
                 const cada = n > 10 ? 5 : 1;
-                if (i % cada === 0) labels += `<text x="${cx.toFixed(2)}" y="${H + 12}" font-size="5.5" fill="#a0aec0" text-anchor="middle">${d.label}</text>`;
+                if (i % cada === 0) labels += `<text x="${cx.toFixed(1)}" y="${H + 13}" font-size="10" fill="#a0aec0" text-anchor="middle">${d.label}</text>`;
             });
-            el.innerHTML = `<svg viewBox="0 0 100 ${H + labelH}" style="width:100%;display:block;" preserveAspectRatio="none"><line x1="0" y1="${H}" x2="100" y2="${H}" stroke="#e2e8f0" stroke-width="0.5"/>${bars}${labels}</svg>`;
+            el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:auto;display:block;"><line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="#e2e8f0" stroke-width="1"/>${bars}${labels}</svg>`;
         }
         function renderTcChart(data) {
             const el = document.getElementById('stats-tc-chart');
             if (!el) return;
             const vals = data.flatMap(d => [d.tcV, d.tcC]).filter(v => v != null);
             if (!vals.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">Sin operaciones en el período</div></div>'; return; }
+            const { W, H, labelH } = chartDims(el);
             const min = Math.min(...vals), max = Math.max(...vals);
-            const range = (max - min) || 1, H = 140, labelH = 16, n = data.length, slot = 100 / n;
-            const y = v => 8 + (1 - (v - min) / range) * (H - 16);
-            const line = key => data.map((d, i) => d[key] != null ? `${(slot * i + slot / 2).toFixed(2)},${y(d[key]).toFixed(2)}` : null).filter(Boolean).join(' ');
-            const dots = key => data.map((d, i) => d[key] != null ? `<circle cx="${(slot * i + slot / 2).toFixed(2)}" cy="${y(d[key]).toFixed(2)}" r="1.4" fill="${key === 'tcV' ? '#438453' : '#e53e3e'}"/>` : '').join('');
+            const range = (max - min) || 1, n = data.length, slot = W / n;
+            const y = v => 12 + (1 - (v - min) / range) * (H - 24);
+            const line = key => data.map((d, i) => d[key] != null ? `${(slot * i + slot / 2).toFixed(1)},${y(d[key]).toFixed(1)}` : null).filter(Boolean).join(' ');
+            const dots = key => data.map((d, i) => d[key] != null ? `<circle cx="${(slot * i + slot / 2).toFixed(1)}" cy="${y(d[key]).toFixed(1)}" r="3" fill="${key === 'tcV' ? '#438453' : '#e53e3e'}"/>` : '').join('');
             let labels = '';
             const cada = n > 10 ? 5 : 1;
-            data.forEach((d, i) => { if (i % cada === 0) labels += `<text x="${(slot * i + slot / 2).toFixed(2)}" y="${H + 12}" font-size="5.5" fill="#a0aec0" text-anchor="middle">${d.label}</text>`; });
-            el.innerHTML = `<svg viewBox="0 0 100 ${H + labelH}" style="width:100%;display:block;" preserveAspectRatio="none">`
-                + `<text x="1" y="10" font-size="5.5" fill="#a0aec0">$${Math.round(max).toLocaleString('es-AR')}</text>`
-                + `<text x="1" y="${H - 2}" font-size="5.5" fill="#a0aec0">$${Math.round(min).toLocaleString('es-AR')}</text>`
-                + `<polyline points="${line('tcV')}" fill="none" stroke="#438453" stroke-width="0.8"/>`
-                + `<polyline points="${line('tcC')}" fill="none" stroke="#e53e3e" stroke-width="0.8"/>`
+            data.forEach((d, i) => { if (i % cada === 0) labels += `<text x="${(slot * i + slot / 2).toFixed(1)}" y="${H + 13}" font-size="10" fill="#a0aec0" text-anchor="middle">${d.label}</text>`; });
+            el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:auto;display:block;">`
+                + `<text x="4" y="14" font-size="10" fill="#a0aec0">$${Math.round(max).toLocaleString('es-AR')}</text>`
+                + `<text x="4" y="${H - 4}" font-size="10" fill="#a0aec0">$${Math.round(min).toLocaleString('es-AR')}</text>`
+                + `<polyline points="${line('tcV')}" fill="none" stroke="#438453" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
+                + `<polyline points="${line('tcC')}" fill="none" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
                 + dots('tcV') + dots('tcC') + labels + `</svg>`;
         }
+        // Re-dibujar al cambiar el tamaño de la ventana (rotación, resize en desktop)
+        let _statsResizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(_statsResizeTimer);
+            _statsResizeTimer = setTimeout(() => {
+                const s = document.getElementById('stats-screen');
+                if (s && s.classList.contains('active')) renderStats();
+            }, 250);
+        });
 
         // ═══════════════════════════════════════════════════════════
         //  CALCULADORA DE COTIZACIÓN
