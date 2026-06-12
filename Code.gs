@@ -16,7 +16,8 @@ function doGet(e) {
         cantidad: parseFloat(params.cantidad),
         precio: parseFloat(params.precio),
         total: parseFloat(params.total),
-        observaciones: params.observaciones || ''
+        observaciones: params.observaciones || '',
+        id: params.id || ''
       };
       return addOperation(ss, data);
     }
@@ -29,7 +30,8 @@ function doGet(e) {
         cliente: params.cliente,
         cantidad: parseFloat(params.cantidad),
         nuevoEstado: params.nuevoEstado,
-        usuario: params.usuario
+        usuario: params.usuario,
+        id: params.id || ''
       };
       return updateStatus(ss, data);
     }
@@ -45,7 +47,8 @@ function doGet(e) {
         nuevoTotal: parseFloat(params.nuevoTotal),
         nuevasObs: params.nuevasObs || '',
         nuevoOperador: params.nuevoOperador || '',
-        usuario: params.usuario
+        usuario: params.usuario,
+        id: params.id || ''
       };
       return editOperation(ss, data);
     }
@@ -62,7 +65,8 @@ function doGet(e) {
         monto: parseFloat(params.monto),
         moneda: params.moneda,
         tipo: params.tipo || 'COBRAR',
-        observaciones: params.observaciones || ''
+        observaciones: params.observaciones || '',
+        id: params.id || ''
       };
       return addDeuda(ss, data);
     }
@@ -73,7 +77,8 @@ function doGet(e) {
         cliente: params.cliente,
         monto: parseFloat(params.monto),
         nuevoEstado: params.nuevoEstado,
-        usuario: params.usuario
+        usuario: params.usuario,
+        id: params.id || ''
       };
       return updateDeudaStatus(ss, data);
     }
@@ -88,7 +93,8 @@ function doGet(e) {
         nuevaFecha: params.nuevaFecha,
         nuevoTipo: params.nuevoTipo || '',
         nuevasObs: params.nuevasObs || '',
-        usuario: params.usuario
+        usuario: params.usuario,
+        id: params.id || ''
       };
       return editDeuda(ss, data);
     }
@@ -98,7 +104,8 @@ function doGet(e) {
         tipo: params.tipo,
         fecha: params.fecha,
         cliente: params.cliente,
-        cantidad: parseFloat(params.cantidad)
+        cantidad: parseFloat(params.cantidad),
+        id: params.id || ''
       });
     }
 
@@ -106,7 +113,8 @@ function doGet(e) {
       return deleteDeuda(ss, {
         fecha: params.fecha,
         cliente: params.cliente,
-        monto: parseFloat(params.monto)
+        monto: parseFloat(params.monto),
+        id: params.id || ''
       });
     }
 
@@ -150,6 +158,16 @@ function doPost(e) {
   }
 }
 
+// Busca una fila por el ID único guardado en la columna N (índice 13).
+// Devuelve el índice (base 0) dentro de values, o -1 si no hay ID o no se encuentra.
+function findRowById(values, id) {
+  if (!id) return -1;
+  for (let i = 1; i < values.length; i++) {
+    if (String(values[i][13] || '') === String(id)) return i;
+  }
+  return -1;
+}
+
 function addOperation(ss, data) {
   const sheetName = data.tipo === 'VENTA' ? 'VENTAS' : 'COMPRAS';
   const sheet = ss.getSheetByName(sheetName);
@@ -173,6 +191,7 @@ function addOperation(ss, data) {
   sheet.getRange(lastRow, 11).setValue(new Date());
   sheet.getRange(lastRow, 12).setValue(data.operador);
   sheet.getRange(lastRow, 13).setValue(new Date());
+  if (data.id) sheet.getRange(lastRow, 14).setValue(data.id);
 
   return ContentService.createTextOutput(JSON.stringify({
     success: true,
@@ -192,6 +211,18 @@ function updateStatus(ss, data) {
 
   const dataRange = sheet.getDataRange();
   const values = dataRange.getValues();
+
+  const byId = findRowById(values, data.id);
+  if (byId >= 0) {
+    sheet.getRange(byId + 1, 7).setValue(data.nuevoEstado);
+    sheet.getRange(byId + 1, 12).setValue(data.usuario);
+    sheet.getRange(byId + 1, 13).setValue(new Date());
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Estado actualizado en fila ' + (byId + 1) + ' a: ' + data.nuevoEstado
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
   const cantidadBuscada = String(data.cantidad).replace(/[\$,\s]/g, '').trim();
 
   let diaFecha = '', mesFecha = '';
@@ -256,6 +287,21 @@ function editOperation(ss, data) {
   }
 
   const values = sheet.getDataRange().getValues();
+
+  const byId = findRowById(values, data.id);
+  if (byId >= 0) {
+    sheet.getRange(byId + 1, 4).setValue('$' + data.nuevaCantidad);
+    sheet.getRange(byId + 1, 5).setValue('$' + data.nuevoPrecio.toFixed(2));
+    sheet.getRange(byId + 1, 8).setValue(data.nuevasObs);
+    if (data.nuevoOperador) sheet.getRange(byId + 1, 2).setValue(data.nuevoOperador);
+    sheet.getRange(byId + 1, 12).setValue(data.usuario);
+    sheet.getRange(byId + 1, 13).setValue(new Date());
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Operación actualizada en fila ' + (byId + 1)
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
   const cantidadBuscada = String(data.cantidadOriginal).replace(/[\$,\s]/g, '').trim();
   let diaFecha = '', mesFecha = '';
   if (fechaBuscar && fechaBuscar.includes('/')) {
@@ -337,6 +383,7 @@ function addDeuda(ss, data) {
   sheet.getRange(lastRow, 11).setValue(new Date());
   sheet.getRange(lastRow, 12).setValue(data.operador);
   sheet.getRange(lastRow, 13).setValue(new Date());
+  if (data.id) sheet.getRange(lastRow, 14).setValue(data.id);
 
   return ContentService.createTextOutput(JSON.stringify({
     success: true,
@@ -354,6 +401,18 @@ function updateDeudaStatus(ss, data) {
   }
 
   const values = sheet.getDataRange().getValues();
+
+  const byId = findRowById(values, data.id);
+  if (byId >= 0) {
+    sheet.getRange(byId + 1, 6).setValue(data.nuevoEstado); // F = Estado
+    sheet.getRange(byId + 1, 12).setValue(data.usuario);
+    sheet.getRange(byId + 1, 13).setValue(new Date());
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Estado de deuda actualizado a: ' + data.nuevoEstado
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
   const montoBuscado = String(data.monto).replace(/[\$,\s]/g, '').trim();
 
   let diaFecha = '', mesFecha = '';
@@ -419,6 +478,22 @@ function editDeuda(ss, data) {
   }
 
   const values = sheet.getDataRange().getValues();
+
+  const byId = findRowById(values, data.id);
+  if (byId >= 0) {
+    sheet.getRange(byId + 1, 1).setValue(nuevaFechaFormato);
+    sheet.getRange(byId + 1, 4).setValue(data.nuevoMonto);
+    sheet.getRange(byId + 1, 5).setValue(data.nuevaMoneda);
+    sheet.getRange(byId + 1, 7).setValue(data.nuevasObs);
+    if (data.nuevoTipo) sheet.getRange(byId + 1, 8).setValue(data.nuevoTipo);
+    sheet.getRange(byId + 1, 12).setValue(data.usuario);
+    sheet.getRange(byId + 1, 13).setValue(new Date());
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Deuda actualizada en fila ' + (byId + 1)
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
   const montoBuscado = String(data.montoOriginal).replace(/[\$,\s]/g, '').trim();
   let diaFecha = '', mesFecha = '';
   if (fechaBuscar && fechaBuscar.includes('/')) {
@@ -471,6 +546,13 @@ function deleteOperation(ss, data) {
   if (!sheet) return ContentService.createTextOutput(JSON.stringify({success:false,error:'Hoja '+sheetName+' no encontrada'})).setMimeType(ContentService.MimeType.JSON);
 
   const values = sheet.getDataRange().getValues();
+
+  const byId = findRowById(values, data.id);
+  if (byId >= 0) {
+    sheet.deleteRow(byId + 1);
+    return ContentService.createTextOutput(JSON.stringify({success:true,message:'Operación eliminada de fila '+(byId+1)})).setMimeType(ContentService.MimeType.JSON);
+  }
+
   const cantidadBuscada = String(data.cantidad).replace(/[\$,\s]/g,'').trim();
   let diaFecha='', mesFecha='';
   if (data.fecha && data.fecha.includes('/')) { const p=data.fecha.split('/'); diaFecha=p[0]; mesFecha=p[1]; }
@@ -496,6 +578,13 @@ function deleteDeuda(ss, data) {
   if (!sheet) return ContentService.createTextOutput(JSON.stringify({success:false,error:'Hoja DEUDAS no encontrada'})).setMimeType(ContentService.MimeType.JSON);
 
   const values = sheet.getDataRange().getValues();
+
+  const byId = findRowById(values, data.id);
+  if (byId >= 0) {
+    sheet.deleteRow(byId + 1);
+    return ContentService.createTextOutput(JSON.stringify({success:true,message:'Deuda eliminada de fila '+(byId+1)})).setMimeType(ContentService.MimeType.JSON);
+  }
+
   const montoBuscado = String(data.monto).replace(/[\$,\s]/g,'').trim();
   let diaFecha='', mesFecha='';
   if (data.fecha && data.fecha.includes('/')) { const p=data.fecha.split('/'); diaFecha=p[0]; mesFecha=p[1]; }
@@ -580,6 +669,7 @@ VENTAS / COMPRAS:
   G: Estado         H: Observaciones
   I: Balance (fórmula)  J: Balance 2 (fórmula)
   K: Timestamp      L: Usuario modificó    M: Fecha modificación
+  N: ID único (generado por la app al crear la fila)
 
 DEUDAS:
   A: Fecha          B: Operador       C: Cliente
@@ -587,5 +677,6 @@ DEUDAS:
   F: Estado (PENDIENTE/COBRADA)       G: Observaciones
   H: Tipo (COBRAR/PAGAR)
   K: Timestamp      L: Usuario modificó    M: Fecha modificación
+  N: ID único (generado por la app al crear la fila)
 ═══════════════════════════════════════════════════════════════════════════
 */

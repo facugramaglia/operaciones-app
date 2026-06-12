@@ -547,6 +547,67 @@
                 border-radius: 12px !important;
             }
         }
+
+        /* ── NUEVAS FUNCIONES (cierre, stats, calculadora, deudas) ── */
+        .nav-icon { position: relative; }
+        .nav-badge { position: absolute; top: -2px; right: -4px; min-width: 17px; height: 17px; padding: 0 4px; background: #e53e3e; color: white; border-radius: 10px; font-size: 10px; font-weight: 800; display: none; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 1px 4px rgba(229,62,62,0.5); }
+        .nav-badge.visible { display: flex; }
+
+        .cierre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .cierre-box { border-radius: 12px; padding: 12px 14px; border: 1px solid #e2e8f0; background: #f8fafc; }
+        .cierre-box-label { font-size: 11px; font-weight: 700; color: #747873; margin-bottom: 4px; }
+        .cierre-box-value { font-size: 17px; font-weight: 800; color: #2d3748; }
+        .cierre-box-sub { font-size: 11px; color: #a0aec0; margin-top: 2px; }
+        .cierre-box.ganancia { grid-column: 1 / -1; background: linear-gradient(135deg, #e6f2ea 0%, #d4e8da 100%); border: 1px solid #8ebf9e; }
+        .cierre-box.ganancia .cierre-box-label { color: #2d5a3d; }
+        .cierre-box.ganancia .cierre-box-value { font-size: 24px; color: #2d5a3d; }
+
+        .dash-deudas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .dash-deuda-box { border-radius: 12px; padding: 12px 14px; }
+        .dash-deuda-box.cobrar { background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border: 1px solid #fde68a; }
+        .dash-deuda-box.pagar { background: linear-gradient(135deg, #fff5f5 0%, #fee2e2 100%); border: 1px solid #fecaca; }
+        .dash-deuda-label { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+        .dash-deuda-box.cobrar .dash-deuda-label { color: #92400e; }
+        .dash-deuda-box.pagar .dash-deuda-label { color: #991b1b; }
+        .dash-deuda-amount { font-size: 15px; font-weight: 800; color: #2d3748; line-height: 1.5; }
+
+        .deuda-vencida-tag { font-size: 10px; font-weight: 800; color: #c53030; background: #fee2e2; padding: 2px 7px; border-radius: 10px; }
+        .deuda-row-vencida .swipe-inner { box-shadow: inset 4px 0 0 #e53e3e; }
+
+        #calc-fab { position: fixed; right: 16px; bottom: calc(92px + env(safe-area-inset-bottom)); width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #438453 0%, #3a7248 100%); color: white; font-size: 24px; border: none; box-shadow: 0 6px 20px rgba(67,132,83,0.45); z-index: 150; cursor: pointer; transition: transform 0.15s; display: flex; align-items: center; justify-content: center; }
+        #calc-fab:active { transform: scale(0.92); }
+        @media (min-width: 860px) { #calc-fab { bottom: 24px; right: 24px; } }
+        .calc-result-box { background: linear-gradient(135deg, #e6f2ea 0%, #d4e8da 100%); border: 2px solid #8ebf9e; border-radius: 14px; padding: 16px; text-align: center; margin-top: 6px; }
+        .calc-result-value { font-size: 28px; font-weight: 800; color: #2d5a3d; }
+        .calc-result-label { font-size: 12px; font-weight: 600; color: #4a7a60; margin-bottom: 4px; }
+
+        #check-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000; display: none; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); backdrop-filter: blur(3px); }
+        #check-overlay.visible { display: flex; }
+        .check-circle { width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(135deg, #438453 0%, #3a7248 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 16px 50px rgba(67,132,83,0.45); animation: checkPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+        @keyframes checkPop { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .check-mark { width: 48px; height: 48px; }
+        .check-mark path { stroke: white; stroke-width: 6; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 60; stroke-dashoffset: 60; animation: checkDraw 0.4s 0.25s ease forwards; }
+        @keyframes checkDraw { to { stroke-dashoffset: 0; } }
+        .check-label { position: absolute; margin-top: 160px; font-size: 15px; font-weight: 700; color: #2d5a3d; animation: splashFadeUp 0.4s 0.3s ease both; }
+
+        .empty-state { text-align: center; padding: 28px 16px; color: #a0aec0; }
+        .empty-state-icon { font-size: 38px; margin-bottom: 8px; opacity: 0.7; }
+        .empty-state-text { font-size: 13px; font-weight: 600; }
+
+        .sel-batch-btn { background: #2d6a4f; color: white; border: none; border-radius: 10px; padding: 6px 11px; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+        .sel-batch-btn.copy { background: #4a7a60; }
+
+        .stats-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+        .stats-toggle button { flex: 1; padding: 10px; border: none; background: rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; font-weight: 700; color: #747873; transition: all 0.3s; }
+        .stats-toggle button.active { background: white; color: #438453; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .stats-legend { display: flex; gap: 14px; margin-bottom: 8px; font-size: 11px; font-weight: 600; color: #747873; flex-wrap: wrap; }
+        .stats-legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--dot, #438453); }
+
+        #balance-sparkline { display: block; width: 100%; height: 30px; margin-top: 8px; }
+        .blue-trend-up { color: #438453; font-weight: 700; }
+        .blue-trend-down { color: #e53e3e; font-weight: 700; }
+
+        .btn-share-op { width: 100%; margin-top: 10px; padding: 14px; background: #e7f9ee; border: 2px solid #b6dfc8; border-radius: 12px; font-size: 15px; font-weight: 600; color: #1f7a4d; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -672,6 +733,8 @@
                         <span style="font-size:11px;color:#b6dfc8;">·</span>
                         <span style="font-size:12px;color:#4a7a60;">@ <span id="mob-sel-prom" style="font-weight:700;color:#1a3328;">$0</span></span>
                     </div>
+                    <button class="sel-batch-btn" onclick="marcarSeleccionRealizada('historial')">✓ Realizadas</button>
+                    <button class="sel-batch-btn copy" onclick="copiarResumenSeleccion('historial')">⧉</button>
                     <button onclick="clearSelection()" style="background:#1a3328;color:white;border:none;border-radius:10px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
                 </div>
             </div>
@@ -684,7 +747,8 @@
                         <div class="bm-item bm-balance">
                             <div class="balance-label">Balance Total</div>
                             <div class="balance-amount" id="header-balance-main">$0</div>
-                            <div class="bm-subtitle">ARS</div>
+                            <div class="bm-subtitle">ARS · <span id="blue-trend-inline">Blue –</span></div>
+                            <svg id="balance-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"></svg>
                         </div>
                         <div class="bm-item bm-gray" id="pesos-en-caja-box">
                             <div class="balance-label">Pesos en Caja</div>
@@ -711,6 +775,8 @@
                         <span style="font-size:11px;color:#b6dfc8;">·</span>
                         <span style="font-size:12px;color:#4a7a60;">@ <span id="dash-sel-prom" style="font-weight:700;color:#1a3328;">$0</span></span>
                     </div>
+                    <button class="sel-batch-btn" onclick="marcarSeleccionRealizada('dash')">✓ Realizadas</button>
+                    <button class="sel-batch-btn copy" onclick="copiarResumenSeleccion('dash')">⧉</button>
                     <button onclick="clearDashSelection()" style="background:#1a3328;color:white;border:none;border-radius:10px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
                 </div>
                 <div class="card dash-animate dash-animate-delay-2" id="card-ventas-pendientes">
@@ -733,6 +799,39 @@
                             <div style="font-size: 11px; color: #e53e3e; font-weight: 700; margin-bottom: 4px;">COMPRAS</div>
                             <div style="font-size: 17px; font-weight: 800; color: #2d3748;" id="hoy-compras-total">$0</div>
                             <div style="font-size: 11px; color: #a0aec0;" id="hoy-compras-count">0 operaciones</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card dash-animate dash-animate-delay-5" id="card-cierre" style="padding: 14px 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #747873; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Cierre del día</div>
+                    <div class="cierre-grid">
+                        <div class="cierre-box">
+                            <div class="cierre-box-label">TC PROM. VENTA</div>
+                            <div class="cierre-box-value" id="cierre-tc-venta">–</div>
+                            <div class="cierre-box-sub" id="cierre-usd-vendidos">USD 0 vendidos</div>
+                        </div>
+                        <div class="cierre-box">
+                            <div class="cierre-box-label">TC PROM. COMPRA</div>
+                            <div class="cierre-box-value" id="cierre-tc-compra">–</div>
+                            <div class="cierre-box-sub" id="cierre-usd-comprados">USD 0 comprados</div>
+                        </div>
+                        <div class="cierre-box ganancia">
+                            <div class="cierre-box-label">💰 GANANCIA BRUTA ESTIMADA (HOY)</div>
+                            <div class="cierre-box-value" id="cierre-ganancia">$ 0</div>
+                            <div class="cierre-box-sub" id="cierre-detalle">Spread $0 · 0 ops pendientes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card dash-animate dash-animate-delay-5" id="card-dash-deudas" style="padding: 14px 16px; cursor: pointer;" onclick="showScreen('deudas')">
+                    <div style="font-size: 12px; font-weight: 700; color: #747873; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Deudas pendientes <span style="font-size:11px;color:#a0aec0;font-weight:400;text-transform:none;">→ ver deudas</span></div>
+                    <div class="dash-deudas-grid">
+                        <div class="dash-deuda-box cobrar">
+                            <div class="dash-deuda-label">💰 A COBRAR</div>
+                            <div class="dash-deuda-amount" id="dash-deudas-cobrar">USD 0<br>ARS 0</div>
+                        </div>
+                        <div class="dash-deuda-box pagar">
+                            <div class="dash-deuda-label">💸 A PAGAR</div>
+                            <div class="dash-deuda-amount" id="dash-deudas-pagar">USD 0<br>ARS 0</div>
                         </div>
                     </div>
                 </div>
@@ -852,6 +951,47 @@
                 </div>
             </div>
             
+            <div id="stats-screen" class="screen">
+                <div class="desktop-page-header">
+                    <div class="dph-title">Estadísticas</div>
+                    <div class="dph-subtitle">Volumen y tipo de cambio de los últimos días</div>
+                </div>
+                <div class="stats-toggle">
+                    <button id="stats-range-7" class="active" onclick="setStatsRange(7)">Últimos 7 días</button>
+                    <button id="stats-range-30" onclick="setStatsRange(30)">Últimos 30 días</button>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="font-size:16px;">Volumen operado (USD por día)</div>
+                    <div class="stats-legend"><span style="--dot:#438453;">Ventas</span><span style="--dot:#e53e3e;">Compras</span></div>
+                    <div id="stats-volumen-chart"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="font-size:16px;">Tipo de cambio promedio por día</div>
+                    <div class="stats-legend"><span style="--dot:#438453;">TC venta propio</span><span style="--dot:#e53e3e;">TC compra propio</span></div>
+                    <div id="stats-tc-chart"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="font-size:16px;">Resumen del período</div>
+                    <div class="cierre-grid">
+                        <div class="cierre-box">
+                            <div class="cierre-box-label">USD VENDIDOS</div>
+                            <div class="cierre-box-value" id="stats-total-vendido">0</div>
+                            <div class="cierre-box-sub" id="stats-ops-venta">0 operaciones</div>
+                        </div>
+                        <div class="cierre-box">
+                            <div class="cierre-box-label">USD COMPRADOS</div>
+                            <div class="cierre-box-value" id="stats-total-comprado">0</div>
+                            <div class="cierre-box-sub" id="stats-ops-compra">0 operaciones</div>
+                        </div>
+                        <div class="cierre-box ganancia">
+                            <div class="cierre-box-label">💰 GANANCIA BRUTA ESTIMADA DEL PERÍODO</div>
+                            <div class="cierre-box-value" id="stats-ganancia">$ 0</div>
+                            <div class="cierre-box-sub" id="stats-spread">Spread promedio $0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="config-screen" class="screen">
                 <div class="card">
                     <div class="card-title">⚙️ Configuración</div>
@@ -929,12 +1069,15 @@
             <button class="nav-item active" id="nav-dashboard"><div class="nav-icon">📊</div><div>Dashboard</div></button>
             <button class="nav-item" id="nav-cargar"><div class="nav-icon">➕</div><div>Cargar</div></button>
             <button class="nav-item" id="nav-historial"><div class="nav-icon">📋</div><div>Historial</div></button>
-            <button class="nav-item" id="nav-deudas"><div class="nav-icon">💰</div><div>Deudas</div></button>
+            <button class="nav-item" id="nav-stats"><div class="nav-icon">📈</div><div>Stats</div></button>
+            <button class="nav-item" id="nav-deudas"><div class="nav-icon">💰<span class="nav-badge" id="deudas-nav-badge">0</span></div><div>Deudas</div></button>
             <div id="sidebar-sel-panel" style="display:none;margin:8px 10px;padding:12px 14px;background:rgba(255,255,255,0.08);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
                 <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;"><span id="sel-count">0</span> seleccionadas</div>
                 <div style="margin-bottom:8px;"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Total pesos</div><div id="sel-total-pesos" style="font-size:15px;font-weight:800;color:white;">$ 0</div></div>
                 <div style="margin-bottom:8px;"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Total USD</div><div id="sel-total-usd" style="font-size:15px;font-weight:800;color:white;">USD 0</div></div>
                 <div style="margin-bottom:10px;"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px;">Cotización prom.</div><div id="sel-promedio" style="font-size:15px;font-weight:800;color:#a3f0c1;">$ 0</div></div>
+                <button class="sel-batch-btn" onclick="marcarSeleccionRealizada('historial')" style="width:100%;margin-bottom:6px;padding:8px 0;">✓ Marcar REALIZADAS</button>
+                <button class="sel-batch-btn copy" onclick="copiarResumenSeleccion('historial')" style="width:100%;margin-bottom:6px;padding:8px 0;">⧉ Copiar resumen</button>
                 <button onclick="clearSelection()" style="width:100%;padding:7px 0;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.18);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.3px;">✕ Limpiar selección</button>
             </div>
             <div id="sidebar-user-section">
@@ -1110,7 +1253,8 @@
                         <button id="btn-edit-save" style="padding: 14px; background: linear-gradient(135deg, #438453 0%, #637e66 100%); border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(67,132,83,0.3);">💾 Guardar</button>
                     </div>
                 </div>
-                <button id="btn-edit-toggle" style="width: 100%; margin-top: 16px; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #438453;">✏️ Editar operación</button>
+                <button id="btn-share-op" class="btn-share-op" style="margin-top: 16px;">📤 Compartir comprobante</button>
+                <button id="btn-edit-toggle" style="width: 100%; margin-top: 10px; padding: 14px; background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #438453;">✏️ Editar operación</button>
                 <button id="btn-delete-op" style="width: 100%; margin-top: 10px; padding: 14px; background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 600; color: #e53e3e;">🗑️ Borrar operación</button>
             </div>
         </div>
@@ -1146,22 +1290,34 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.104';
+        const APP_VERSION = 'v3.161';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
             sheetId: '1Fn3iiKSMeDH8PAh1C-8SSLrcuikOSHTx7-ZIZXqeDnE',
-            ventasRange: 'VENTAS!A2:M',
-            comprasRange: 'COMPRAS!A2:M',
-            deudasRange: 'DEUDAS!A2:M',
+            ventasRange: 'VENTAS!A2:N',
+            comprasRange: 'COMPRAS!A2:N',
+            deudasRange: 'DEUDAS!A2:N',
             balanceCell: 'CALCULO!D3',
             scriptUrl: localStorage.getItem('scriptUrl') || '',
             separador: '---SEPARADOR---'
         };
-        const MASTER_PIN = '630500';
+        // Solo se guarda el hash SHA-256 del PIN; el PIN nunca aparece en texto plano
+        const MASTER_PIN_HASH = '15bec0bae1f47a8fb92cba765fef9f2650865638a3dff6c0017109b567f4fdcd';
         let pinAttempts = 0, pinLocked = false;
         const MAX_PIN_ATTEMPTS = 5;
         async function hashPin(pin) { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+        // Llamada al Apps Script con confirmación real: lanza error si no hay
+        // conexión o si el backend respondió success:false
+        async function apiCall(paramsObj) {
+            if (!config.scriptUrl) throw new Error('Configura la URL del Script');
+            const params = new URLSearchParams(paramsObj);
+            const res = await fetch(config.scriptUrl + '?' + params.toString());
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || 'Error del servidor');
+            return data;
+        }
+        function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
         let currentUser = null, ventas = [], compras = [], ventasRaw = [], comprasRaw = [], deudasRaw = [];
         let balanceTotal = 0, currentTipo = 'VENTA', currentFilter = 'ultimo', currentTab = 'ventas';
         let showOnlyPending = false;
@@ -1200,7 +1356,7 @@
             document.getElementById('app-version-display').textContent = APP_VERSION;
             setupEventListeners();
             const storedHash = localStorage.getItem('pinHash');
-            const pinValid = storedHash ? storedHash === await hashPin(MASTER_PIN) : false;
+            const pinValid = storedHash === MASTER_PIN_HASH;
             setTimeout(() => {
                 hideSplash();
                 if (pinValid) { document.getElementById('pin-screen').classList.add('hidden'); checkInitialSetup(); }
@@ -1216,7 +1372,11 @@
             document.getElementById('nav-dashboard').addEventListener('click', () => showScreen('dashboard'));
             document.getElementById('nav-cargar').addEventListener('click', () => { showScreen('cargar'); volverAlPicker(); });
             document.getElementById('nav-historial').addEventListener('click', () => showScreen('historial'));
+            document.getElementById('nav-stats').addEventListener('click', () => showScreen('stats'));
             document.getElementById('nav-deudas').addEventListener('click', () => showScreen('deudas'));
+            document.getElementById('calc-usd').addEventListener('input', () => { _calcLastEdited = 'usd'; recalcCalc(); });
+            document.getElementById('calc-ars').addEventListener('input', () => { _calcLastEdited = 'ars'; recalcCalc(); });
+            document.getElementById('calc-tc').addEventListener('input', () => { document.getElementById('calc-tc-fuente').textContent = '(manual)'; recalcCalc(); });
             document.getElementById('btn-config-header').addEventListener('click', () => showScreen('config'));
             document.getElementById('btn-config-sidebar').addEventListener('click', () => showScreen('config'));
             document.getElementById('btn-logout-sidebar').addEventListener('click', handleLogout);
@@ -1261,9 +1421,9 @@
         async function checkPIN() {
             if (pinLocked) { showToast('❌ Demasiados intentos. Recargá la página.', '#e53e3e'); return; }
             const pin = document.getElementById('pin-input').value;
-            if (pin === MASTER_PIN) {
+            if (await hashPin(pin) === MASTER_PIN_HASH) {
                 pinAttempts = 0;
-                localStorage.setItem('pinHash', await hashPin(pin));
+                localStorage.setItem('pinHash', MASTER_PIN_HASH);
                 document.getElementById('pin-screen').classList.add('hidden');
                 checkInitialSetup();
             } else {
@@ -1301,7 +1461,7 @@
             currentUser = username; localStorage.setItem('currentUser', username); showMainApp();
         }
         function switchOperator() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('main-app').style.display = 'none'; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-user').value = ''; }
-        function handleLogout() { if (_dateTimeTimer) clearTimeout(_dateTimeTimer); if (_syncLabelTimer) clearTimeout(_syncLabelTimer); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); if (_dolarBlueScheduleTimer) clearTimeout(_dolarBlueScheduleTimer); localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
+        function handleLogout() { if (_dateTimeTimer) clearTimeout(_dateTimeTimer); if (_syncLabelTimer) clearTimeout(_syncLabelTimer); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); if (_dolarBlueInterval) clearInterval(_dolarBlueInterval); if (_dolarBlueScheduleTimer) clearTimeout(_dolarBlueScheduleTimer); document.getElementById('calc-fab').style.display = 'none'; localStorage.removeItem('currentUser'); localStorage.removeItem('pinHash'); pinAttempts = 0; pinLocked = false; document.getElementById('btn-pin').disabled = false; currentUser = null; document.getElementById('pin-screen').classList.remove('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'none'; document.getElementById('pin-input').value = ''; document.getElementById('login-user').value = ''; }
         let _dolarBlueInterval = null;
         let _dolarBlueScheduleTimer = null;
         let _dataRefreshInterval = null;
@@ -1320,6 +1480,21 @@
                 document.getElementById('dolar-blue-compra-hero').textContent = compra;
                 document.getElementById('dolar-blue-venta-hero').textContent = venta;
                 document.getElementById('dolar-blue-updated-hero').textContent = updated;
+                // Tendencia: comparar con la última cotización distinta registrada
+                _blueCompra = Number(data.compra); _blueVenta = Number(data.venta);
+                let last = parseFloat(localStorage.getItem('lastBlueVenta'));
+                let prev = parseFloat(localStorage.getItem('prevBlueVenta'));
+                if (!isNaN(last) && last !== _blueVenta) { prev = last; localStorage.setItem('prevBlueVenta', String(prev)); }
+                localStorage.setItem('lastBlueVenta', String(_blueVenta));
+                const tEl = document.getElementById('blue-trend-inline');
+                if (tEl) {
+                    let trendHtml = '';
+                    if (!isNaN(prev) && prev !== _blueVenta) {
+                        const diff = _blueVenta - prev;
+                        trendHtml = ` <span class="${diff > 0 ? 'blue-trend-up' : 'blue-trend-down'}">${diff > 0 ? '▲' : '▼'}${Math.abs(diff).toLocaleString('es-AR')}</span>`;
+                    }
+                    tEl.innerHTML = 'Blue ' + escHTML(venta) + trendHtml;
+                }
             } catch(e) {
                 ['dolar-blue-compra','dolar-blue-venta','dolar-blue-compra-hero','dolar-blue-venta-hero'].forEach(id => document.getElementById(id).textContent = '–');
                 document.getElementById('dolar-blue-updated').textContent = 'Sin conexión';
@@ -1353,7 +1528,7 @@
             const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
             _midnightTimer = setTimeout(() => { if (currentUser) handleLogout(); }, midnight - now);
         }
-        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('sidebar-user-avatar').textContent = currentUser[0]; document.getElementById('sidebar-user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); scheduleDolarBlue(); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
+        function showMainApp() { document.getElementById('pin-screen').classList.add('hidden'); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').style.display = 'block'; document.getElementById('calc-fab').style.display = 'flex'; document.getElementById('user-avatar').textContent = currentUser[0]; document.getElementById('user-name').textContent = currentUser; document.getElementById('sidebar-user-avatar').textContent = currentUser[0]; document.getElementById('sidebar-user-name').textContent = currentUser; document.getElementById('config-api-key').value = config.apiKey; document.getElementById('config-script-url').value = config.scriptUrl; scheduleMidnightLogout(); scheduleDolarBlue(); if (_dataRefreshInterval) clearInterval(_dataRefreshInterval); _dataRefreshInterval = setInterval(() => loadData(true), 60 * 1000); loadData(); loadDeudas(); }
         
         function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
@@ -1427,7 +1602,7 @@
             return rows.filter(row => { if (!row || !row[1] || !row[3]) return false; const op = String(row[1]).trim(); return !op.includes('SEPARADOR'); })
             .map(row => {
                 const n = s => parseFloat(String(s||'0').replace(/[$,]/g,'').trim()) || 0;
-                return { fecha: String(row[0]||'').trim(), operador: String(row[1]||'').trim().toUpperCase(), cliente: String(row[2]||'').trim(), cantidad: n(row[3]), precio: n(row[4]), total: n(row[5]), estado: String(row[6]||'PENDIENTE').trim(), observaciones: String(row[7]||'').trim(), modificadoPor: String(row[11]||'').trim(), fechaModificacion: String(row[12]||'').trim() };
+                return { fecha: String(row[0]||'').trim(), operador: String(row[1]||'').trim().toUpperCase(), cliente: String(row[2]||'').trim(), cantidad: n(row[3]), precio: n(row[4]), total: n(row[5]), estado: String(row[6]||'PENDIENTE').trim(), observaciones: String(row[7]||'').trim(), modificadoPor: String(row[11]||'').trim(), fechaModificacion: String(row[12]||'').trim(), id: String(row[13]||'').trim() };
             });
         }
 
@@ -1445,6 +1620,7 @@
                 tipo: String(row[7]||'COBRAR').trim().toUpperCase(),
                 modificadoPor: String(row[11]||'').trim(),
                 fechaModificacion: String(row[12]||'').trim(),
+                id: String(row[13]||'').trim(),
             }));
         }
         
@@ -1459,6 +1635,8 @@
             sb.textContent = '$' + balanceTotal.toLocaleString('es-AR');
             sb.style.color = balanceTotal >= 0 ? '#438453' : '#f56565';
             updateDateTime(); updateResumenHoy(); updatePendingTables(); updateHistorial(); updatePesosEnCaja();
+            updateCierreHoy(); renderSparkline();
+            if (document.getElementById('stats-screen').classList.contains('active')) renderStats();
         }
         
         function updateResumenHoy() {
@@ -1533,7 +1711,7 @@
             const cp = compras.filter(c => ['PENDIENTE','LLEVO PESOS','PREPARADO'].includes(c.estado.toUpperCase())).reverse();
             function addPendingRows(data, tbodyId, estados, tipo) {
                 const tbody = document.getElementById(tbodyId); tbody.innerHTML = '';
-                if (!data.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#a0aec0;padding:20px;">No hay ${tipo === 'VENTA' ? 'ventas' : 'compras'} pendientes</td></tr>`; return; }
+                if (!data.length) { tbody.innerHTML = `<tr><td colspan="7" style="padding:0;border:none;"><div class="empty-state"><div class="empty-state-icon">${tipo === 'VENTA' ? '📈' : '📉'}</div><div class="empty-state-text">No hay ${tipo === 'VENTA' ? 'ventas' : 'compras'} pendientes</div></div></td></tr>`; return; }
                 data.forEach(op => {
                     const row = tbody.insertRow(), es = getEstadoStyles(op.estado);
                     row.style.cursor='pointer';
@@ -1545,14 +1723,14 @@
                     const checked = dashSelectedOps.has(opKey) ? 'checked' : '';
                     const isMobile = window.innerWidth < 860;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><div style="background:white;display:flex;align-items:center;"><div style="padding:8px 2px 8px 10px;flex-shrink:0;"><input type="checkbox" class="dash-op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${checked}></div><div style="flex:1;padding:12px 10px 12px 8px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><div style="background:white;display:flex;align-items:center;"><div style="padding:8px 2px 8px 10px;flex-shrink:0;"><input type="checkbox" class="dash-op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${checked}></div><div style="flex:1;padding:12px 10px 12px 8px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
                     } else {
-                        row.innerHTML = `<td class="pt-cb"><input type="checkbox" class="dash-op-check op-check" ${checked}></td><td class="pt-fecha">${escHTML(op.fecha)}</td><td class="pt-cliente"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.operador)}</div></td><td class="pt-cant">${cantStr}</td><td class="pt-precio">$${op.precio.toFixed(0)}</td><td class="pt-monto">${montoStr}</td><td class="pt-estado"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:4px 8px;border-radius:8px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;white-space:nowrap;">${escHTML(op.estado)} ▾</span></td>`;
+                        row.innerHTML = `<td class="pt-cb"><input type="checkbox" class="dash-op-check op-check" ${checked}></td><td class="pt-fecha">${escHTML(op.fecha)}</td><td class="pt-cliente"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHTML(op.operador)}</div></td><td class="pt-cant">${cantStr}</td><td class="pt-precio">$${op.precio.toFixed(0)}</td><td class="pt-monto">${montoStr}</td><td class="pt-estado"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:4px 8px;border-radius:8px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;white-space:nowrap;">${escHTML(op.estado)} ▾</span></td>`;
                     }
                     const cb = row.querySelector('.dash-op-check');
                     cb.addEventListener('click', e => e.stopPropagation());
                     cb.addEventListener('change', e => {
-                        if (e.target.checked) { dashSelectedOps.add(opKey); dashSelectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal }; }
+                        if (e.target.checked) { dashSelectedOps.add(opKey); dashSelectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal, tipo, fecha: op.fecha, cliente: op.cliente, cantidad: op.cantidad, precio: op.precio, estado: op.estado, id: op.id || '' }; }
                         else { dashSelectedOps.delete(opKey); delete dashSelectedOpsData[opKey]; }
                         updateDashSelectionPanel();
                     });
@@ -1599,20 +1777,20 @@
                     const isMobile = window.innerWidth < 860;
                     const opKey = `${tipo}-${op.fecha}-${op.cliente}-${op.cantidad}`;
                     if (isMobile) {
-                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div onclick="event.stopPropagation()" style="padding:0 6px 0 14px;display:flex;align-items:center;align-self:stretch;flex-shrink:0;"><input type="checkbox" class="op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${selectedOps.has(opKey) ? 'checked' : ''}></div><div style="flex:1;padding:12px 10px 12px 4px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
+                        row.innerHTML = `<td colspan="6" style="padding:0;border:none;border-bottom:1px solid #f0f0f0;"><div style="background:white;display:flex;align-items:center;"><div onclick="event.stopPropagation()" style="padding:0 6px 0 14px;display:flex;align-items:center;align-self:stretch;flex-shrink:0;"><input type="checkbox" class="op-check" style="width:18px;height:18px;accent-color:#2d6a4f;cursor:pointer;" ${selectedOps.has(opKey) ? 'checked' : ''}></div><div style="flex:1;padding:12px 10px 12px 4px;min-width:0;display:flex;align-items:center;gap:10px;"><div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:15px;color:#2d3748;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;margin-top:2px;">${escHTML(op.operador)}</div></div><div style="text-align:center;flex-shrink:0;"><div style="font-size:10px;font-weight:700;color:#b0bec5;text-transform:uppercase;letter-spacing:0.4px;">TC</div><div style="font-size:13px;font-weight:700;color:#747873;">$${op.precio.toFixed(0)}</div><div style="font-size:10px;color:#a0aec0;margin-top:1px;">${escHTML(op.fecha)}</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:16px;font-weight:800;color:#2d3748;white-space:nowrap;">${cantStr} <span style="font-size:11px;font-weight:600;color:#a0aec0;">USD</span></div><div style="font-size:13px;font-weight:700;color:#4a5568;margin-top:2px;">${montoStr}</div><div style="margin-top:4px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;background:${es.bg};color:${es.color};cursor:pointer;">${escHTML(op.estado)} ▾</span></div></div></div></div></td>`;
                         const cb = row.querySelector('.op-check');
                         cb.addEventListener('click', e => e.stopPropagation());
                         cb.addEventListener('change', e => {
-                            if (e.target.checked) { selectedOps.add(opKey); selectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal }; }
+                            if (e.target.checked) { selectedOps.add(opKey); selectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal, tipo, fecha: op.fecha, cliente: op.cliente, cantidad: op.cantidad, precio: op.precio, estado: op.estado, id: op.id || '' }; }
                             else { selectedOps.delete(opKey); delete selectedOpsData[opKey]; }
                             updateSelectionPanel();
                         });
                     } else {
-                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr><td style="padding:10px 8px;width:36px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" class="op-check" ${selectedOps.has(opKey) ? 'checked' : ''}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#747873;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;width:200px;overflow:hidden;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#747873;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
+                        row.innerHTML = `<td colspan="7" style="padding:0;border:none;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr><td style="padding:10px 8px;width:36px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" class="op-check" ${selectedOps.has(opKey) ? 'checked' : ''}></td><td style="padding:10px 8px;white-space:nowrap;font-size:12px;color:#747873;width:80px;">${escHTML(op.fecha)}</td><td style="padding:10px 8px;width:200px;overflow:hidden;"><div style="font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(op.cliente)}</div><div style="font-size:11px;color:#a0aec0;">${escHTML(op.operador)}</div></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-weight:700;font-size:14px;color:#2d3748;">${cantStr}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:70px;"><span style="font-size:13px;font-weight:600;color:#747873;">$${op.precio.toFixed(0)}</span></td><td style="padding:10px 8px;text-align:right;white-space:nowrap;width:120px;"><span style="font-size:14px;font-weight:700;color:#4a5568;">${montoStr}</span></td><td style="padding:10px 8px;text-align:right;width:130px;"><span onclick="showStatusPicker(event,this);" data-tipo="${tipo}" data-fecha="${escHTML(op.fecha)}" data-cliente="${escHTML(op.cliente)}" data-cantidad="${op.cantidad}" data-estados="${escHTML(JSON.stringify(estados))}" data-estado="${escHTML(op.estado)}" data-id="${escHTML(op.id||'')}" style="padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${es.bg};color:${es.color};display:inline-block;cursor:pointer;">${escHTML(op.estado)} ▾</span></td></tr></table></td>`;
                         const cb = row.querySelector('.op-check');
                         cb.addEventListener('click', e => e.stopPropagation());
                         cb.addEventListener('change', e => {
-                            if (e.target.checked) { selectedOps.add(opKey); selectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal }; }
+                            if (e.target.checked) { selectedOps.add(opKey); selectedOpsData[opKey] = { usd: op.cantidad, pesos: montoVal, tipo, fecha: op.fecha, cliente: op.cliente, cantidad: op.cantidad, precio: op.precio, estado: op.estado, id: op.id || '' }; }
                             else { selectedOps.delete(opKey); delete selectedOpsData[opKey]; }
                             updateSelectionPanel();
                         });
@@ -1635,7 +1813,7 @@
         let _sqpCloser = null;
         function showStatusPicker(event, badge) {
             event.stopPropagation();
-            const tipo = badge.dataset.tipo, fecha = badge.dataset.fecha, cliente = badge.dataset.cliente, cantidad = badge.dataset.cantidad, estadoActual = badge.dataset.estado;
+            const tipo = badge.dataset.tipo, fecha = badge.dataset.fecha, cliente = badge.dataset.cliente, cantidad = badge.dataset.cantidad, estadoActual = badge.dataset.estado, opId = badge.dataset.id || '';
             const estados = JSON.parse(badge.dataset.estados || '[]');
             if (!estados.length) return;
             const picker = document.getElementById('status-quick-picker');
@@ -1649,7 +1827,7 @@
                 btn.style.cssText = `display:block;width:100%;text-align:left;padding:9px 14px;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:3px;background:${s.bg};color:${s.color};opacity:${isCurrent?'0.5':'1'};pointer-events:${isCurrent?'none':'auto'};`;
                 if (isCurrent) btn.textContent += ' ✓';
                 btn.onclick = () => {
-                    cambiarEstadoRapido(tipo, fecha, cliente, cantidad, e);
+                    cambiarEstadoRapido(tipo, fecha, cliente, cantidad, e, opId);
                     closePicker();
                 };
                 opts.appendChild(btn);
@@ -1671,19 +1849,17 @@
             document.getElementById('status-quick-picker').style.display = 'none';
             if (_sqpCloser) { document.removeEventListener('click', _sqpCloser); _sqpCloser = null; }
         }
-        async function cambiarEstadoRapido(tipo, fecha, cliente, cantidad, nuevoEstado) {
+        async function cambiarEstadoRapido(tipo, fecha, cliente, cantidad, nuevoEstado, id) {
             if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
             let ff = fecha; if (fecha.includes('-')) { const p=fecha.split('-'); ff=p[2]+'/'+p[1]+'/'+p[0]; }
             const arr = tipo==='VENTA' ? ventas : compras;
             const oi = arr.findIndex(o => o.fecha===ff && o.cliente===cliente && String(o.cantidad)===String(cantidad).replace('$',''));
             if (oi >= 0) arr[oi].estado = nuevoEstado;
             updatePendingTables(); updateHistorial();
-            const params = new URLSearchParams({action:'update_status', tipo, fecha:ff, cliente, cantidad:String(cantidad).replace('$',''), nuevoEstado, usuario:currentUser});
-            const iframe = document.createElement('iframe'); iframe.style.cssText='display:none;position:absolute;width:0;height:0;border:none;';
-            iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             showToast('✅ Estado → '+nuevoEstado, '#438453');
-            setTimeout(()=>{ if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
-            setTimeout(()=>loadData(true), 5000);
+            apiCall({action:'update_status', tipo, fecha:ff, cliente, cantidad:String(cantidad).replace('$',''), nuevoEstado, usuario:currentUser, id: id||''})
+                .then(()=>loadData(true))
+                .catch(()=>{ showToast('❌ Sin conexión: el cambio de estado no se guardó', '#e53e3e'); loadData(true); });
         }
         // ─────────────────────────────────────────────────────────────
 
@@ -1701,7 +1877,7 @@
             const mss = document.getElementById('modal-estado-select'), ns = mss.cloneNode(true);
             mss.parentNode.replaceChild(ns, mss);
             ns.innerHTML = estadosDisponibles.map(e=>`<option value="${escHTML(e)}" ${op.estado===e?'selected':''}>${escHTML(e)}</option>`).join('');
-            ns.style.background=es.bg; ns.style.color=es.color; ns.dataset.tipo=tipo; ns.dataset.fecha=op.fecha; ns.dataset.cliente=op.cliente; ns.dataset.cantidad=op.cantidad;
+            ns.style.background=es.bg; ns.style.color=es.color; ns.dataset.tipo=tipo; ns.dataset.fecha=op.fecha; ns.dataset.cliente=op.cliente; ns.dataset.cantidad=op.cantidad; ns.dataset.id=op.id||'';
             ns.onchange = function() { const k=getOpKey(op,tipo); guardarCambio(k,'estado',op.estado,this.value,currentUser); cambiarEstado(this); setTimeout(()=>closeModal(),500); };
             const od=document.getElementById('modal-observaciones'); if(op.observaciones){od.textContent=op.observaciones;od.style.display='block';}else{od.style.display='none';}
             const md=document.getElementById('modal-modificado'); if(op.modificadoPor){md.innerHTML=`Modificado por <strong>${escHTML(op.modificadoPor)}</strong>${op.fechaModificacion?' • '+escHTML(op.fechaModificacion):''}`;md.style.display='block';}else{md.style.display='none';}
@@ -1717,6 +1893,7 @@
             document.getElementById('btn-edit-cancel').onclick = () => { document.getElementById('modal-edit-form').style.display='none'; document.getElementById('btn-edit-toggle').style.display='block'; };
             document.getElementById('btn-edit-save').onclick = () => guardarEdicion(op, tipo);
             document.getElementById('btn-delete-op').onclick = () => borrarOperacion(op, tipo);
+            document.getElementById('btn-share-op').onclick = () => compartirOperacion(op, tipo);
         }
         
         function getOpKey(op,tipo){return `cambios_${tipo}_${op.fecha}_${op.cliente}_${op.cantidad}`.replace(/\s/g,'_');}
@@ -1737,16 +1914,15 @@
             if(nuevoOperador!==op.operador) guardarCambio(k,'operador',op.operador,nuevoOperador,currentUser);
             // Guardar valores originales ANTES del optimistic update
             const fechaOrig=op.fecha, clienteOrig=op.cliente, cantidadOrig=op.cantidad;
-            // Construir params con valores originales antes de modificar en memoria
-            const params=new URLSearchParams({action:'edit_operation',tipo,fecha:fechaOrig,clienteOriginal:clienteOrig,cantidadOriginal:cantidadOrig,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,nuevoOperador,usuario:currentUser});
             // Optimistic update: actualizar en memoria
             const arr=tipo==='VENTA'?ventas:compras;
             const oi=arr.findIndex(o=>o.fecha===fechaOrig&&o.cliente===clienteOrig&&o.cantidad===cantidadOrig);
             if(oi>=0){arr[oi].cantidad=nc;arr[oi].precio=np;arr[oi].total=nt;arr[oi].observaciones=no;arr[oi].operador=nuevoOperador;}
             updateUI();
-            const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
-            showToast('✅ Operación actualizada','#438453'); closeModal(); setTimeout(()=>loadData(true),5000);
+            showToast('✅ Operación actualizada','#438453'); closeModal();
+            apiCall({action:'edit_operation',tipo,fecha:fechaOrig,clienteOriginal:clienteOrig,cantidadOriginal:cantidadOrig,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,nuevoOperador,usuario:currentUser,id:op.id||''})
+                .then(()=>loadData(true))
+                .catch(()=>{ showToast('❌ Sin conexión: la edición no se guardó','#e53e3e'); loadData(true); });
         }
         
         function showToast(msg,color='#2d3748'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500);}
@@ -1761,12 +1937,11 @@
             const oi=arr.findIndex(o=>o.fecha===op.fecha&&o.cliente===op.cliente&&o.cantidad===op.cantidad);
             if(oi>=0) arr.splice(oi,1);
             updateUI();
-            const params = new URLSearchParams({ action:'delete_operation', tipo, fecha:op.fecha, cliente:op.cliente, cantidad:op.cantidad });
-            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
             showToast('🗑️ Operación borrada','#e53e3e');
             closeModal();
-            setTimeout(()=>loadData(true),5000);
+            apiCall({ action:'delete_operation', tipo, fecha:op.fecha, cliente:op.cliente, cantidad:op.cantidad, id:op.id||'' })
+                .then(()=>loadData(true))
+                .catch(()=>{ showToast('❌ Sin conexión: no se pudo borrar','#e53e3e'); loadData(true); });
         }
 
         function borrarDeuda(key) {
@@ -1778,18 +1953,17 @@
             const di=deudas.findIndex(d=>d.fecha===deuda.fecha&&d.cliente===deuda.cliente&&String(d.monto)===String(deuda.monto));
             if(di>=0) deudas.splice(di,1);
             updateDeudas();
-            const params = new URLSearchParams({ action:'delete_deuda', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto });
-            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
             showToast('🗑️ Deuda borrada','#e53e3e');
             closeDeudaDetailModal();
-            setTimeout(()=>loadData(true),5000);
+            apiCall({ action:'delete_deuda', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto, id:deuda.id||'' })
+                .then(()=>loadData(true))
+                .catch(()=>{ showToast('❌ Sin conexión: no se pudo borrar','#e53e3e'); loadData(true); });
         }
         function getEstadoStyles(e){const s={'PENDIENTE':{bg:'#FEF3C7',color:'#92400E'},'REALIZADA':{bg:'#86EFAC',color:'#166534'},'LLEVO BILLETES':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO BILL':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO PESOS':{bg:'#FCA5A5',color:'#7F1D1D'},'PREPARADO':{bg:'#FDBA74',color:'#7C2D12'}};return s[e]||{bg:'#E5E7EB',color:'#374151'};}
         
         async function cambiarEstado(sel){
             if(!config.scriptUrl){alert('⚠️ Configura la URL del Script');updateHistorial();return;}
-            const ne=sel.value,tipo=sel.getAttribute('data-tipo'),fecha=sel.getAttribute('data-fecha'),cliente=sel.getAttribute('data-cliente'),cantidad=sel.getAttribute('data-cantidad');
+            const ne=sel.value,tipo=sel.getAttribute('data-tipo'),fecha=sel.getAttribute('data-fecha'),cliente=sel.getAttribute('data-cliente'),cantidad=sel.getAttribute('data-cantidad'),opId=sel.getAttribute('data-id')||'';
             if(!confirm(`¿Cambiar estado de "${cliente}" a ${ne}?`)){updateHistorial();return;}
             let ff=fecha; if(fecha.includes('-')){const p=fecha.split('-');ff=p[2]+'/'+p[1]+'/'+p[0];}
             // Optimistic update: actualizar estado en memoria inmediatamente
@@ -1797,11 +1971,10 @@
             const oi=arr.findIndex(o=>o.fecha===ff&&o.cliente===cliente&&String(o.cantidad)===String(cantidad).replace('$',''));
             if(oi>=0) arr[oi].estado=ne;
             updatePendingTables(); updateHistorial();
-            const params=new URLSearchParams({action:'update_status',tipo,fecha:ff,cliente,cantidad:cantidad.replace('$',''),nuevoEstado:ne,usuario:currentUser});
-            const iframe=document.createElement('iframe'); iframe.style.cssText='display:none;position:absolute;width:0;height:0;border:none;'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
             showToast('✅ Estado → '+ne,'#438453');
-            setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
-            setTimeout(()=>loadData(true),5000);
+            apiCall({action:'update_status',tipo,fecha:ff,cliente,cantidad:cantidad.replace('$',''),nuevoEstado:ne,usuario:currentUser,id:opId})
+                .then(()=>loadData(true))
+                .catch(()=>{ showToast('❌ Sin conexión: el cambio de estado no se guardó','#e53e3e'); loadData(true); });
         }
         
         function updateSelectionPanel() {
@@ -1848,7 +2021,7 @@
             bar.classList.add('visible');
         }
         function clearDashSelection() { dashSelectedOps.clear(); for (const k in dashSelectedOpsData) delete dashSelectedOpsData[k]; document.querySelectorAll('.dash-op-check').forEach(cb => { cb.checked = false; }); updateDashSelectionPanel(); }
-        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#f0e5e5':'#e8ede9';else if(s==='deudas') document.body.style.background='#edf2ee';else document.body.style.background='#e8ede9';if(s!=='historial') clearSelection();if(s!=='dashboard') clearDashSelection();}
+        function showScreen(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s+'-screen').classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+s);if(n)n.classList.add('active');if(s==='historial') document.body.style.background=currentTab==='compras'?'#f0e5e5':'#e8ede9';else if(s==='deudas') document.body.style.background='#edf2ee';else document.body.style.background='#e8ede9';if(s!=='historial') clearSelection();if(s!=='dashboard') clearDashSelection();if(s==='stats') renderStats();}
         function switchTab(t){clearSelection();currentTab=t;if(t==='ventas'){document.getElementById('tab-ventas').classList.add('active');document.getElementById('tab-compras').classList.remove('active');document.getElementById('ventas-tab').classList.remove('hidden');document.getElementById('compras-tab').classList.add('hidden');document.body.style.background='#e8ede9';}else{document.getElementById('tab-ventas').classList.remove('active');document.getElementById('tab-compras').classList.add('active');document.getElementById('ventas-tab').classList.add('hidden');document.getElementById('compras-tab').classList.remove('hidden');document.body.style.background='#f0e5e5';}updateHistorial();}
         function changeFilter(f){currentFilter=f;updateHistorial();}
         function togglePendingOnly(){showOnlyPending=!showOnlyPending;const btn=document.getElementById('btn-pending-only');btn.classList.toggle('active',showOnlyPending);btn.textContent=showOnlyPending?'⏳ Solo pendientes':'Todos los estados';if(showOnlyPending){currentFilter='todas';document.getElementById('filter-select').value='todas';}updateHistorial();}
@@ -1866,21 +2039,21 @@
             btn.disabled=true; const ot=btn.textContent; btn.textContent='⏳ Guardando...'; btn.style.opacity='0.6';
             try {
                 const operador=document.getElementById('form-operador').value||currentUser;
-                const params=new URLSearchParams({action:'add_operation',tipo:currentTipo,fecha,operador,cliente,cantidad,precio,total,observaciones:obs});
-                const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-                setTimeout(()=>{if(iframe.parentNode)document.body.removeChild(iframe);},5000);
-                // Optimistic update: agregar a memoria inmediatamente
+                const opId=genId();
+                // Se espera la confirmación real del backend: si falla, el formulario
+                // conserva los datos para reintentar
+                await apiCall({action:'add_operation',tipo:currentTipo,fecha,operador,cliente,cantidad,precio,total,observaciones:obs,id:opId});
                 const [fy,fm,fd]=fecha.split('-');
-                const tempOp={fecha:`${parseInt(fd)}/${parseInt(fm)}/${fy}`,operador,cliente,cantidad,precio,total,estado:'PENDIENTE',observaciones:obs,modificadoPor:'',fechaModificacion:''};
+                const tempOp={fecha:`${parseInt(fd)}/${parseInt(fm)}/${fy}`,operador,cliente,cantidad,precio,total,estado:'PENDIENTE',observaciones:obs,modificadoPor:'',fechaModificacion:'',id:opId};
                 if(currentTipo==='VENTA') ventas.push(tempOp); else compras.push(tempOp);
                 updateUI();
-                showToast('✅ '+currentTipo+' agregada','#438453');
+                showCheckAnimation(currentTipo+' registrada');
                 ['form-cliente','form-cantidad','form-precio','form-observaciones'].forEach(id=>document.getElementById(id).value='');
                 volverAlPicker();
                 document.getElementById('total-preview').classList.add('hidden');
-                setTimeout(()=>loadData(true),5000);
-            } catch(e){showToast('❌ Error: '+e.message,'#e53e3e');}
-            finally{setTimeout(()=>{btn.disabled=false;btn.textContent=ot;btn.style.opacity='1';},2000);}
+                setTimeout(()=>loadData(true),4000);
+            } catch(e){showToast('❌ Sin conexión: la operación NO se guardó. Reintentá.','#e53e3e');}
+            finally{btn.disabled=false;btn.textContent=ot;btn.style.opacity='1';}
         }
         
         function isValidHttpsUrl(url) { try { return new URL(url).protocol === 'https:'; } catch { return false; } }
@@ -1959,19 +2132,20 @@
             const fechaStr = `${parseInt(d)}/${parseInt(m)}/${y}`;
             const btn = document.getElementById('btn-deuda-submit');
             btn.disabled = true; btn.textContent = '⏳ Guardando...'; btn.style.opacity = '0.6';
-            const params = new URLSearchParams({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, tipo:currentDeudaTipoForm, observaciones:obs });
-            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
-            // Optimistic update
-            deudas.push({fecha:fechaStr,operador:currentUser,cliente,monto,moneda:currentDeudaMoneda,estado:'PENDIENTE',observaciones:obs,tipo:currentDeudaTipoForm,modificadoPor:'',fechaModificacion:''});
-            updateDeudas();
-            document.getElementById('deuda-cliente').value = '';
-            document.getElementById('deuda-monto').value = '';
-            document.getElementById('deuda-obs').value = '';
-            showToast('✅ Deuda registrada','#438453');
-            closeNuevaDeudaModal();
-            setTimeout(() => { btn.disabled=false; btn.textContent='💰 Registrar Deuda'; btn.style.opacity='1'; }, 2000);
-            setTimeout(() => loadData(true), 5000);
+            const deudaId = genId();
+            apiCall({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, tipo:currentDeudaTipoForm, observaciones:obs, id:deudaId })
+                .then(() => {
+                    deudas.push({fecha:fechaStr,operador:currentUser,cliente,monto,moneda:currentDeudaMoneda,estado:'PENDIENTE',observaciones:obs,tipo:currentDeudaTipoForm,modificadoPor:'',fechaModificacion:'',id:deudaId});
+                    updateDeudas();
+                    document.getElementById('deuda-cliente').value = '';
+                    document.getElementById('deuda-monto').value = '';
+                    document.getElementById('deuda-obs').value = '';
+                    showCheckAnimation('Deuda registrada');
+                    closeNuevaDeudaModal();
+                    setTimeout(() => loadData(true), 4000);
+                })
+                .catch(() => showToast('❌ Sin conexión: la deuda NO se guardó. Reintentá.','#e53e3e'))
+                .finally(() => { btn.disabled=false; btn.textContent='💰 Registrar Deuda'; btn.style.opacity='1'; });
         }
 
         function getFilteredDeudas() {
@@ -1993,11 +2167,14 @@
             document.getElementById('deudas-total-usd').textContent = 'USD ' + tUSD.toLocaleString('es-AR');
             document.getElementById('deudas-total-ars').textContent = 'ARS ' + tARS.toLocaleString('es-AR');
             document.getElementById('deudas-count-pendientes').textContent = pendTipo.length + ' pendiente' + (pendTipo.length !== 1 ? 's' : '');
-            if (!filtered.length) { list.innerHTML = '<div style="text-align:center;color:#a0aec0;padding:30px 20px;">No hay deudas para este filtro</div>'; return; }
+            updateDashDeudasPanel(); updateDeudasBadge();
+            if (!filtered.length) { list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎉</div><div class="empty-state-text">No hay deudas para este filtro</div></div>'; return; }
             list.innerHTML = '';
             filtered.forEach(deuda => {
                 const esPend = deuda.estado === 'PENDIENTE';
                 const esPagar = deuda.tipo === 'PAGAR';
+                const diasD = diasDesde(deuda.fecha);
+                const esVieja = esPend && diasD >= DEUDA_VIEJA_DIAS;
                 const esColor = esPend
                     ? (esPagar ? {bg:'#FEE2E2',color:'#991B1B'} : {bg:'#FEF3C7',color:'#92400E'})
                     : {bg:'#86EFAC',color:'#166534'};
@@ -2007,11 +2184,11 @@
                 const actionColor = esPend ? {bg:'#86EFAC',color:'#166534'} : {bg:'#FEF3C7',color:'#92400E'};
                 const key = encodeURIComponent(deuda.fecha+'|'+deuda.cliente+'|'+deuda.monto);
                 const row = document.createElement('div');
-                row.className = 'swipe-row deuda-row';
+                row.className = 'swipe-row deuda-row' + (esVieja ? ' deuda-row-vencida' : '');
                 row.style.cssText = 'position:relative;overflow:hidden;';
                 row.dataset.swipeWidth = 160;
                 const estadoLabel = deuda.estado === 'COBRADA' ? (esPagar ? 'PAGADA' : 'COBRADA') : deuda.estado;
-                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${estadoLabel}</span></div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#747873;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','COBRADA','${esPagar?'PAGAR':'COBRAR'}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
+                row.innerHTML = `<div class="swipe-inner" style="background:white;display:flex;align-items:center;"><div style="flex:1;padding:14px 14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-weight:700;font-size:15px;">${escHTML(deuda.cliente)}</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:${esColor.bg};color:${esColor.color};">${estadoLabel}</span>${esVieja?`<span class="deuda-vencida-tag">⚠ hace ${diasD}d</span>`:''}</div><div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:18px;font-weight:800;color:${mColor};">${escHTML(deuda.moneda)} ${deuda.monto.toLocaleString('es-AR')}</span><span style="font-size:11px;color:#a0aec0;">${escHTML(deuda.fecha)}</span></div>${deuda.observaciones?`<div style="font-size:11px;color:#747873;margin-top:3px;">${escHTML(deuda.observaciones)}</div>`:''}</div><div style="padding-right:14px;font-size:20px;color:#e2e8f0;">←</div></div><div class="swipe-actions" style="width:160px;"><button class="swipe-action-btn" style="background:${actionColor.bg};color:${actionColor.color};" onclick="cambiarEstadoDeuda('${key}','COBRADA','${esPagar?'PAGAR':'COBRAR'}');event.stopPropagation();">${escHTML(actionLabel)}</button><button class="swipe-action-btn" style="background:#EBF4FF;color:#3B82F6;" onclick="editarDeudaByKey('${key}');event.stopPropagation();">EDITAR</button></div>`;
                 row.addEventListener('click', () => showDeudaDetail(deuda));
                 setupSwipe(row);
                 list.appendChild(row);
@@ -2028,14 +2205,13 @@
             const deuda = getDeudaByKey(key);
             if (!deuda) return;
             if (!confirm(`¿Marcar deuda de "${deuda.cliente}" como ${nuevoEstado}?`)) { updateDeudas(); return; }
-            const params = new URLSearchParams({ action:'update_deuda_status', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto, nuevoEstado, usuario:currentUser });
-            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
             // Optimistic update
             const deudaObj=getDeudaByKey(key); if(deudaObj) deudaObj.estado=nuevoEstado;
             updateDeudas();
             showToast('✅ Marcada como ' + nuevoEstado,'#438453');
-            setTimeout(() => loadData(true), 5000);
+            apiCall({ action:'update_deuda_status', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto, nuevoEstado, usuario:currentUser, id:deuda.id||'' })
+                .then(() => loadData(true))
+                .catch(() => { showToast('❌ Sin conexión: el cambio no se guardó','#e53e3e'); loadData(true); });
         }
 
         function editarDeudaByKey(key) { const deuda = getDeudaByKey(key); if(deuda) editarDeuda(deuda); }
@@ -2065,16 +2241,15 @@
             const moneda = document.getElementById('deuda-edit-moneda').value;
             const tipo = document.getElementById('deuda-edit-tipo').value;
             const obs = document.getElementById('deuda-edit-obs').value.trim();
-            const params = new URLSearchParams({ action:'edit_deuda', fecha:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoMonto:monto, nuevaMoneda:moneda, nuevoTipo:tipo, nuevasObs:obs, usuario:currentUser });
-            const iframe = document.createElement('iframe'); iframe.style.display='none'; iframe.src = config.scriptUrl+'?'+params.toString(); document.body.appendChild(iframe);
-            setTimeout(() => { if(iframe.parentNode) document.body.removeChild(iframe); }, 5000);
             // Optimistic update
             const dObj=deudas.find(d=>d.fecha===origFecha&&d.cliente===origCliente&&String(d.monto)===origMonto);
             if(dObj){dObj.fecha=fechaStr;dObj.monto=monto;dObj.moneda=moneda;dObj.tipo=tipo;dObj.observaciones=obs;}
             updateDeudas();
             document.getElementById('deuda-edit-modal').classList.add('hidden');
             showToast('✅ Deuda actualizada','#438453');
-            setTimeout(() => loadData(true), 5000);
+            apiCall({ action:'edit_deuda', fecha:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoMonto:monto, nuevaMoneda:moneda, nuevoTipo:tipo, nuevasObs:obs, usuario:currentUser, id:(dObj&&dObj.id)||'' })
+                .then(() => loadData(true))
+                .catch(() => { showToast('❌ Sin conexión: la edición no se guardó','#e53e3e'); loadData(true); });
         }
 
         function showDeudaDetail(deuda) {
@@ -2105,15 +2280,299 @@
 
         function closeDeudaDetailModal() { document.getElementById('deuda-detail-modal').classList.add('hidden'); }
         function closeDeudaEditModal() { document.getElementById('deuda-edit-modal').classList.add('hidden'); }
+
+        // ═══════════════════════════════════════════════════════════
+        //  ANIMACIÓN DE CONFIRMACIÓN
+        // ═══════════════════════════════════════════════════════════
+        function showCheckAnimation(label) {
+            const o = document.getElementById('check-overlay');
+            document.getElementById('check-label').textContent = label || 'Guardado';
+            o.classList.remove('visible');
+            void o.offsetWidth; // reinicia las animaciones CSS
+            o.classList.add('visible');
+            setTimeout(() => o.classList.remove('visible'), 1300);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  ACCIONES EN LOTE (selección múltiple)
+        // ═══════════════════════════════════════════════════════════
+        async function marcarSeleccionRealizada(which) {
+            const set = which === 'dash' ? dashSelectedOps : selectedOps;
+            const dataMap = which === 'dash' ? dashSelectedOpsData : selectedOpsData;
+            const ops = Array.from(set).map(k => dataMap[k]).filter(Boolean).filter(o => String(o.estado).toUpperCase() !== 'REALIZADA');
+            if (!ops.length) { showToast('No hay operaciones pendientes seleccionadas'); return; }
+            if (!confirm(`¿Marcar ${ops.length} operación${ops.length !== 1 ? 'es' : ''} como REALIZADA?`)) return;
+            showToast('⏳ Actualizando ' + ops.length + ' operaciones...');
+            let ok = 0, fail = 0;
+            for (const o of ops) {
+                const arr = o.tipo === 'VENTA' ? ventas : compras;
+                const oi = arr.findIndex(x => x.fecha === o.fecha && x.cliente === o.cliente && x.cantidad === o.cantidad);
+                if (oi >= 0) arr[oi].estado = 'REALIZADA';
+                try {
+                    await apiCall({ action: 'update_status', tipo: o.tipo, fecha: o.fecha, cliente: o.cliente, cantidad: o.cantidad, nuevoEstado: 'REALIZADA', usuario: currentUser, id: o.id || '' });
+                    ok++;
+                } catch (e) { fail++; }
+            }
+            if (which === 'dash') clearDashSelection(); else clearSelection();
+            updatePendingTables(); updateHistorial();
+            if (fail) showToast(`⚠️ ${ok} actualizadas · ${fail} fallaron (sin conexión)`, '#f59e0b');
+            else showToast(`✅ ${ok} marcadas como REALIZADA`, '#438453');
+            loadData(true);
+        }
+
+        function copiarResumenSeleccion(which) {
+            const set = which === 'dash' ? dashSelectedOps : selectedOps;
+            const dataMap = which === 'dash' ? dashSelectedOpsData : selectedOpsData;
+            const ops = Array.from(set).map(k => dataMap[k]).filter(Boolean);
+            if (!ops.length) return;
+            let totalUSD = 0, totalPesos = 0;
+            const lines = ops.map(o => {
+                totalUSD += o.usd; totalPesos += o.pesos;
+                return `• ${o.fecha} ${o.cliente} — USD ${o.usd.toLocaleString('es-AR')} @ $${o.precio} = $ ${Math.round(o.pesos).toLocaleString('es-AR')} [${o.tipo}]`;
+            });
+            const prom = totalUSD > 0 ? totalPesos / totalUSD : 0;
+            const texto = `Resumen (${ops.length} ops)\n${lines.join('\n')}\nTotal: USD ${totalUSD.toLocaleString('es-AR')} · $ ${Math.round(totalPesos).toLocaleString('es-AR')} · prom $${prom.toFixed(2)}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(texto).then(() => showToast('⧉ Resumen copiado', '#438453')).catch(() => showToast('❌ No se pudo copiar', '#e53e3e'));
+            } else showToast('❌ No se pudo copiar', '#e53e3e');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  CIERRE DEL DÍA
+        // ═══════════════════════════════════════════════════════════
+        function normFecha(f) { const p = String(f).split('/'); return p.length === 3 ? `${parseInt(p[0])}/${parseInt(p[1])}/${parseInt(p[2])}` : ''; }
+        function setText(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+        function updateCierreHoy() {
+            const hoy = new Date();
+            const hoyKey = `${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear()}`;
+            const vh = ventas.filter(v => normFecha(v.fecha) === hoyKey), ch = compras.filter(c => normFecha(c.fecha) === hoyKey);
+            const usdV = vh.reduce((s, v) => s + v.cantidad, 0), usdC = ch.reduce((s, c) => s + c.cantidad, 0);
+            const arsV = vh.reduce((s, v) => s + (v.total || v.cantidad * v.precio), 0), arsC = ch.reduce((s, c) => s + (c.total || c.cantidad * c.precio), 0);
+            const tcV = usdV > 0 ? arsV / usdV : 0, tcC = usdC > 0 ? arsC / usdC : 0;
+            const spread = (tcV && tcC) ? tcV - tcC : 0;
+            const ganancia = spread * Math.min(usdV, usdC);
+            const pend = [...vh, ...ch].filter(o => o.estado.toUpperCase() !== 'REALIZADA').length;
+            setText('cierre-tc-venta', tcV ? '$ ' + tcV.toFixed(2) : '–');
+            setText('cierre-tc-compra', tcC ? '$ ' + tcC.toFixed(2) : '–');
+            setText('cierre-usd-vendidos', 'USD ' + usdV.toLocaleString('es-AR') + ' vendidos');
+            setText('cierre-usd-comprados', 'USD ' + usdC.toLocaleString('es-AR') + ' comprados');
+            setText('cierre-ganancia', '$ ' + Math.round(ganancia).toLocaleString('es-AR'));
+            const gEl = document.getElementById('cierre-ganancia');
+            if (gEl) gEl.style.color = ganancia >= 0 ? '#2d5a3d' : '#c53030';
+            setText('cierre-detalle', (spread ? `Spread $${spread.toFixed(2)}` : 'Sin spread aún') + ` · ${pend} op${pend !== 1 ? 's' : ''} pendiente${pend !== 1 ? 's' : ''}`);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  PANEL DE DEUDAS EN DASHBOARD + BADGE DEUDAS VIEJAS
+        // ═══════════════════════════════════════════════════════════
+        const DEUDA_VIEJA_DIAS = 7;
+        function diasDesde(fechaStr) {
+            const p = String(fechaStr).split('/');
+            if (p.length !== 3) return 0;
+            const f = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
+            return Math.floor((Date.now() - f.getTime()) / 86400000);
+        }
+        function updateDashDeudasPanel() {
+            const pend = deudas.filter(d => d.estado === 'PENDIENTE');
+            const sum = (tipo, mon) => pend.filter(d => d.tipo === tipo && d.moneda === mon).reduce((s, d) => s + d.monto, 0);
+            const cEl = document.getElementById('dash-deudas-cobrar'), pEl = document.getElementById('dash-deudas-pagar');
+            if (cEl) cEl.innerHTML = 'USD ' + sum('COBRAR', 'USD').toLocaleString('es-AR') + '<br>ARS ' + sum('COBRAR', 'ARS').toLocaleString('es-AR');
+            if (pEl) pEl.innerHTML = 'USD ' + sum('PAGAR', 'USD').toLocaleString('es-AR') + '<br>ARS ' + sum('PAGAR', 'ARS').toLocaleString('es-AR');
+        }
+        function updateDeudasBadge() {
+            const viejas = deudas.filter(d => d.estado === 'PENDIENTE' && diasDesde(d.fecha) >= DEUDA_VIEJA_DIAS).length;
+            const b = document.getElementById('deudas-nav-badge');
+            if (b) { b.textContent = viejas; b.classList.toggle('visible', viejas > 0); }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  SPARKLINE DE VOLUMEN (últimos 7 días, en USD)
+        // ═══════════════════════════════════════════════════════════
+        function renderSparkline() {
+            const svg = document.getElementById('balance-sparkline');
+            if (!svg) return;
+            const now = new Date(), vols = [];
+            for (let i = 6; i >= 0; i--) {
+                const dt = new Date(now); dt.setDate(now.getDate() - i);
+                const key = `${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`;
+                vols.push([...ventas, ...compras].filter(o => normFecha(o.fecha) === key).reduce((s, o) => s + o.cantidad, 0));
+            }
+            const max = Math.max(...vols, 1);
+            const pts = vols.map((v, i) => `${(i / (vols.length - 1)) * 100},${27 - (v / max) * 22}`).join(' ');
+            svg.innerHTML = `<polyline points="${pts}" fill="none" stroke="#8ebf9e" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>`;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  ESTADÍSTICAS
+        // ═══════════════════════════════════════════════════════════
+        let statsRange = 7;
+        function setStatsRange(r) {
+            statsRange = r;
+            document.getElementById('stats-range-7').classList.toggle('active', r === 7);
+            document.getElementById('stats-range-30').classList.toggle('active', r === 30);
+            renderStats();
+        }
+        function getStatsData() {
+            const now = new Date(), out = [];
+            for (let i = statsRange - 1; i >= 0; i--) {
+                const dt = new Date(now); dt.setDate(now.getDate() - i);
+                const key = `${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`;
+                const v = ventas.filter(o => normFecha(o.fecha) === key), c = compras.filter(o => normFecha(o.fecha) === key);
+                const usdV = v.reduce((s, o) => s + o.cantidad, 0), usdC = c.reduce((s, o) => s + o.cantidad, 0);
+                const arsV = v.reduce((s, o) => s + (o.total || o.cantidad * o.precio), 0), arsC = c.reduce((s, o) => s + (o.total || o.cantidad * o.precio), 0);
+                out.push({ label: `${dt.getDate()}/${dt.getMonth() + 1}`, usdV, usdC, arsV, arsC, opsV: v.length, opsC: c.length, tcV: usdV > 0 ? arsV / usdV : null, tcC: usdC > 0 ? arsC / usdC : null });
+            }
+            return out;
+        }
+        function renderStats() {
+            const data = getStatsData();
+            renderVolChart(data);
+            renderTcChart(data);
+            const usdV = data.reduce((s, d) => s + d.usdV, 0), usdC = data.reduce((s, d) => s + d.usdC, 0);
+            const arsV = data.reduce((s, d) => s + d.arsV, 0), arsC = data.reduce((s, d) => s + d.arsC, 0);
+            const opsV = data.reduce((s, d) => s + d.opsV, 0), opsC = data.reduce((s, d) => s + d.opsC, 0);
+            const tcV = usdV > 0 ? arsV / usdV : 0, tcC = usdC > 0 ? arsC / usdC : 0;
+            const spread = (tcV && tcC) ? tcV - tcC : 0;
+            const ganancia = spread * Math.min(usdV, usdC);
+            setText('stats-total-vendido', usdV.toLocaleString('es-AR'));
+            setText('stats-total-comprado', usdC.toLocaleString('es-AR'));
+            setText('stats-ops-venta', opsV + ' operación' + (opsV !== 1 ? 'es' : ''));
+            setText('stats-ops-compra', opsC + ' operación' + (opsC !== 1 ? 'es' : ''));
+            setText('stats-ganancia', '$ ' + Math.round(ganancia).toLocaleString('es-AR'));
+            const gEl = document.getElementById('stats-ganancia');
+            if (gEl) gEl.style.color = ganancia >= 0 ? '#2d5a3d' : '#c53030';
+            setText('stats-spread', spread ? `Spread promedio $${spread.toFixed(2)}` : 'Sin datos suficientes');
+        }
+        function renderVolChart(data) {
+            const el = document.getElementById('stats-volumen-chart');
+            if (!el) return;
+            const max = Math.max(...data.map(d => Math.max(d.usdV, d.usdC)), 1);
+            const H = 140, labelH = 16, n = data.length, slot = 100 / n, bw = Math.min(slot * 0.32, 6);
+            let bars = '', labels = '';
+            data.forEach((d, i) => {
+                const cx = slot * i + slot / 2;
+                const hV = (d.usdV / max) * (H - 10), hC = (d.usdC / max) * (H - 10);
+                if (d.usdV > 0) bars += `<rect x="${(cx - bw - 0.3).toFixed(2)}" y="${(H - hV).toFixed(2)}" width="${bw.toFixed(2)}" height="${hV.toFixed(2)}" rx="1" fill="#438453"/>`;
+                if (d.usdC > 0) bars += `<rect x="${(cx + 0.3).toFixed(2)}" y="${(H - hC).toFixed(2)}" width="${bw.toFixed(2)}" height="${hC.toFixed(2)}" rx="1" fill="#e53e3e"/>`;
+                const cada = n > 10 ? 5 : 1;
+                if (i % cada === 0) labels += `<text x="${cx.toFixed(2)}" y="${H + 12}" font-size="5.5" fill="#a0aec0" text-anchor="middle">${d.label}</text>`;
+            });
+            el.innerHTML = `<svg viewBox="0 0 100 ${H + labelH}" style="width:100%;display:block;" preserveAspectRatio="none"><line x1="0" y1="${H}" x2="100" y2="${H}" stroke="#e2e8f0" stroke-width="0.5"/>${bars}${labels}</svg>`;
+        }
+        function renderTcChart(data) {
+            const el = document.getElementById('stats-tc-chart');
+            if (!el) return;
+            const vals = data.flatMap(d => [d.tcV, d.tcC]).filter(v => v != null);
+            if (!vals.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">Sin operaciones en el período</div></div>'; return; }
+            const min = Math.min(...vals), max = Math.max(...vals);
+            const range = (max - min) || 1, H = 140, labelH = 16, n = data.length, slot = 100 / n;
+            const y = v => 8 + (1 - (v - min) / range) * (H - 16);
+            const line = key => data.map((d, i) => d[key] != null ? `${(slot * i + slot / 2).toFixed(2)},${y(d[key]).toFixed(2)}` : null).filter(Boolean).join(' ');
+            const dots = key => data.map((d, i) => d[key] != null ? `<circle cx="${(slot * i + slot / 2).toFixed(2)}" cy="${y(d[key]).toFixed(2)}" r="1.4" fill="${key === 'tcV' ? '#438453' : '#e53e3e'}"/>` : '').join('');
+            let labels = '';
+            const cada = n > 10 ? 5 : 1;
+            data.forEach((d, i) => { if (i % cada === 0) labels += `<text x="${(slot * i + slot / 2).toFixed(2)}" y="${H + 12}" font-size="5.5" fill="#a0aec0" text-anchor="middle">${d.label}</text>`; });
+            el.innerHTML = `<svg viewBox="0 0 100 ${H + labelH}" style="width:100%;display:block;" preserveAspectRatio="none">`
+                + `<text x="1" y="10" font-size="5.5" fill="#a0aec0">$${Math.round(max).toLocaleString('es-AR')}</text>`
+                + `<text x="1" y="${H - 2}" font-size="5.5" fill="#a0aec0">$${Math.round(min).toLocaleString('es-AR')}</text>`
+                + `<polyline points="${line('tcV')}" fill="none" stroke="#438453" stroke-width="0.8"/>`
+                + `<polyline points="${line('tcC')}" fill="none" stroke="#e53e3e" stroke-width="0.8"/>`
+                + dots('tcV') + dots('tcC') + labels + `</svg>`;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  CALCULADORA DE COTIZACIÓN
+        // ═══════════════════════════════════════════════════════════
+        let _blueVenta = null, _blueCompra = null, _calcLastEdited = 'usd';
+        function openCalcModal() {
+            const tc = document.getElementById('calc-tc');
+            if (!tc.value && _blueVenta) { tc.value = _blueVenta; document.getElementById('calc-tc-fuente').textContent = '(blue venta)'; }
+            document.getElementById('calc-modal').classList.remove('hidden');
+            recalcCalc();
+        }
+        function closeCalcModal() { document.getElementById('calc-modal').classList.add('hidden'); }
+        function usarBlueEnCalc() {
+            if (!_blueVenta) { showToast('Sin cotización blue disponible'); return; }
+            document.getElementById('calc-tc').value = _blueVenta;
+            document.getElementById('calc-tc-fuente').textContent = '(blue venta)';
+            recalcCalc();
+        }
+        function recalcCalc() {
+            const tc = parseFloat(document.getElementById('calc-tc').value) || 0;
+            const usdEl = document.getElementById('calc-usd'), arsEl = document.getElementById('calc-ars');
+            const rLabel = document.getElementById('calc-result-label'), rVal = document.getElementById('calc-result');
+            if (!tc) { rLabel.textContent = 'Ingresá un tipo de cambio'; rVal.textContent = '–'; return; }
+            if (_calcLastEdited === 'usd') {
+                const usd = parseFloat(usdEl.value) || 0;
+                const ars = usd * tc;
+                arsEl.value = usd ? ars.toFixed(2) : '';
+                rLabel.textContent = usd ? `USD ${usd.toLocaleString('es-AR')} × $${tc.toLocaleString('es-AR')}` : 'Ingresá un monto';
+                rVal.textContent = usd ? '$ ' + Math.round(ars).toLocaleString('es-AR') : '–';
+            } else {
+                const ars = parseFloat(arsEl.value) || 0;
+                const usd = ars / tc;
+                usdEl.value = ars ? usd.toFixed(2) : '';
+                rLabel.textContent = ars ? `$ ${ars.toLocaleString('es-AR')} ÷ $${tc.toLocaleString('es-AR')}` : 'Ingresá un monto';
+                rVal.textContent = ars ? 'USD ' + usd.toLocaleString('es-AR', { maximumFractionDigits: 2 }) : '–';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  COMPARTIR COMPROBANTE
+        // ═══════════════════════════════════════════════════════════
+        function compartirOperacion(op, tipo) {
+            const monto = op.total || op.cantidad * op.precio;
+            const texto = `💱 ${tipo}\n📅 ${op.fecha}\n👤 ${op.cliente}\n💵 USD ${op.cantidad.toLocaleString('es-AR')}\n💲 TC $${op.precio.toLocaleString('es-AR', { minimumFractionDigits: 2 })}\n💰 Total $ ${Math.round(monto).toLocaleString('es-AR')}\n📌 Estado: ${op.estado}`;
+            if (navigator.share) { navigator.share({ text: texto }).catch(() => {}); }
+            else { window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank'); }
+        }
         
         (function(){
             let sy=0,pulling=false,refreshing=false;
             const ind=document.getElementById('pull-indicator'),pt=document.getElementById('pull-text'),ps=document.getElementById('pull-spinner');
+            const content=()=>document.querySelector('#main-app .content');
+            // Efecto elástico: el contenido acompaña el arrastre con amortiguación
+            function setPull(px,animate){const c=content();if(!c)return;c.style.transition=animate?'transform 0.3s ease':'none';c.style.transform=px>0?`translateY(${px}px)`:'';}
             document.addEventListener('touchstart',e=>{if(window.scrollY===0&&!refreshing&&currentUser){sy=e.touches[0].clientY;pulling=true;}},{passive:true});
-            document.addEventListener('touchmove',e=>{if(!pulling||refreshing)return;const d=e.touches[0].clientY-sy;if(d>10){ind.classList.add('visible');if(d>80){pt.textContent='↑ Suelta para actualizar';ind.style.background='#f0f4ff';}else{pt.textContent='↓ Desliza para actualizar';ind.style.background='white';}}},{passive:true});
-            document.addEventListener('touchend',async e=>{if(!pulling||refreshing)return;pulling=false;const d=e.changedTouches[0].clientY-sy;if(d>80){refreshing=true;pt.style.display='none';ps.style.display='block';ind.classList.add('visible');try{await loadData();}catch(e){}setTimeout(()=>{ind.classList.remove('visible');pt.style.display='block';ps.style.display='none';pt.textContent='↓ Desliza para actualizar';ind.style.background='white';refreshing=false;},600);}else{ind.classList.remove('visible');}},{passive:true});
+            document.addEventListener('touchmove',e=>{if(!pulling||refreshing)return;const d=e.touches[0].clientY-sy;if(d>10){const damped=Math.min(d/2.2,75);setPull(damped,false);ind.classList.add('visible');if(d>80){pt.textContent='↑ Suelta para actualizar';ind.style.background='#f0f4ff';}else{pt.textContent='↓ Desliza para actualizar';ind.style.background='white';}}},{passive:true});
+            document.addEventListener('touchend',async e=>{if(!pulling||refreshing)return;pulling=false;const d=e.changedTouches[0].clientY-sy;if(d>80){refreshing=true;setPull(48,true);pt.style.display='none';ps.style.display='block';ind.classList.add('visible');try{await loadData();}catch(e){}setTimeout(()=>{setPull(0,true);ind.classList.remove('visible');pt.style.display='block';ps.style.display='none';pt.textContent='↓ Desliza para actualizar';ind.style.background='white';refreshing=false;},600);}else{setPull(0,true);ind.classList.remove('visible');}},{passive:true});
         })();
     </script>
+
+    <!-- CALCULADORA -->
+    <button id="calc-fab" onclick="openCalcModal()" title="Calculadora de cotización" style="display:none;">🧮</button>
+    <div id="calc-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeCalcModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0; font-size: 20px; color: #438453;">🧮 Calculadora</h2>
+                <button onclick="closeCalcModal()" style="background: none; border: none; font-size: 28px; color: #747873; padding: 0; width: 40px; height: 40px;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Tipo de cambio (ARS) <span id="calc-tc-fuente" style="font-weight:400;font-size:12px;color:#a0aec0;"></span></label>
+                    <input type="number" class="form-input" id="calc-tc" placeholder="0.00" step="0.01" inputmode="decimal">
+                    <button onclick="usarBlueEnCalc()" id="calc-usar-blue" style="margin-top:8px;background:#ebf8ff;border:1px solid #bee3f8;color:#3182ce;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;">Usar dólar blue</button>
+                </div>
+                <div class="form-2col">
+                    <div class="form-group"><label class="form-label">USD</label><input type="number" class="form-input" id="calc-usd" placeholder="0" step="0.01" inputmode="decimal"></div>
+                    <div class="form-group"><label class="form-label">ARS</label><input type="number" class="form-input" id="calc-ars" placeholder="0" step="0.01" inputmode="decimal"></div>
+                </div>
+                <div class="calc-result-box">
+                    <div class="calc-result-label" id="calc-result-label">Resultado</div>
+                    <div class="calc-result-value" id="calc-result">–</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECK ANIMATION -->
+    <div id="check-overlay">
+        <div class="check-circle">
+            <svg class="check-mark" viewBox="0 0 52 52"><path d="M14 27 L 23 36 L 39 17" /></svg>
+        </div>
+        <div class="check-label" id="check-label">Guardado</div>
+    </div>
 
     <!-- Quick status picker -->
     <div id="status-quick-picker" style="display:none;position:fixed;z-index:9999;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.18),0 2px 8px rgba(0,0,0,0.08);padding:6px;min-width:155px;border:1px solid #e2e8f0;">
