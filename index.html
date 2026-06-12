@@ -1298,7 +1298,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.184';
+        const APP_VERSION = 'v3.185';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1326,6 +1326,8 @@
             return data;
         }
         function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+        // Mensaje legible: error de red vs error reportado por el backend
+        function errMsg(e) { return (e instanceof TypeError) ? 'sin conexión' : ((e && e.message) || 'error desconocido'); }
         let currentUser = null, ventas = [], compras = [], ventasRaw = [], comprasRaw = [], deudasRaw = [];
         let balanceTotal = 0, currentTipo = 'VENTA', currentFilter = 'ultimo', currentTab = 'ventas';
         let showOnlyPending = false;
@@ -1867,7 +1869,7 @@
             showToast('✅ Estado → '+nuevoEstado, '#1d8a45');
             apiCall({action:'update_status', tipo, fecha:ff, cliente, cantidad:String(cantidad).replace('$',''), nuevoEstado, usuario:currentUser, id: id||''})
                 .then(()=>loadData(true))
-                .catch(()=>{ showToast('❌ Sin conexión: el cambio de estado no se guardó', '#e30000'); loadData(true); });
+                .catch(e=>{ showToast('❌ Estado no guardado: '+errMsg(e), '#e30000'); loadData(true); });
         }
         // ─────────────────────────────────────────────────────────────
 
@@ -1930,7 +1932,7 @@
             showToast('✅ Operación actualizada','#1d8a45'); closeModal();
             apiCall({action:'edit_operation',tipo,fecha:fechaOrig,clienteOriginal:clienteOrig,cantidadOriginal:cantidadOrig,nuevaCantidad:nc,nuevoPrecio:np,nuevoTotal:nt,nuevasObs:no,nuevoOperador,usuario:currentUser,id:op.id||''})
                 .then(()=>loadData(true))
-                .catch(()=>{ showToast('❌ Sin conexión: la edición no se guardó','#e30000'); loadData(true); });
+                .catch(e=>{ showToast('❌ Edición no guardada: '+errMsg(e),'#e30000'); loadData(true); });
         }
         
         function showToast(msg,color='#1d1d1f'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500);}
@@ -1949,7 +1951,7 @@
             closeModal();
             apiCall({ action:'delete_operation', tipo, fecha:op.fecha, cliente:op.cliente, cantidad:op.cantidad, id:op.id||'' })
                 .then(()=>loadData(true))
-                .catch(()=>{ showToast('❌ Sin conexión: no se pudo borrar','#e30000'); loadData(true); });
+                .catch(e=>{ showToast('❌ No se pudo borrar: '+errMsg(e),'#e30000'); loadData(true); });
         }
 
         function borrarDeuda(key) {
@@ -1965,7 +1967,7 @@
             closeDeudaDetailModal();
             apiCall({ action:'delete_deuda', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto, id:deuda.id||'' })
                 .then(()=>loadData(true))
-                .catch(()=>{ showToast('❌ Sin conexión: no se pudo borrar','#e30000'); loadData(true); });
+                .catch(e=>{ showToast('❌ No se pudo borrar: '+errMsg(e),'#e30000'); loadData(true); });
         }
         function getEstadoStyles(e){const s={'PENDIENTE':{bg:'#FEF3C7',color:'#92400E'},'REALIZADA':{bg:'#86EFAC',color:'#166534'},'LLEVO BILLETES':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO BILL':{bg:'#FCA5A5',color:'#7F1D1D'},'LLEVO PESOS':{bg:'#FCA5A5',color:'#7F1D1D'},'PREPARADO':{bg:'#FDBA74',color:'#7C2D12'}};return s[e]||{bg:'#E5E7EB',color:'#424245'};}
         
@@ -1982,7 +1984,7 @@
             showToast('✅ Estado → '+ne,'#1d8a45');
             apiCall({action:'update_status',tipo,fecha:ff,cliente,cantidad:cantidad.replace('$',''),nuevoEstado:ne,usuario:currentUser,id:opId})
                 .then(()=>loadData(true))
-                .catch(()=>{ showToast('❌ Sin conexión: el cambio de estado no se guardó','#e30000'); loadData(true); });
+                .catch(e=>{ showToast('❌ Estado no guardado: '+errMsg(e),'#e30000'); loadData(true); });
         }
         
         function updateSelectionPanel() {
@@ -2062,7 +2064,7 @@
                 volverAlPicker();
                 document.getElementById('total-preview').classList.add('hidden');
                 setTimeout(()=>loadData(true),4000);
-            } catch(e){showToast('❌ Sin conexión: la operación NO se guardó. Reintentá.','#e30000');}
+            } catch(e){showToast('❌ NO se guardó ('+errMsg(e)+'). Reintentá.','#e30000');}
             finally{btn.disabled=false;btn.textContent=ot;btn.style.opacity='1';}
         }
         
@@ -2154,7 +2156,7 @@
                     closeNuevaDeudaModal();
                     setTimeout(() => loadData(true), 4000);
                 })
-                .catch(() => showToast('❌ Sin conexión: la deuda NO se guardó. Reintentá.','#e30000'))
+                .catch(e => showToast('❌ Deuda NO guardada ('+errMsg(e)+'). Reintentá.','#e30000'))
                 .finally(() => { btn.disabled=false; btn.textContent='Registrar Deuda'; btn.style.opacity='1'; });
         }
 
@@ -2221,7 +2223,7 @@
             showToast('✅ Marcada como ' + nuevoEstado,'#1d8a45');
             apiCall({ action:'update_deuda_status', fecha:deuda.fecha, cliente:deuda.cliente, monto:deuda.monto, nuevoEstado, usuario:currentUser, id:deuda.id||'' })
                 .then(() => loadData(true))
-                .catch(() => { showToast('❌ Sin conexión: el cambio no se guardó','#e30000'); loadData(true); });
+                .catch(e => { showToast('❌ Cambio no guardado: '+errMsg(e),'#e30000'); loadData(true); });
         }
 
         function editarDeudaByKey(key) { const deuda = getDeudaByKey(key); if(deuda) editarDeuda(deuda); }
@@ -2259,7 +2261,7 @@
             showToast('✅ Deuda actualizada','#1d8a45');
             apiCall({ action:'edit_deuda', fecha:origFecha, clienteOriginal:origCliente, montoOriginal:origMonto, nuevaFecha:fechaStr, nuevoMonto:monto, nuevaMoneda:moneda, nuevoTipo:tipo, nuevasObs:obs, usuario:currentUser, id:(dObj&&dObj.id)||'' })
                 .then(() => loadData(true))
-                .catch(() => { showToast('❌ Sin conexión: la edición no se guardó','#e30000'); loadData(true); });
+                .catch(e => { showToast('❌ Edición no guardada: '+errMsg(e),'#e30000'); loadData(true); });
         }
 
         function showDeudaDetail(deuda) {

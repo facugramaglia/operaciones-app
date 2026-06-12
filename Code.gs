@@ -168,6 +168,18 @@ function findRowById(values, id) {
   return -1;
 }
 
+// Compara día y mes numéricamente ("06" debe coincidir con "6")
+function mismoDiaMes(diaA, mesA, diaB, mesB) {
+  return parseInt(diaA, 10) === parseInt(diaB, 10) && parseInt(mesA, 10) === parseInt(mesB, 10);
+}
+
+// Compara montos numéricamente ("1500.50" debe coincidir con "1500.5")
+function mismoMonto(a, b) {
+  const na = parseFloat(String(a).replace(/[\$,\s]/g, ''));
+  const nb = parseFloat(String(b).replace(/[\$,\s]/g, ''));
+  return !isNaN(na) && !isNaN(nb) && Math.abs(na - nb) < 0.005;
+}
+
 function addOperation(ss, data) {
   const sheetName = data.tipo === 'VENTA' ? 'VENTAS' : 'COMPRAS';
   const sheet = ss.getSheetByName(sheetName);
@@ -253,8 +265,8 @@ function updateStatus(ss, data) {
       }
     }
 
-    if (clienteRow === clienteBuscado && cantidadRow == cantidadBuscada &&
-        diaRow === diaFecha && mesRow === mesFecha) {
+    if (clienteRow === clienteBuscado && mismoMonto(cantidadRow, cantidadBuscada) &&
+        mismoDiaMes(diaRow, mesRow, diaFecha, mesFecha)) {
       sheet.getRange(i + 1, 7).setValue(data.nuevoEstado);
       sheet.getRange(i + 1, 12).setValue(data.usuario);
       sheet.getRange(i + 1, 13).setValue(new Date());
@@ -326,8 +338,8 @@ function editOperation(ss, data) {
       diaRow = partes[0]; mesRow = partes[1];
     }
 
-    if (clienteRow === clienteBuscado && cantidadRow == cantidadBuscada &&
-        diaRow === diaFecha && mesRow === mesFecha) {
+    if (clienteRow === clienteBuscado && mismoMonto(cantidadRow, cantidadBuscada) &&
+        mismoDiaMes(diaRow, mesRow, diaFecha, mesFecha)) {
       sheet.getRange(i + 1, 4).setValue('$' + data.nuevaCantidad);
       sheet.getRange(i + 1, 5).setValue('$' + data.nuevoPrecio.toFixed(2));
       // No se sobreescribe columna F — la fórmula de la planilla calcula el total
@@ -438,8 +450,8 @@ function updateDeudaStatus(ss, data) {
       diaRow = partes[0]; mesRow = partes[1];
     }
 
-    if (clienteRow === clienteBuscado && montoRow == montoBuscado &&
-        diaRow === diaFecha && mesRow === mesFecha) {
+    if (clienteRow === clienteBuscado && mismoMonto(montoRow, montoBuscado) &&
+        mismoDiaMes(diaRow, mesRow, diaFecha, mesFecha)) {
       sheet.getRange(i + 1, 6).setValue(data.nuevoEstado); // F = Estado
       sheet.getRange(i + 1, 12).setValue(data.usuario);
       sheet.getRange(i + 1, 13).setValue(new Date());
@@ -518,8 +530,8 @@ function editDeuda(ss, data) {
       diaRow = partes[0]; mesRow = partes[1];
     }
 
-    if (clienteRow === clienteBuscado && montoRow == montoBuscado &&
-        diaRow === diaFecha && mesRow === mesFecha) {
+    if (clienteRow === clienteBuscado && mismoMonto(montoRow, montoBuscado) &&
+        mismoDiaMes(diaRow, mesRow, diaFecha, mesFecha)) {
       sheet.getRange(i + 1, 1).setValue(nuevaFechaFormato); // A: Fecha
       sheet.getRange(i + 1, 4).setValue(data.nuevoMonto);   // D: Monto
       sheet.getRange(i + 1, 5).setValue(data.nuevaMoneda);  // E: Moneda
@@ -565,7 +577,7 @@ function deleteOperation(ss, data) {
     let fechaRow=row[0], diaRow='', mesRow='';
     if (fechaRow instanceof Date) { diaRow=String(fechaRow.getDate()); mesRow=String(fechaRow.getMonth()+1); }
     else if (fechaRow && String(fechaRow).includes('/')) { const p=String(fechaRow).split('/'); diaRow=p[0]; mesRow=p[1]; }
-    if (clienteRow===String(data.cliente).trim().toLowerCase() && cantidadRow==cantidadBuscada && diaRow===diaFecha && mesRow===mesFecha) {
+    if (clienteRow===String(data.cliente).trim().toLowerCase() && mismoMonto(cantidadRow, cantidadBuscada) && mismoDiaMes(diaRow, mesRow, diaFecha, mesFecha)) {
       sheet.deleteRow(i + 1);
       return ContentService.createTextOutput(JSON.stringify({success:true,message:'Operación eliminada de fila '+(i+1)})).setMimeType(ContentService.MimeType.JSON);
     }
@@ -597,7 +609,7 @@ function deleteDeuda(ss, data) {
     let fechaRow=row[0], diaRow='', mesRow='';
     if (fechaRow instanceof Date) { diaRow=String(fechaRow.getDate()); mesRow=String(fechaRow.getMonth()+1); }
     else if (fechaRow && String(fechaRow).includes('/')) { const p=String(fechaRow).split('/'); diaRow=p[0]; mesRow=p[1]; }
-    if (clienteRow===String(data.cliente).trim().toLowerCase() && montoRow==montoBuscado && diaRow===diaFecha && mesRow===mesFecha) {
+    if (clienteRow===String(data.cliente).trim().toLowerCase() && mismoMonto(montoRow, montoBuscado) && mismoDiaMes(diaRow, mesRow, diaFecha, mesFecha)) {
       sheet.deleteRow(i + 1);
       return ContentService.createTextOutput(JSON.stringify({success:true,message:'Deuda eliminada de fila '+(i+1)})).setMimeType(ContentService.MimeType.JSON);
     }
