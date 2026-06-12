@@ -902,8 +902,8 @@
                         </div>
                         <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="form-cliente" placeholder="Nombre del cliente"></div>
                         <div class="form-2col">
-                            <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
-                            <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
+                            <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="text" inputmode="decimal" class="form-input" id="form-cantidad" placeholder="0"></div>
+                            <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="text" inputmode="decimal" class="form-input" id="form-precio" placeholder="0.00"></div>
                         </div>
                         <div class="form-2col">
                             <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
@@ -1298,7 +1298,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.181';
+        const APP_VERSION = 'v3.184';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -2036,12 +2036,14 @@
         function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
         function selectTipoForm(tipo){setTipo(tipo);document.body.style.background=tipo==='VENTA'?'#f5f5f7':'#f5f5f7';document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
         function volverAlPicker(){document.body.style.background='#f5f5f7';document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
-        function calcularTotal(){const c=parseFloat(document.getElementById('form-cantidad').value)||0,p=parseFloat(document.getElementById('form-precio').value)||0,t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
+        // Acepta coma o punto como separador decimal (teclado es-AR)
+        function parseNum(v){return parseFloat(String(v||'').replace(',','.').replace(/\s/g,''))||0;}
+        function calcularTotal(){const c=parseNum(document.getElementById('form-cantidad').value),p=parseNum(document.getElementById('form-precio').value),t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
         
         async function agregarOperacion(){
             const btn=document.getElementById('btn-submit'); if(btn.disabled)return;
             if(!config.scriptUrl){alert('Configura la URL del Script en Config');return;}
-            const cliente=document.getElementById('form-cliente').value.trim(), cantidad=parseFloat(document.getElementById('form-cantidad').value), precio=parseFloat(document.getElementById('form-precio').value);
+            const cliente=document.getElementById('form-cliente').value.trim(), cantidad=parseNum(document.getElementById('form-cantidad').value), precio=parseNum(document.getElementById('form-precio').value);
             if(!cliente||!cantidad||!precio){alert('Completa todos los campos');return;}
             const fecha=document.getElementById('form-fecha').value, obs=document.getElementById('form-observaciones').value, total=cantidad*precio;
             btn.disabled=true; const ot=btn.textContent; btn.textContent='⏳ Guardando...'; btn.style.opacity='0.6';
