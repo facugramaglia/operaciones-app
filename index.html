@@ -1151,7 +1151,7 @@
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Monto</label>
-                    <input type="number" id="deuda-edit-monto" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;">
+                    <input type="text" inputmode="decimal" id="deuda-edit-monto" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;">
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Moneda</label>
@@ -1201,7 +1201,7 @@
                 <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="deuda-cliente" placeholder="Nombre del cliente"></div>
                 <div class="form-group">
                     <label class="form-label">Monto</label>
-                    <input type="number" class="form-input" id="deuda-monto" placeholder="0" step="0.01">
+                    <input type="text" inputmode="decimal" class="form-input" id="deuda-monto" placeholder="0">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Moneda</label>
@@ -1251,8 +1251,8 @@
                 </div>
                 <div id="modal-edit-form" style="display: none; margin-top: 16px; border-top: 2px solid #e8e8ed; padding-top: 16px;">
                     <div style="font-size: 14px; font-weight: 700; color: #1d1d1f; margin-bottom: 16px;">Editar Operación</div>
-                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Cantidad (USD)</label><input type="number" id="edit-cantidad" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
-                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Precio (ARS)</label><input type="number" id="edit-precio" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Cantidad (USD)</label><input type="text" inputmode="decimal" id="edit-cantidad" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Precio (ARS)</label><input type="text" inputmode="decimal" id="edit-precio" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
                     <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Observaciones</label><textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea></div>
                     <div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Operador</label><select id="edit-operador" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 15px; font-weight: 600; background: white;"><option value="TOMI">TOMI</option><option value="CHOKI">CHOKI</option><option value="TURCO">TURCO</option><option value="AGU">AGU</option><option value="X3">X3</option></select></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -1910,7 +1910,7 @@
         function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#1d8a45',cantidad:'#1d8a45',precio:'#f59e0b',observaciones:'#6e6e73'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[escHTML(x.campo)]||'#6e6e73'};"></div><div class="cambio-content"><div class="cambio-tipo">${escHTML(x.campo.charAt(0).toUpperCase()+x.campo.slice(1))}</div><div class="cambio-detalle"><span style="color:#6e6e73;text-decoration:line-through;">${escHTML(x.anterior)}</span><span style="margin:0 4px;">→</span><strong>${escHTML(x.nuevo)}</strong></div><div class="cambio-meta">👤 ${escHTML(x.usuario)} · ${escHTML(x.fecha)}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
         
         async function guardarEdicion(op,tipo){
-            const nc=parseFloat(document.getElementById('edit-cantidad').value), np=parseFloat(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
+            const nc=parseNum(document.getElementById('edit-cantidad').value), np=parseNum(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
             const nuevoOperador=document.getElementById('edit-operador').value||op.operador;
             if(!nc||!np){alert('⚠️ Cantidad y precio son requeridos');return;}
             const nt=nc*np;
@@ -2134,7 +2134,7 @@
         function agregarDeuda() {
             if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script primero'); return; }
             const cliente = document.getElementById('deuda-cliente').value.trim();
-            const monto = parseFloat(document.getElementById('deuda-monto').value);
+            const monto = parseNum(document.getElementById('deuda-monto').value);
             const fechaVal = document.getElementById('deuda-fecha').value;
             const obs = document.getElementById('deuda-obs').value.trim();
             if (!cliente || !monto || !fechaVal) { alert('⚠️ Completá fecha, cliente y monto'); return; }
@@ -2242,7 +2242,7 @@
             if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
             const key = document.getElementById('deuda-edit-id').value;
             const fechaVal = document.getElementById('deuda-edit-fecha').value;
-            const monto = parseFloat(document.getElementById('deuda-edit-monto').value);
+            const monto = parseNum(document.getElementById('deuda-edit-monto').value);
             const cliente = document.getElementById('deuda-edit-cliente').value.trim();
             if (!cliente || !monto || !fechaVal) { alert('Completá todos los campos'); return; }
             const [y,mv,dv] = fechaVal.split('-');
@@ -2525,18 +2525,18 @@
             recalcCalc();
         }
         function recalcCalc() {
-            const tc = parseFloat(document.getElementById('calc-tc').value) || 0;
+            const tc = parseNum(document.getElementById('calc-tc').value);
             const usdEl = document.getElementById('calc-usd'), arsEl = document.getElementById('calc-ars');
             const rLabel = document.getElementById('calc-result-label'), rVal = document.getElementById('calc-result');
             if (!tc) { rLabel.textContent = 'Ingresá un tipo de cambio'; rVal.textContent = '–'; return; }
             if (_calcLastEdited === 'usd') {
-                const usd = parseFloat(usdEl.value) || 0;
+                const usd = parseNum(usdEl.value);
                 const ars = usd * tc;
                 arsEl.value = usd ? ars.toFixed(2) : '';
                 rLabel.textContent = usd ? `USD ${usd.toLocaleString('es-AR')} × $${tc.toLocaleString('es-AR')}` : 'Ingresá un monto';
                 rVal.textContent = usd ? '$ ' + Math.round(ars).toLocaleString('es-AR') : '–';
             } else {
-                const ars = parseFloat(arsEl.value) || 0;
+                const ars = parseNum(arsEl.value);
                 const usd = ars / tc;
                 usdEl.value = ars ? usd.toFixed(2) : '';
                 rLabel.textContent = ars ? `$ ${ars.toLocaleString('es-AR')} ÷ $${tc.toLocaleString('es-AR')}` : 'Ingresá un monto';
@@ -2578,12 +2578,12 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Tipo de cambio (ARS) <span id="calc-tc-fuente" style="font-weight:400;font-size:12px;color:#6e6e73;"></span></label>
-                    <input type="number" class="form-input" id="calc-tc" placeholder="0.00" step="0.01" inputmode="decimal">
+                    <input type="text" inputmode="decimal" class="form-input" id="calc-tc" placeholder="0.00">
                     <button onclick="usarBlueEnCalc()" id="calc-usar-blue" style="margin-top:8px;background:#ebf8ff;border:1px solid #bee3f8;color:#0071e3;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;">Usar dólar blue</button>
                 </div>
                 <div class="form-2col">
-                    <div class="form-group"><label class="form-label">USD</label><input type="number" class="form-input" id="calc-usd" placeholder="0" step="0.01" inputmode="decimal"></div>
-                    <div class="form-group"><label class="form-label">ARS</label><input type="number" class="form-input" id="calc-ars" placeholder="0" step="0.01" inputmode="decimal"></div>
+                    <div class="form-group"><label class="form-label">USD</label><input type="text" inputmode="decimal" class="form-input" id="calc-usd" placeholder="0"></div>
+                    <div class="form-group"><label class="form-label">ARS</label><input type="text" inputmode="decimal" class="form-input" id="calc-ars" placeholder="0"></div>
                 </div>
                 <div class="calc-result-box">
                     <div class="calc-result-label" id="calc-result-label">Resultado</div>
