@@ -902,8 +902,8 @@
                         </div>
                         <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="form-cliente" placeholder="Nombre del cliente"></div>
                         <div class="form-2col">
-                            <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="number" class="form-input" id="form-cantidad" placeholder="0" step="0.01"></div>
-                            <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="number" class="form-input" id="form-precio" placeholder="0.00" step="0.01"></div>
+                            <div class="form-group"><label class="form-label">Cantidad (USD)</label><input type="text" inputmode="decimal" class="form-input" id="form-cantidad" placeholder="0"></div>
+                            <div class="form-group"><label class="form-label">Precio (ARS)</label><input type="text" inputmode="decimal" class="form-input" id="form-precio" placeholder="0.00"></div>
                         </div>
                         <div class="form-2col">
                             <div class="form-group"><label class="form-label">Observaciones</label><textarea class="form-textarea" id="form-observaciones" rows="3" placeholder="Notas adicionales"></textarea></div>
@@ -1151,7 +1151,7 @@
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Monto</label>
-                    <input type="number" id="deuda-edit-monto" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;">
+                    <input type="text" inputmode="decimal" id="deuda-edit-monto" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;">
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Moneda</label>
@@ -1201,7 +1201,7 @@
                 <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="deuda-cliente" placeholder="Nombre del cliente"></div>
                 <div class="form-group">
                     <label class="form-label">Monto</label>
-                    <input type="number" class="form-input" id="deuda-monto" placeholder="0" step="0.01">
+                    <input type="text" inputmode="decimal" class="form-input" id="deuda-monto" placeholder="0">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Moneda</label>
@@ -1251,8 +1251,8 @@
                 </div>
                 <div id="modal-edit-form" style="display: none; margin-top: 16px; border-top: 2px solid #e8e8ed; padding-top: 16px;">
                     <div style="font-size: 14px; font-weight: 700; color: #1d1d1f; margin-bottom: 16px;">Editar Operación</div>
-                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Cantidad (USD)</label><input type="number" id="edit-cantidad" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
-                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Precio (ARS)</label><input type="number" id="edit-precio" step="0.01" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Cantidad (USD)</label><input type="text" inputmode="decimal" id="edit-cantidad" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
+                    <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Precio (ARS)</label><input type="text" inputmode="decimal" id="edit-precio" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 17px; font-weight: 600;"></div>
                     <div style="margin-bottom: 14px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Observaciones</label><textarea id="edit-observaciones" rows="2" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 15px; font-family: inherit; resize: none;"></textarea></div>
                     <div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #6e6e73; margin-bottom: 6px;">Operador</label><select id="edit-operador" style="width: 100%; padding: 12px 14px; border: 2px solid #e8e8ed; border-radius: 10px; font-size: 15px; font-weight: 600; background: white;"><option value="TOMI">TOMI</option><option value="CHOKI">CHOKI</option><option value="TURCO">TURCO</option><option value="AGU">AGU</option><option value="X3">X3</option></select></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -1298,7 +1298,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.181';
+        const APP_VERSION = 'v3.184';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1910,7 +1910,7 @@
         function renderCambios(k){let h=[];try{const s=localStorage.getItem(k);if(s)h=JSON.parse(s);}catch(e){}const c=document.getElementById('modal-historial-cambios'),l=document.getElementById('modal-cambios-lista');if(!h.length){c.style.display='none';return;}const cols={estado:'#1d8a45',cantidad:'#1d8a45',precio:'#f59e0b',observaciones:'#6e6e73'};l.innerHTML=h.map(x=>`<div class="cambio-item"><div class="cambio-dot" style="background:${cols[escHTML(x.campo)]||'#6e6e73'};"></div><div class="cambio-content"><div class="cambio-tipo">${escHTML(x.campo.charAt(0).toUpperCase()+x.campo.slice(1))}</div><div class="cambio-detalle"><span style="color:#6e6e73;text-decoration:line-through;">${escHTML(x.anterior)}</span><span style="margin:0 4px;">→</span><strong>${escHTML(x.nuevo)}</strong></div><div class="cambio-meta">👤 ${escHTML(x.usuario)} · ${escHTML(x.fecha)}</div></div></div>`).join('');l.style.display='none';document.getElementById('cambios-arrow').textContent='▼';c.style.display='block';}
         
         async function guardarEdicion(op,tipo){
-            const nc=parseFloat(document.getElementById('edit-cantidad').value), np=parseFloat(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
+            const nc=parseNum(document.getElementById('edit-cantidad').value), np=parseNum(document.getElementById('edit-precio').value), no=document.getElementById('edit-observaciones').value.trim();
             const nuevoOperador=document.getElementById('edit-operador').value||op.operador;
             if(!nc||!np){alert('⚠️ Cantidad y precio son requeridos');return;}
             const nt=nc*np;
@@ -2036,12 +2036,14 @@
         function setTipo(t){currentTipo=t;const btn=document.getElementById('btn-submit');const title=document.getElementById('form-tipo-title');if(t==='VENTA'){if(title)title.textContent='Nueva Venta';btn.textContent='Registrar VENTA';btn.classList.remove('compra');}else{if(title)title.textContent='Nueva Compra';btn.textContent='Registrar COMPRA';btn.classList.add('compra');}}
         function selectTipoForm(tipo){setTipo(tipo);document.body.style.background=tipo==='VENTA'?'#f5f5f7':'#f5f5f7';document.getElementById('cargar-picker').style.display='none';document.getElementById('cargar-form').style.display='block';document.getElementById('form-operador').value=currentUser;const lp=getLastPrice();const pi=document.getElementById('form-precio');if(lp&&!pi.value){pi.value=lp;calcularTotal();}}
         function volverAlPicker(){document.body.style.background='#f5f5f7';document.getElementById('cargar-picker').style.display='block';document.getElementById('cargar-form').style.display='none';}
-        function calcularTotal(){const c=parseFloat(document.getElementById('form-cantidad').value)||0,p=parseFloat(document.getElementById('form-precio').value)||0,t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
+        // Acepta coma o punto como separador decimal (teclado es-AR)
+        function parseNum(v){return parseFloat(String(v||'').replace(',','.').replace(/\s/g,''))||0;}
+        function calcularTotal(){const c=parseNum(document.getElementById('form-cantidad').value),p=parseNum(document.getElementById('form-precio').value),t=c*p;if(t>0){document.getElementById('total-preview').classList.remove('hidden');document.getElementById('total-preview-value').textContent='$'+t.toLocaleString('es-AR');}else{document.getElementById('total-preview').classList.add('hidden');}}
         
         async function agregarOperacion(){
             const btn=document.getElementById('btn-submit'); if(btn.disabled)return;
             if(!config.scriptUrl){alert('Configura la URL del Script en Config');return;}
-            const cliente=document.getElementById('form-cliente').value.trim(), cantidad=parseFloat(document.getElementById('form-cantidad').value), precio=parseFloat(document.getElementById('form-precio').value);
+            const cliente=document.getElementById('form-cliente').value.trim(), cantidad=parseNum(document.getElementById('form-cantidad').value), precio=parseNum(document.getElementById('form-precio').value);
             if(!cliente||!cantidad||!precio){alert('Completa todos los campos');return;}
             const fecha=document.getElementById('form-fecha').value, obs=document.getElementById('form-observaciones').value, total=cantidad*precio;
             btn.disabled=true; const ot=btn.textContent; btn.textContent='⏳ Guardando...'; btn.style.opacity='0.6';
@@ -2132,7 +2134,7 @@
         function agregarDeuda() {
             if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script primero'); return; }
             const cliente = document.getElementById('deuda-cliente').value.trim();
-            const monto = parseFloat(document.getElementById('deuda-monto').value);
+            const monto = parseNum(document.getElementById('deuda-monto').value);
             const fechaVal = document.getElementById('deuda-fecha').value;
             const obs = document.getElementById('deuda-obs').value.trim();
             if (!cliente || !monto || !fechaVal) { alert('⚠️ Completá fecha, cliente y monto'); return; }
@@ -2240,7 +2242,7 @@
             if (!config.scriptUrl) { alert('⚠️ Configura la URL del Script'); return; }
             const key = document.getElementById('deuda-edit-id').value;
             const fechaVal = document.getElementById('deuda-edit-fecha').value;
-            const monto = parseFloat(document.getElementById('deuda-edit-monto').value);
+            const monto = parseNum(document.getElementById('deuda-edit-monto').value);
             const cliente = document.getElementById('deuda-edit-cliente').value.trim();
             if (!cliente || !monto || !fechaVal) { alert('Completá todos los campos'); return; }
             const [y,mv,dv] = fechaVal.split('-');
@@ -2523,18 +2525,18 @@
             recalcCalc();
         }
         function recalcCalc() {
-            const tc = parseFloat(document.getElementById('calc-tc').value) || 0;
+            const tc = parseNum(document.getElementById('calc-tc').value);
             const usdEl = document.getElementById('calc-usd'), arsEl = document.getElementById('calc-ars');
             const rLabel = document.getElementById('calc-result-label'), rVal = document.getElementById('calc-result');
             if (!tc) { rLabel.textContent = 'Ingresá un tipo de cambio'; rVal.textContent = '–'; return; }
             if (_calcLastEdited === 'usd') {
-                const usd = parseFloat(usdEl.value) || 0;
+                const usd = parseNum(usdEl.value);
                 const ars = usd * tc;
                 arsEl.value = usd ? ars.toFixed(2) : '';
                 rLabel.textContent = usd ? `USD ${usd.toLocaleString('es-AR')} × $${tc.toLocaleString('es-AR')}` : 'Ingresá un monto';
                 rVal.textContent = usd ? '$ ' + Math.round(ars).toLocaleString('es-AR') : '–';
             } else {
-                const ars = parseFloat(arsEl.value) || 0;
+                const ars = parseNum(arsEl.value);
                 const usd = ars / tc;
                 usdEl.value = ars ? usd.toFixed(2) : '';
                 rLabel.textContent = ars ? `$ ${ars.toLocaleString('es-AR')} ÷ $${tc.toLocaleString('es-AR')}` : 'Ingresá un monto';
@@ -2576,12 +2578,12 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Tipo de cambio (ARS) <span id="calc-tc-fuente" style="font-weight:400;font-size:12px;color:#6e6e73;"></span></label>
-                    <input type="number" class="form-input" id="calc-tc" placeholder="0.00" step="0.01" inputmode="decimal">
+                    <input type="text" inputmode="decimal" class="form-input" id="calc-tc" placeholder="0.00">
                     <button onclick="usarBlueEnCalc()" id="calc-usar-blue" style="margin-top:8px;background:#ebf8ff;border:1px solid #bee3f8;color:#0071e3;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;">Usar dólar blue</button>
                 </div>
                 <div class="form-2col">
-                    <div class="form-group"><label class="form-label">USD</label><input type="number" class="form-input" id="calc-usd" placeholder="0" step="0.01" inputmode="decimal"></div>
-                    <div class="form-group"><label class="form-label">ARS</label><input type="number" class="form-input" id="calc-ars" placeholder="0" step="0.01" inputmode="decimal"></div>
+                    <div class="form-group"><label class="form-label">USD</label><input type="text" inputmode="decimal" class="form-input" id="calc-usd" placeholder="0"></div>
+                    <div class="form-group"><label class="form-label">ARS</label><input type="text" inputmode="decimal" class="form-input" id="calc-ars" placeholder="0"></div>
                 </div>
                 <div class="calc-result-box">
                     <div class="calc-result-label" id="calc-result-label">Resultado</div>
