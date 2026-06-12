@@ -378,6 +378,9 @@
 
             /* Formulario: centrado y compacto */
             #cargar-form { max-width: 580px; margin: 0 auto; }
+
+            /* Stats: ancho acotado para que los gráficos no se estiren */
+            #stats-screen { max-width: 780px; margin: 0 auto; }
             .form-2col {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -1290,7 +1293,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.162';
+        const APP_VERSION = 'v3.164';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -2464,7 +2467,7 @@
                 const cada = n > 10 ? 5 : 1;
                 if (i % cada === 0) labels += `<text x="${cx.toFixed(1)}" y="${H + 13}" font-size="10" fill="#a0aec0" text-anchor="middle">${d.label}</text>`;
             });
-            el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:auto;display:block;"><line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="#e2e8f0" stroke-width="1"/>${bars}${labels}</svg>`;
+            el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:${H + labelH}px;display:block;"><line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="#e2e8f0" stroke-width="1"/>${bars}${labels}</svg>`;
         }
         function renderTcChart(data) {
             const el = document.getElementById('stats-tc-chart');
@@ -2480,7 +2483,7 @@
             let labels = '';
             const cada = n > 10 ? 5 : 1;
             data.forEach((d, i) => { if (i % cada === 0) labels += `<text x="${(slot * i + slot / 2).toFixed(1)}" y="${H + 13}" font-size="10" fill="#a0aec0" text-anchor="middle">${d.label}</text>`; });
-            el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:auto;display:block;">`
+            el.innerHTML = `<svg viewBox="0 0 ${W} ${H + labelH}" width="${W}" height="${H + labelH}" style="width:100%;height:${H + labelH}px;display:block;">`
                 + `<text x="4" y="14" font-size="10" fill="#a0aec0">$${Math.round(max).toLocaleString('es-AR')}</text>`
                 + `<text x="4" y="${H - 4}" font-size="10" fill="#a0aec0">$${Math.round(min).toLocaleString('es-AR')}</text>`
                 + `<polyline points="${line('tcV')}" fill="none" stroke="#438453" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
