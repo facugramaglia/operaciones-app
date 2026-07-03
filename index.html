@@ -1298,7 +1298,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.189';
+        const APP_VERSION = 'v3.193';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -2369,6 +2369,30 @@
         // ═══════════════════════════════════════════════════════════
         function normFecha(f) { const p = String(f).split('/'); return p.length === 3 ? `${parseInt(p[0])}/${parseInt(p[1])}/${parseInt(p[2])}` : ''; }
         function setText(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+        // Ganancia calzada: los USD vendidos se calzan contra los USD comprados
+        // en el orden de la planilla (FIFO). Ganancia = pesos que entraron por
+        // los USD de venta calzados − pesos que salieron por los USD de compra
+        // calzados. El volumen sin calzar no suma ni resta.
+        function gananciaCalzada(vs, cs) {
+            const usdV = vs.reduce((s, o) => s + o.cantidad, 0);
+            const usdC = cs.reduce((s, o) => s + o.cantidad, 0);
+            const calzado = Math.min(usdV, usdC);
+            if (calzado <= 0) return 0;
+            const pesosCalzados = (ops, cupo) => {
+                let pesos = 0;
+                for (const o of ops) {
+                    if (cupo <= 0) break;
+                    if (!(o.cantidad > 0)) continue;
+                    const usd = Math.min(o.cantidad, cupo);
+                    // precio real de la operación (usa el total de la planilla si está)
+                    const precioReal = (o.total || o.cantidad * o.precio) / o.cantidad;
+                    pesos += usd * precioReal;
+                    cupo -= usd;
+                }
+                return pesos;
+            };
+            return pesosCalzados(vs, calzado) - pesosCalzados(cs, calzado);
+        }
         function updateCierreHoy() {
             const hoy = new Date();
             const hoyKey = `${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear()}`;
@@ -2377,7 +2401,8 @@
             const arsV = vh.reduce((s, v) => s + (v.total || v.cantidad * v.precio), 0), arsC = ch.reduce((s, c) => s + (c.total || c.cantidad * c.precio), 0);
             const tcV = usdV > 0 ? arsV / usdV : 0, tcC = usdC > 0 ? arsC / usdC : 0;
             const spread = (tcV && tcC) ? tcV - tcC : 0;
-            const ganancia = spread * Math.min(usdV, usdC);
+            const ganancia = gananciaCalzada(vh, ch);
+            const calzado = Math.min(usdV, usdC);
             const pend = [...vh, ...ch].filter(o => o.estado.toUpperCase() !== 'REALIZADA').length;
             setText('cierre-tc-venta', tcV ? '$ ' + tcV.toFixed(2) : '–');
             setText('cierre-tc-compra', tcC ? '$ ' + tcC.toFixed(2) : '–');
@@ -2386,7 +2411,7 @@
             setText('cierre-ganancia', '$ ' + Math.round(ganancia).toLocaleString('es-AR'));
             const gEl = document.getElementById('cierre-ganancia');
             if (gEl) gEl.style.color = ganancia >= 0 ? '#157038' : '#e30000';
-            setText('cierre-detalle', (spread ? `Spread $${spread.toFixed(2)}` : 'Sin spread aún') + ` · ${pend} op${pend !== 1 ? 's' : ''} pendiente${pend !== 1 ? 's' : ''}`);
+            setText('cierre-detalle', (calzado > 0 ? `USD ${calzado.toLocaleString('es-AR')} calzados · spread $${spread.toFixed(2)}` : 'Sin USD calzados aún') + ` · ${pend} op${pend !== 1 ? 's' : ''} pendiente${pend !== 1 ? 's' : ''}`);
         }
 
         // ═══════════════════════════════════════════════════════════
@@ -2460,7 +2485,11 @@
             const opsV = data.reduce((s, d) => s + d.opsV, 0), opsC = data.reduce((s, d) => s + d.opsC, 0);
             const tcV = usdV > 0 ? arsV / usdV : 0, tcC = usdC > 0 ? arsC / usdC : 0;
             const spread = (tcV && tcC) ? tcV - tcC : 0;
-            const ganancia = spread * Math.min(usdV, usdC);
+            // Misma ganancia calzada que el dashboard, sobre las operaciones del rango
+            // en el orden de la planilla
+            const now = new Date(), keysRango = new Set();
+            for (let i = statsRange - 1; i >= 0; i--) { const dt = new Date(now); dt.setDate(now.getDate() - i); keysRango.add(`${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`); }
+            const ganancia = gananciaCalzada(ventas.filter(o => keysRango.has(normFecha(o.fecha))), compras.filter(o => keysRango.has(normFecha(o.fecha))));
             setText('stats-total-vendido', usdV.toLocaleString('es-AR'));
             setText('stats-total-comprado', usdC.toLocaleString('es-AR'));
             setText('stats-ops-venta', opsV + ' operación' + (opsV !== 1 ? 'es' : ''));
