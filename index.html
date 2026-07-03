@@ -1298,7 +1298,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.193';
+        const APP_VERSION = 'v3.194';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -2393,10 +2393,20 @@
             };
             return pesosCalzados(vs, calzado) - pesosCalzados(cs, calzado);
         }
+        // "Hoy" en el cierre = operaciones después del último separador (el
+        // separador marca el cierre del día), no la fecha de la operación.
+        function opsPostSeparador(raw) {
+            const isSep = row => row && String(row[1] || '').includes('SEPARADOR');
+            let sep = -1;
+            for (let i = 0; i < raw.length; i++) { if (isSep(raw[i])) sep = i; }
+            const n = s => parseFloat(String(s || '0').replace(/[$,]/g, '').trim()) || 0;
+            return raw.filter((r, i) => i > sep && r && r[2] && r[3] && !isSep(r)).map(row => ({
+                cantidad: n(row[3]), precio: n(row[4]), total: n(row[5]),
+                estado: String(row[6] || 'PENDIENTE').trim()
+            }));
+        }
         function updateCierreHoy() {
-            const hoy = new Date();
-            const hoyKey = `${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear()}`;
-            const vh = ventas.filter(v => normFecha(v.fecha) === hoyKey), ch = compras.filter(c => normFecha(c.fecha) === hoyKey);
+            const vh = opsPostSeparador(ventasRaw), ch = opsPostSeparador(comprasRaw);
             const usdV = vh.reduce((s, v) => s + v.cantidad, 0), usdC = ch.reduce((s, c) => s + c.cantidad, 0);
             const arsV = vh.reduce((s, v) => s + (v.total || v.cantidad * v.precio), 0), arsC = ch.reduce((s, c) => s + (c.total || c.cantidad * c.precio), 0);
             const tcV = usdV > 0 ? arsV / usdV : 0, tcC = usdC > 0 ? arsC / usdC : 0;
