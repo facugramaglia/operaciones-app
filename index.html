@@ -1298,7 +1298,7 @@
             } catch(e) {}
         })();
 
-        const APP_VERSION = 'v3.184';
+        const APP_VERSION = 'v3.189';
 
         let config = {
             apiKey: localStorage.getItem('apiKey') || '',
@@ -1316,14 +1316,29 @@
         const MAX_PIN_ATTEMPTS = 5;
         async function hashPin(pin) { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
         // Llamada al Apps Script con confirmación real: lanza error si no hay
-        // conexión o si el backend respondió success:false
-        async function apiCall(paramsObj) {
+        // conexión o si el backend respondió success:false.
+        // Cada intento tiene timeout de 45s para que la UI nunca quede colgada.
+        // opts.retries reintenta con los mismos parámetros — seguro solo para
+        // acciones que deduplican por id en el backend (add_operation/add_deuda).
+        async function apiCall(paramsObj, opts) {
             if (!config.scriptUrl) throw new Error('Configura la URL del Script');
-            const params = new URLSearchParams(paramsObj);
-            const res = await fetch(config.scriptUrl + '?' + params.toString());
-            const data = await res.json();
-            if (!data.success) throw new Error(data.error || 'Error del servidor');
-            return data;
+            const retries = (opts && opts.retries) || 0;
+            const url = config.scriptUrl + '?' + new URLSearchParams(paramsObj).toString();
+            let lastError;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                if (attempt > 0) await new Promise(r => setTimeout(r, 2000 * attempt));
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 45000);
+                    let res;
+                    try { res = await fetch(url, { signal: controller.signal }); }
+                    finally { clearTimeout(timer); }
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.error || 'Error del servidor');
+                    return data;
+                } catch (e) { lastError = e; }
+            }
+            throw lastError;
         }
         function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
         let currentUser = null, ventas = [], compras = [], ventasRaw = [], comprasRaw = [], deudasRaw = [];
@@ -2052,7 +2067,9 @@
                 const opId=genId();
                 // Se espera la confirmación real del backend: si falla, el formulario
                 // conserva los datos para reintentar
-                await apiCall({action:'add_operation',tipo:currentTipo,fecha,operador,cliente,cantidad,precio,total,observaciones:obs,id:opId});
+                // Reintenta hasta 2 veces con el mismo id: el backend deduplica,
+                // así que un reintento nunca genera una operación duplicada
+                await apiCall({action:'add_operation',tipo:currentTipo,fecha,operador,cliente,cantidad,precio,total,observaciones:obs,id:opId}, {retries: 2});
                 const [fy,fm,fd]=fecha.split('-');
                 const tempOp={fecha:`${parseInt(fd)}/${parseInt(fm)}/${fy}`,operador,cliente,cantidad,precio,total,estado:'PENDIENTE',observaciones:obs,modificadoPor:'',fechaModificacion:'',id:opId};
                 if(currentTipo==='VENTA') ventas.push(tempOp); else compras.push(tempOp);
@@ -2143,7 +2160,7 @@
             const btn = document.getElementById('btn-deuda-submit');
             btn.disabled = true; btn.textContent = '⏳ Guardando...'; btn.style.opacity = '0.6';
             const deudaId = genId();
-            apiCall({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, tipo:currentDeudaTipoForm, observaciones:obs, id:deudaId })
+            apiCall({ action:'add_deuda', fecha:fechaStr, operador:currentUser, cliente, monto, moneda:currentDeudaMoneda, tipo:currentDeudaTipoForm, observaciones:obs, id:deudaId }, { retries: 2 })
                 .then(() => {
                     deudas.push({fecha:fechaStr,operador:currentUser,cliente,monto,moneda:currentDeudaMoneda,estado:'PENDIENTE',observaciones:obs,tipo:currentDeudaTipoForm,modificadoPor:'',fechaModificacion:'',id:deudaId});
                     updateDeudas();

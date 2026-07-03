@@ -168,6 +168,41 @@ function findRowById(values, id) {
   return -1;
 }
 
+// Devuelve la fila donde ya existe el ID (base 1), o -1 si no está.
+// Lee solo la columna N hasta la última fila con datos.
+function findExistingIdRow(sheet, id) {
+  if (!id) return -1;
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return -1;
+  const ids = sheet.getRange(2, 14, lastRow - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (String(ids[i][0] || '') === String(id)) return i + 2;
+  }
+  return -1;
+}
+
+// Próxima fila libre según la última celda no vacía de la columna dada.
+// Lee solo hasta getLastRow() en vez de la columna completa, y avanza
+// más allá de huecos intermedios para no pisar filas existentes.
+function getNextFreeRow(sheet, col) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 1) return 1;
+  const values = sheet.getRange(1, col, lastRow, 1).getValues();
+  for (let i = values.length - 1; i >= 0; i--) {
+    if (String(values[i][0]).trim() !== '') return i + 2;
+  }
+  return 2;
+}
+
+// La grilla de Sheets tiene 1000 filas por defecto; escribir con getRange()
+// más allá del límite falla. Amplía la grilla antes de llegar al borde.
+function ensureRowCapacity(sheet, targetRow) {
+  const maxRows = sheet.getMaxRows();
+  if (targetRow > maxRows) {
+    sheet.insertRowsAfter(maxRows, Math.max(targetRow - maxRows, 200));
+  }
+}
+
 function addOperation(ss, data) {
   const sheetName = data.tipo === 'VENTA' ? 'VENTAS' : 'COMPRAS';
   const sheet = ss.getSheetByName(sheetName);
@@ -184,19 +219,35 @@ function addOperation(ss, data) {
     fecha = parts[2] + '/' + parts[1] + '/' + parts[0];
   }
 
-  const lastRow = sheet.getRange('B:B').getValues().filter(String).length + 1;
-  // Escribir A-E y G-H; dejar F libre para que la fórmula de la planilla calcule el total
-  sheet.getRange(lastRow, 1, 1, 5).setValues([[fecha, data.operador, data.cliente, '$' + data.cantidad, '$' + data.precio.toFixed(2)]]);
-  sheet.getRange(lastRow, 7, 1, 2).setValues([['PENDIENTE', data.observaciones || '']]);
-  sheet.getRange(lastRow, 11).setValue(new Date());
-  sheet.getRange(lastRow, 12).setValue(data.operador);
-  sheet.getRange(lastRow, 13).setValue(new Date());
-  if (data.id) sheet.getRange(lastRow, 14).setValue(data.id);
+  // Serializa escrituras concurrentes: sin lock, dos requests calculan la misma fila
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    // Idempotencia: si el ID ya existe, este request es un reintento de una
+    // operación que ya se guardó — responder OK sin duplicarla
+    const existente = findExistingIdRow(sheet, data.id);
+    if (existente >= 0) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        message: data.tipo + ' ya estaba registrada en fila ' + existente
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
 
-  return ContentService.createTextOutput(JSON.stringify({
-    success: true,
-    message: data.tipo + ' agregada en fila ' + lastRow
-  })).setMimeType(ContentService.MimeType.JSON);
+    const lastRow = getNextFreeRow(sheet, 2);
+    ensureRowCapacity(sheet, lastRow);
+    // Escribir A-E y G-H; dejar F libre para que la fórmula de la planilla calcule el total
+    sheet.getRange(lastRow, 1, 1, 5).setValues([[fecha, data.operador, data.cliente, '$' + data.cantidad, '$' + data.precio.toFixed(2)]]);
+    sheet.getRange(lastRow, 7, 1, 2).setValues([['PENDIENTE', data.observaciones || '']]);
+    // K=timestamp, L=usuario, M=fecha modificación, N=ID — una sola escritura
+    sheet.getRange(lastRow, 11, 1, 4).setValues([[new Date(), data.operador, new Date(), data.id || '']]);
+
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: data.tipo + ' agregada en fila ' + lastRow
+    })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function updateStatus(ss, data) {
@@ -367,28 +418,42 @@ function addDeuda(ss, data) {
     fecha = parts[2] + '/' + parts[1] + '/' + parts[0];
   }
 
-  const lastRow = sheet.getRange('C:C').getValues().filter(String).length + 1;
-  // A=Fecha, B=Operador, C=Cliente, D=Monto, E=Moneda, F=Estado, G=Observaciones, H=Tipo
-  const newRow = [
-    fecha,
-    data.operador,
-    data.cliente,
-    data.monto,
-    data.moneda,
-    'PENDIENTE',
-    data.observaciones || '',
-    data.tipo || 'COBRAR'
-  ];
-  sheet.getRange(lastRow, 1, 1, 8).setValues([newRow]);
-  sheet.getRange(lastRow, 11).setValue(new Date());
-  sheet.getRange(lastRow, 12).setValue(data.operador);
-  sheet.getRange(lastRow, 13).setValue(new Date());
-  if (data.id) sheet.getRange(lastRow, 14).setValue(data.id);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    // Idempotencia: si el ID ya existe, es un reintento de una deuda ya guardada
+    const existente = findExistingIdRow(sheet, data.id);
+    if (existente >= 0) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        message: 'Deuda ya estaba registrada en fila ' + existente
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
 
-  return ContentService.createTextOutput(JSON.stringify({
-    success: true,
-    message: 'Deuda agregada en fila ' + lastRow
-  })).setMimeType(ContentService.MimeType.JSON);
+    const lastRow = getNextFreeRow(sheet, 3);
+    ensureRowCapacity(sheet, lastRow);
+    // A=Fecha, B=Operador, C=Cliente, D=Monto, E=Moneda, F=Estado, G=Observaciones, H=Tipo
+    const newRow = [
+      fecha,
+      data.operador,
+      data.cliente,
+      data.monto,
+      data.moneda,
+      'PENDIENTE',
+      data.observaciones || '',
+      data.tipo || 'COBRAR'
+    ];
+    sheet.getRange(lastRow, 1, 1, 8).setValues([newRow]);
+    // K=timestamp, L=usuario, M=fecha modificación, N=ID — una sola escritura
+    sheet.getRange(lastRow, 11, 1, 4).setValues([[new Date(), data.operador, new Date(), data.id || '']]);
+
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Deuda agregada en fila ' + lastRow
+    })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function updateDeudaStatus(ss, data) {
